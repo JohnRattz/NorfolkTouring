@@ -1,6 +1,5 @@
 package com.example.john.norfolktouring;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
@@ -65,4 +64,5 @@ public class NorfolkTouring extends Application {
     public static String getActionBarTitle(AppCompatActivity activity) {
         return activity.getSupportActionBar().getTitle().toString();
     }
+
 }

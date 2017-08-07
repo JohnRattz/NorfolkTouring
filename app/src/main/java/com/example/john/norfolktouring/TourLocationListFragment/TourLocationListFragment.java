@@ -16,11 +16,10 @@ import android.widget.TextView;
 import com.example.john.norfolktouring.MainActivity;
 import com.example.john.norfolktouring.NavigationIconClickListeners.DirectionsIconClickListener;
 import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClickListener;
-import com.example.john.norfolktouring.TourLocationDetailFragment;
-import com.example.john.norfolktouring.Utils.PlacesUtils;
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.example.john.norfolktouring.TourLocationDetailFragment;
+import com.example.john.norfolktouring.Utils.PlacesUtils;
 
 import java.util.ArrayList;
 import java.util.List;

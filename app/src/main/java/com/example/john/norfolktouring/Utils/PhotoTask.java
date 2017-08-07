@@ -4,7 +4,6 @@ package com.example.john.norfolktouring.Utils;
  * Created by John on 6/20/2017.
  */
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;

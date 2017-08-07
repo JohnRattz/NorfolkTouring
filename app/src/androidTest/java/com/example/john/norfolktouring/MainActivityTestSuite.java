@@ -1,9 +1,5 @@
 package com.example.john.norfolktouring;
 
-import android.app.Activity;
-import android.content.res.Resources;
-import android.support.test.espresso.DataInteraction;
-import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -21,16 +17,13 @@ import org.junit.runners.Suite;
 
 import java.util.List;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.anything;
 
 /**
@@ -38,7 +31,7 @@ import static org.hamcrest.Matchers.anything;
  */
 
 /**
- * The test suite - used to run all of the following tests..
+ * The test suite - used to run all of the following tests.
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({MainActivityTestSuite.MainActivityTest.class})
@@ -75,10 +68,9 @@ public class MainActivityTestSuite {
                 // Check if the corresponding Fragment is displayed by checking the Action Bar text.
                 // This assumes that the subclasses of `TourLocationListFragment` change the
                 // Action Bar title to their respective category names.
-                Resources resources = getInstrumentation().getTargetContext().getResources();
                 String categoryName = categoryNames.get(categoryIndx);
                 String actionBarTitle = NorfolkTouring.getActionBarTitle(activity);
-                assert actionBarTitle.equals(categoryName);
+                assertTrue(actionBarTitle.equals(categoryName));
             }
         }
 
