@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Location list element dimensions-->
+    <dimen name="location_list_elem_height">180dp</dimen>
+    <!--Location list element image dimensions-->
+    <dimen name="location_list_elem_image_width">180dp</dimen>
+    <dimen name="location_list_elem_image_height">@dimen/location_list_elem_height</dimen>
+
+    <!--Location detail view main content dimensions-->
+    <dimen name="location_detail_images_height">180dp</dimen>
+    <!--Location detail view resource image dimensions-->
+    <dimen name="location_detail_resource_image_width">0dp</dimen>
+    <dimen name="location_detail_resource_image_height">@dimen/location_detail_images_height</dimen>
+    <!--Location detail view google image dimensions-->
+    <dimen name="location_detail_google_image_width">0dp</dimen>
+    <dimen name="location_detail_google_image_height">@dimen/location_detail_images_height</dimen>
+</resources>

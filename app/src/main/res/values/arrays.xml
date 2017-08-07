@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories_array">
+        <item>@string/parks_category_label</item>
+        <item>@string/museums_category_label</item>
+        <item>@string/military_category_label</item>
+        <item>@string/restaurants_category_label</item>
+        <item>@string/others_category_label</item>
+    </string-array>
+
+
+</resources>

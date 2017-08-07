@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/location_list_elem_height">
+
+    <!-- Image for the location -->
+    <ImageView
+        android:id="@+id/location_image"
+        android:layout_width="@dimen/location_list_elem_image_width"
+        android:layout_height="@dimen/location_list_elem_image_height"
+        tools:src="@drawable/parks_town_point_park1"
+        android:scaleType="fitXY"/>
+
+    <!-- The location name and description -->
+    <LinearLayout
+        android:id="@+id/location_text_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--Location name-->
+        <TextView
+            android:id="@+id/location_name"
+            style="@style/location_name_main_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="LOCATION NAME"/>
+
+        <!--Location rating (5 star system)-->
+        <LinearLayout
+            android:id="@+id/location_rating_main_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/first_star"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+
+            <ImageView
+                android:id="@+id/second_star"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+
+            <ImageView
+                android:id="@+id/third_star"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+
+            <ImageView
+                android:id="@+id/fourth_star"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+
+            <ImageView
+                android:id="@+id/fifth_star"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+
+        </LinearLayout>
+
+        <!--Location current open status-->
+        <TextView
+            android:id="@+id/location_open_status_main_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/location_open_status_main_view"/>
+
+        <!--Location distance-->
+        <TextView
+            android:id="@+id/location_distance_main_view"
+            style="@style/location_distance_main_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="LOCATION DISTANCE"/>
+
+        <!--Google Maps View-->
+        <LinearLayout
+            android:id="@+id/google_maps_main_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/google_maps_icon_main_view"
+                android:src="@drawable/ic_place_black_24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/google_maps_text_main_view"
+                android:text="@string/location_resource_google_maps_text"
+                style="@style/location_google_maps_main_view"/>
+
+        </LinearLayout>
+
+        <!--Google Maps Route Planning-->
+        <LinearLayout
+            android:id="@+id/google_maps_route_plan_main_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/google_maps_route_plan_icon_main_view"
+                android:src="@drawable/ic_directions_car_black_24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/google_maps_route_plan_text_main_view"
+                android:text="@string/location_resource_google_maps_route_plan_text"
+                style="@style/location_google_maps_main_view"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

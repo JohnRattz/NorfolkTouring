@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--YouTube Video Player-->
+        <!--android:name="com.google.android.youtube.player.YouTubePlayerFragment"-->
+        <FrameLayout
+            android:id="@+id/youtube_fragment"
+            android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!--Application Introduction and Description-->
+        <TextView
+            style="@style/introduction_header_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/introductory_header_text" />
+
+        <TextView
+            style="@style/introduction_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/introductory_text" />
+
+    </LinearLayout>
+</ScrollView>

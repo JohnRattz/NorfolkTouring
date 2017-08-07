@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?><!--android:visibility="gone"--><!--tools:visibility="visible"-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feature"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--Caret denoting the state of this feature view (expanded or not)-->
+    <ImageView
+        android:id="@+id/expanded_state_caret_view"
+        android:layout_width="24dp"
+        android:layout_height="match_parent"
+        android:scaleType="fitStart"
+        android:src="@drawable/ic_keyboard_arrow_down_black_24dp" />
+
+    <LinearLayout
+        android:id="@+id/feature_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--Feature header-->
+        <TextView
+            android:id="@+id/feature_header"
+            style="@style/location_feature_header_detail_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="HEADER TEXT"/>
+
+        <!--Feature image and description - shown when the header is clicked-->
+        <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+            android:id="@+id/feature_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:ael_duration="500"
+            app:ael_expanded="true"
+            app:ael_interpolator="linear"
+            app:ael_orientation="vertical"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/feature_image"
+                android:layout_width="120dp"
+                android:layout_height="80dp"
+                android:layout_alignParentLeft="true"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                tools:src="@drawable/military_battleship_wisconsin1" />
+
+            <TextView
+                android:id="@+id/feature_description"
+                style="@style/location_features_detail_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/feature_image"
+                android:layout_weight="1" />
+
+        </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,258 @@
+<resources>
+    <string name="app_name">Norfolk Touring</string>
+
+    <!--Location Category Labels-->
+    <string name="parks_category_label">Parks</string>
+    <string name="museums_category_label">Museums</string>
+    <string name="military_category_label">Military</string>
+    <string name="restaurants_category_label">Restaurants</string>
+    <string name="others_category_label">Other</string>
+
+    <!--Location Strings-->
+    <string name="location_open">Open Now</string>
+    <string name="location_closed">Closed</string>
+
+    <!--Military Descriptions-->
+
+    <!--Nauticus-->
+    <string name="military_nauticus_desc">
+        NAUTICUS inspires and educates with engaging &amp; interactive experiences that celebrate our
+        connections with today\'s maritime world. Nauticus is a contemporary museum that uses the
+        natural setting of Norfolk\'s harbor to showcase global maritime commerce and the world\'s
+        largest Navy.
+    </string>
+    <!--Nauticus Features-->
+    <string name="military_nauticus_uss_wisconsin">
+        Berthed at Nauticus, the Battleship Wisconsin is one of the largest and last battleships
+        ever built by the U.S. Navy. Explore its deck through a self-guided tour or, with an
+        additional charge, our guided Topside Tour that will take you back in time to experience
+        this majestic ship that earned five battle stars during WW II.
+    </string>
+    <string name="military_nauticus_hampton_roads_naval_museum">
+        The Hampton Roads Naval Museum is an accredited museum operated by the United States Navy
+        that celebrates the over 240 year history of the fleet in the Hampton Roads region of
+        Virginia. We are located on the second floor of Nauticus in beautiful downtown
+        Norfolk, Virginia.
+    </string>
+    <string name="military_nauticus_power_of_the_sea_galleries">
+        The Power of the Sea Galleries encompass the entire 3rd floor event area of Nauticus,
+        including the Living Sea Landing, the Wisconsin Vista, and the Living Sea Theater.
+        Maximum seated capacity of 350.
+    </string>
+    <string name="military_nauticus_wisconsin_vista">
+        In this area you can enjoy the breathtaking view of the Battleship Wisconsin through large
+        picture windows. This area also includes a variety of computer interactives.
+    </string>
+    <string name="military_nauticus_living_sea_landing">
+        The Living Sea Landing features Horseshoe Crab Cove, a simulated tide pool where your
+        guests can interact with many of the Chesapeake Bay marine life. It is also home to the
+        Shark Experience, and interactive shark tank filled with a variety of friendly sharks.
+        The area accommodates 110 seated guests or 250 standing.
+    </string>
+    <string name="military_nauticus_living_sea_theater">
+        With seating for up to 350 people, this location is ideal
+        for presentations, performances and award ceremonies. It features a large format screen.
+    </string>
+    <string name="military_nauticus_lighthouse_portico">
+        The Lighthouse Portico is Nauticus’s expansive front entrance
+        deck, with access to the waterfront.  Cool breezes off the river
+        make this a delightful area to entertain.
+    </string>
+    <string name="military_nauticus_elizabeth_river_pavilion">
+        This outdoor covered event area offers up beautiful views of
+        the Elizabeth River, as well as protection from inclement
+        weather.  With a seated capacity of 550 and a standing
+        capacity of 900, it is the largest event area on the
+        Nauticus grounds. Add in the parking lot and capacity
+        increases to 1200 standing.
+    </string>
+
+    <!--MacArthur Memorial-->
+    <string name="military_macarthur_memorial_desc">
+        The MacArthur Memorial is a museum and research center dedicated to preserving and
+        presenting the story of the life of General of the Army Douglas MacArthur. The Memorial
+        also pays tribute to the millions of men and women who served with General MacArthur
+        in World War I, World War II, and the Korean War.
+    </string>
+
+    <!--Museums Descriptions-->
+
+    <!--Chrysler Museum of Art-->
+    <string name="museum_chrysler_museum_desc">
+        The Chrysler Museum of Art is a rare gem, with small but inspirational collections of art
+        and antiquities, all well laid out in a lovely building, newly renovated in 2014. This free
+        museum has one of the country\'s leading glass collections. Even visitors who are not
+        interested in art cannot help but be impressed by the beauty and creativity found in this
+        collection. In addition, the museum features European and American painting and sculpture,
+        modern art, contemporary art, photography, decorative arts, and ancient art. From Henri
+        Matisse to Andy Warhol, the museum\'s permanent collection offers a bit of everything, and
+        temporary exhibitions ensure return visits are in order.
+        \n
+        \nNext door to the main museum is the Chrysler Museum Glass Studio, where artists come to
+        work at their craft, and guests can see demonstrations in glass blowing.
+        Classes and workshops are also available.
+    </string>
+
+    <!--Hampton Roads Naval Museum-->
+    <string name="museum_hampton_roads_naval_museum_desc">
+        @string/military_nauticus_hampton_roads_naval_museum
+    </string>
+
+    <!--Hermitage Museum & Gardens-->
+    <string name="museum_hermitage_museum_and_gardens_desc">
+        Historic home and picturesque gardens offering a fine art collection,
+        professional program and classes.
+    </string>
+
+    <!--Other Descriptions-->
+
+    <!--Norfolk Botanical Garden-->
+    <string name="other_norfolk_botanical_garden_desc">
+        The Norfolk Botanical Garden is a botanical garden with an arboretum located at 6700
+        Azalea Garden Road, Norfolk, Virginia.
+    </string>
+
+    <!--The Virginia Zoo-->
+    <string name="other_virginia_zoo_desc">
+        The Virginia Zoological Park is a 53-acre zoo
+        located adjacent to Lafayette Park in Norfolk, Virginia, United States.
+        The zoo opened in 1900, and was accredited by the Association of Zoos and Aquariums in 1987.
+    </string>
+
+    <!--American Rover-->
+    <string name="other_american_rover_desc">
+        Docked in downtown Norfolk, not far from Nauticus, is the tall ship, American Rover.
+        This three-masted schooner offers sailing cruises on the Elizabeth River and Hampton Roads
+        Harbor, with fantastic views of the city and surroundings. These narrated cruises last an
+        hour and a half to two hours and run from April to October. Guests can help with the sailing
+        if they want a little hands-on experience, or simply enjoy the ride. Snacks and beverages
+        are sold on the ship, but guests are also welcome to bring their own food on with them if
+        they choose. Cruises can be booked 30 days in advance, but it is often possible to get
+        tickets at the last minute. Afternoon and sunset cruises are available, and occasionally
+        special sailings are scheduled, including night cruises.
+    </string>
+
+    <!--Parks Descriptions-->
+
+    <!--Town Point Park-->
+    <string name="parks_town_point_park_desc">
+        Located in the heart of downtown Norfolk, Town Point Park provides seven acres of peaceful
+        green space along the Elizabeth River. Town Point Park is Norfolk\'s premier waterfront
+        entertainment venue and serves as a destination for signature festivals,
+        cultural and educational events.
+    </string>
+
+    <!--Ocean View Beach Park-->
+    <string name="parks_ocean_view_beach_park_desc">
+        This unique 6.5-acre beach park, is considered the jewel of Ocean View.
+        The park has a large band shell for presentations and dancing, a beach with lifeguards
+        in the summer, a boardwalk, beach handicap access ramp, and lots of open green space.
+    </string>
+
+    <!--Restaurants Descriptions-->
+
+    <!--Franco's-->
+    <string name="restaurants_francos_desc">
+        Comfy, time-tested option serving pizza, pasta and other Italian comfort food,
+        plus beer and wine.
+    </string>
+
+    <!--Azalea Inn & Time Out Sports Bar-->
+    <string name="restaurants_azalea_inn_desc">
+        Italian and Greek dishes meet pizza and burgers in a casual, paneled tavern with
+        sports photos and TVs.
+    </string>
+
+    <!--Paradise Pizzera-->
+    <string name="restaurants_paradise_pizzera_desc">
+        Delivery, Dine In, Pick Up and Catering Breakfast, Pizza, Stromboli, Calzones, Salads,
+        Wings, Pasta, Dinners, Desserts, Catering and more for entire Family.
+    </string>
+
+    <!--Regino's-->
+    <string name="restaurants_reginos_desc">
+        Understated joint dishing up classic pizzas, hearty pasta dishes and
+        other Italian comfort foods.
+    </string>
+
+    <!--Doumars-->
+    <string name="restaurants_doumars_desc">
+        Landmark stop since 1904 serving BBQ, burgers, dogs and sandwiches
+        plus soda fountain favorites.
+    </string>
+
+    <!--Handsome Biscuit-->
+    <string name="restaurants_handsome_biscuit_desc">
+        Tiny breakfast and lunch joint serving a variety of sweet-potato biscuit sandwiches,
+        sides and desserts.
+    </string>
+
+    <!--Detail View Section Headers-->
+    <string name="detail_view_name_header_text">Name:</string>
+    <string name="detail_view_address_header_text">Address:</string>
+    <string name="detail_view_contact_info_header_text">Contact Info:</string>
+    <string name="detail_view_features_header_text">Features:</string>
+    <string name="detail_view_description_header_text">Full Description:</string>
+
+    <!--Detail View Rating-->
+    <string name="detail_view_rating_header_text">Rating:</string>
+
+    <!--Detail View Hours of Operation-->
+    <string name="location_hours_header">Hours:</string>
+    <string name="sunday_header">Sun</string>
+    <string name="monday_header">Mon</string>
+    <string name="tuesday_header">Tues</string>
+    <string name="wednesday_header">Wed</string>
+    <string name="thursday_header">Thur</string>
+    <string name="friday_header">Fri</string>
+    <string name="saturday_header">Sat</string>
+
+    <!--Detail View Website-->
+    <string name="detail_view_website_header_text">Website:</string>
+
+    <!--Detail View Google Images-->
+    <string name="google_image_attribution">Image attributed to %s</string>
+    <string name="location_detail_resource_image_label_text">Chosen Images</string>
+    <string name="location_detail_google_image_label_text">Images from Google</string>
+
+    <!--Distances-->
+    <string name="location_distance_main_view">%d meters away</string>
+    <string name="location_distance_detail_view">%d meters away</string>
+    <string name="detail_view_distance_header_text">Distance:</string>
+
+    <!--Introduction Fragment-->
+    <string name="introductory_header_text">Welcome to Norfolk, Virginia!</string>
+    <string name="introductory_text">
+        This application shows various locations of interest in Norfolk, Virgina.
+        \n
+        \nSwipe from the left side of the screen to open a drawer from which you may select various
+        categories of locations of interest: parks, museums, military locations, restaurants,
+        and other locations.
+    </string>
+
+    <!--Google Maps Icon Text-->
+    <string name="location_resource_google_maps_text">Google Maps View</string>
+    <!--Google Maps Route Planning Icon Text-->
+    <string name="location_resource_google_maps_route_plan_text">Plan Route</string>
+
+    <!--Permissions and Services-->
+    <string name="LocationServiceDescription">
+        Acquires location data for the NorfolkTouring app.
+    </string>
+    <string name="permission_rationale">
+        NorfolkTouring needs to access this device\'s location
+        to determine distance from touring locations.
+    </string>
+
+    <!--Media Playback-->
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="restart">Restart</string>
+
+    <!--Miscellaneous-->
+    <string name="not_available">N/A</string>
+    <string name="open_status_unavailable">Open Status Uncertain</string>
+    <string name="introductory_video_media_notification_title">NorfolkTouring YouTube player controls</string>
+    <string name="introductory_video_media_notification_text">Click the icons to control the player</string>
+
+</resources>
