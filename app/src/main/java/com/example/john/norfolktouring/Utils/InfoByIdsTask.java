@@ -12,9 +12,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.TourLocation;
-import com.example.john.norfolktouring.TourLocationAdapter;
+import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.example.john.norfolktouring.VolleyRequestQueue;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +35,7 @@ class InfoByIdsTask extends AsyncTask<String, Void, Void> {
     /*** Member Variables ***/
     private Activity mActivity;
     private List<TourLocation> mTourLocations;
-    private TourLocationAdapter mAdapter;
+    private TourLocationListFragment.TourLocationAdapter mAdapter;
 
     // Constants
     private static final String LOG_TAG = InfoByIdsTask.class.getCanonicalName();
@@ -44,7 +43,7 @@ class InfoByIdsTask extends AsyncTask<String, Void, Void> {
     /*** Methods ***/
 
     InfoByIdsTask(Activity activity, List<TourLocation> tourLocations,
-                  TourLocationAdapter adapter) {
+                  TourLocationListFragment.TourLocationAdapter adapter) {
         mActivity = activity;
         mTourLocations = tourLocations;
         mAdapter = adapter;
@@ -58,9 +57,7 @@ class InfoByIdsTask extends AsyncTask<String, Void, Void> {
             String uriParams = "?placeid=" + currentPlaceID +
                     "&key=" + NorfolkTouring.GEO_DATA_WEB_API_KEY;
             String uriString = uriPath + uriParams;
-            RequestFuture<JSONObject> future = RequestFuture.newFuture();
-            JSONObject response = null;
-            Map<String, String> jsonParams = new HashMap<String, String>();
+            Map<String, String> jsonParams = new HashMap<>();
             final int finalTourLocationIndx = tourLocationIndx;
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
                     uriString,

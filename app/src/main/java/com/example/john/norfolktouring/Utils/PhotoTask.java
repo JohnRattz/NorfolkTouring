@@ -22,7 +22,6 @@ import java.util.List;
  * <a href="https://developers.google.com/places/android-api/photos">here</a>
  */
 class PhotoTask extends AsyncTask<String, Void, Void> {
-    private Activity mActivity;
     private int[] mWidths;
     private int[] mHeights;
     private GoogleApiClient mGoogleApiClient;

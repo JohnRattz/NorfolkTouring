@@ -4,7 +4,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 
 import com.example.john.norfolktouring.TourLocation;
-import com.example.john.norfolktouring.TourLocationAdapter;
+import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.places.Place;
@@ -25,12 +25,12 @@ import java.util.List;
 class LocationsByIdsTask extends AsyncTask<String, Void, Void> {
     private GoogleApiClient mGoogleApiClient;
     private List<TourLocation> mTourLocations;
-    private TourLocationAdapter mAdapter;
+    private TourLocationListFragment.TourLocationAdapter mAdapter;
 
     // Constants
     private static final String LOG_TAG = LocationsByIdsTask.class.getCanonicalName();
 
-    LocationsByIdsTask(List<TourLocation> tourLocations, TourLocationAdapter adapter) {
+    LocationsByIdsTask(List<TourLocation> tourLocations, TourLocationListFragment.TourLocationAdapter adapter) {
         mGoogleApiClient = PlacesUtils.getGoogleApiClient();
         mTourLocations = tourLocations;
         mAdapter = adapter;

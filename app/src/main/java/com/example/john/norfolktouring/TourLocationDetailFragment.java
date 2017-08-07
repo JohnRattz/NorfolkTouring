@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.john.norfolktouring.NavigationIconClickListeners.DirectionsIconClickListener;
+import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClickListener;
 import com.example.john.norfolktouring.Utils.AttributedPhoto;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
@@ -44,17 +46,12 @@ public class TourLocationDetailFragment extends Fragment {
     View mEnlargedViewPoweredByGoogle;
     TextView mEnlargedViewImageAttribution;
     LinearLayout mFeaturesListView;
-    // Denotes which features are expanded in this view.
-//    boolean[] mFeaturesExpanded;
-    ArrayList<LocationFeature> mFeatures;
+    ArrayList<TourLocation.LocationFeature> mFeatures;
 
     /** Image Cycling **/
     // Resource images.
     ArrayList<Integer> mResourceImages;
     ImageView mLocationResourcesImageView;
-    // Cycles images in the resource ImageView.
-//    Handler mLocationResourceImageCyclingHandler;
-//    Runnable mResourceImageCycler;
     // The index into an array of image resources to cycle through
     // in this detailed view.
     int mImageResourceIndx = 0;
@@ -63,9 +60,6 @@ public class TourLocationDetailFragment extends Fragment {
     ArrayList<AttributedPhoto> mGoogleImages;
     ImageView mLocationGoogleImageView;
     TextView mLocationGoogleImageAttributionView;
-    // Cycles images in the Google images ImageView (images from Google Places API).
-//    Handler mLocationGoogleImageCyclingHandler;
-//    Runnable mGoogleImageCycler;
     int mGoogleImageIndx = 0;
     // All image cyclers.
     ArrayList<Cycler> mImageCyclers;
@@ -134,11 +128,11 @@ public class TourLocationDetailFragment extends Fragment {
     /**
      * Click listener for features.
      */
-    class FeatureClickListener implements View.OnClickListener {
+    private static class FeatureClickListener implements View.OnClickListener {
         private final boolean mHasImages;
         private final boolean mHasDescription;
         private ImageView mExpandedStateCaretView;
-        private ExpandableRelativeLayout/*ExpandableLinearLayout*//*LinearLayout*/ mFeatureContentContainer;
+        private ExpandableRelativeLayout mFeatureContentContainer;
         private ImageView mFeatureImageView;
         private TextView mFeatureDescriptionView;
         private Cycler mFeatureImageCycler;
@@ -146,7 +140,7 @@ public class TourLocationDetailFragment extends Fragment {
 
         FeatureClickListener(boolean hasImages, boolean hasDescription,
                              ImageView expandedStateCaretView,
-                             ExpandableRelativeLayout/*ExpandableLinearLayout*//*LinearLayout*/ featureContentContainer,
+                             ExpandableRelativeLayout featureContentContainer,
                              ImageView featureImageView, TextView featureDescriptionView,
                              Cycler featureImageCycler) {
             mHasImages = hasImages;
@@ -198,33 +192,15 @@ public class TourLocationDetailFragment extends Fragment {
      * Creates and adds feature `View`s to the list of features.
      */
     private void addFeatures() {
-//        int columnCount = NUM_FEATURES_COLUMNS /*mFeaturesListView.getColumnCount()*/;
-//        int rowCount = (int) Math.ceil(mFeatures.size() / (double) columnCount);
-//        int featureIndx = 0;
-//        for (int columnIndx = 0; columnIndx < columnCount; columnIndx++) {
-//            // Create the row layout.
-//            LinearLayout featuresColumn = (LinearLayout) LayoutInflater.from(mActivity).inflate(
-//                    R.layout.feature_column, mFeaturesListView, false);
-//            for (int rowIndx = 0;
-//                 (rowIndx < rowCount) && (featureIndx < mFeatures.size());
-//                 rowIndx++, featureIndx++) {
-//                LocationFeature feature = mFeatures.get(featureIndx);
-//                // Create a `View` for this feature.
-//                View featureView = getFeatureView(featuresColumn, feature);
-//                featuresColumn.addView(featureView);
-//            }
-//            mFeaturesListView.addView(featuresColumn);
-//        }
-
         for (int featureIndx = 0; featureIndx < mFeatures.size(); featureIndx++) {
-            LocationFeature feature = mFeatures.get(featureIndx);
+            TourLocation.LocationFeature feature = mFeatures.get(featureIndx);
             // Create a `View` for this feature.
             View featureView = getFeatureView(mFeaturesListView, feature);
             mFeaturesListView.addView(featureView);
         }
     }
 
-    private View getFeatureView(ViewGroup parent, LocationFeature feature) {
+    private View getFeatureView(ViewGroup parent, TourLocation.LocationFeature feature) {
         View featureView = LayoutInflater.from(mActivity).inflate(
                 R.layout.feature, parent, false);
 
@@ -242,8 +218,8 @@ public class TourLocationDetailFragment extends Fragment {
         featureHeader.setText(featureHeaderText);
 
         // Get the the image and description (the "content") as well as the container `View`.
-        final ExpandableRelativeLayout/*ExpandableLinearLayout*//*LinearLayout*/ featureContentContainer =
-                (ExpandableRelativeLayout/*ExpandableLinearLayout*//*LinearLayout*/) featureView.findViewById(R.id.feature_content);
+        final ExpandableRelativeLayout featureContentContainer =
+                (ExpandableRelativeLayout) featureView.findViewById(R.id.feature_content);
         final ImageView featureImageView = (ImageView) featureView.findViewById(R.id.feature_image);
         TextView featureDescriptionView = (TextView) featureView.findViewById(R.id.feature_description);
 
@@ -1031,7 +1007,7 @@ public class TourLocationDetailFragment extends Fragment {
         mForwardArrowImageView.setVisibility(View.INVISIBLE);
     }
 
-    /* Click listeners for the image selection arrows for the enlarged view */
+    /** Click listeners for the image selection arrows for the enlarged view **/
 
     /**
      * The click listener for the left arrow (changes to previous image).

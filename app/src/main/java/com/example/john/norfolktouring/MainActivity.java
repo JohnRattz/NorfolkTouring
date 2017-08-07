@@ -1,6 +1,7 @@
 package com.example.john.norfolktouring;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -15,10 +16,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.example.john.norfolktouring.TourLocationListFragment.MilitaryFragment;
+import com.example.john.norfolktouring.TourLocationListFragment.MuseumsFragment;
+import com.example.john.norfolktouring.TourLocationListFragment.OtherFragment;
+import com.example.john.norfolktouring.TourLocationListFragment.ParksFragment;
+import com.example.john.norfolktouring.TourLocationListFragment.RestaurantsFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -129,11 +135,11 @@ public class MainActivity extends AppCompatActivity
         PlacesUtils.setGoogleApiClient(mGoogleApiClient);
 
         // Set the adapter for the drawer.
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.drawer_category_item, mCategories));
         // Set the drawer's click listener.
         DrawerItemClickListener drawerItemClickListener = new DrawerItemClickListener(this, mDrawerList,
-                mCategories, getSupportActionBar()) ;
+                mCategories/*, getSupportActionBar()*/) ;
         mDrawerList.setOnItemClickListener(drawerItemClickListener);
 
         // Set the introductory `Fragment`.
@@ -169,7 +175,7 @@ public class MainActivity extends AppCompatActivity
 
         // Remove location updates to save battery.
         if (mLocationServiceBound && mReceivingLocationUpdates)
-            mLocationService.stopLocationUpdates(this, mLocationCallback);
+            mLocationService.stopLocationUpdates(mLocationCallback);
     }
 
     @Override
@@ -204,30 +210,81 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case RESULT_CANCELED:
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
-                        mLocationService.stopLocationUpdates(this, mLocationCallback);
+                        mLocationService.stopLocationUpdates(mLocationCallback);
                         break;
                 }
                 break;
         }
     }
 
-    /** Drawer Population Methods **/
+    /** Navigation Drawer **/
 
     /**
      * Returns a List of the category titles used to populate the Navigation Drawer.
      */
     static List<String> getNavigationDrawerCategories() {
-        return new ArrayList<String>(Arrays.asList(
+        return new ArrayList<>(Arrays.asList(
                 NorfolkTouring.getContext().getResources().getStringArray(R.array.categories_array)
         ));
     }
 
-    private void addCategoriesToDrawer() {
-        for (int categoryIndx = 0; categoryIndx < mCategories.size(); categoryIndx++) {
-            String category = mCategories.get(categoryIndx);
-            // Create a `View` for this feature.
-            View drawerItemView = View.inflate(this, R.layout.drawer_category_item, null);
-            mDrawerList.addView(drawerItemView);
+    /**
+     * Click listener for drawer items that opens the corresponding TourLocationListFragments.
+     */
+    private static class DrawerItemClickListener implements ListView.OnItemClickListener {
+        private ListView mDrawerList;
+        private DrawerLayout mDrawerLayout;
+        private MainActivity mActivity;
+        private List<String> mCategories;
+
+        DrawerItemClickListener(MainActivity activity, ListView drawerList,
+                                List<String> categories/*, ActionBar actionBar*/){
+            this.mActivity = activity;
+            this.mDrawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
+            this.mDrawerList = drawerList;
+            this.mCategories = categories;
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+
+        /**
+         * Swaps fragments in the main content view
+         */
+        void selectItem(int position) {
+            Fragment fragment = null;
+            String category = mCategories.get(position);
+            // Note that these must be in the same order as listed in @arrays/categories_array.
+            switch (category){
+                case "Parks":
+                    fragment = new ParksFragment();
+                    break;
+                case "Museums":
+                    fragment = new MuseumsFragment();
+                    break;
+                case "Military":
+                    fragment = new MilitaryFragment();
+                    break;
+                case "Restaurants":
+                    fragment = new RestaurantsFragment();
+                    break;
+                case "Other":
+                    fragment = new OtherFragment();
+                    break;
+            }
+
+            // Insert the fragment by replacing any existing fragment.
+            FragmentManager fragmentManager = mActivity.getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment, TourLocationListFragment.FRAGMENT_LABEL)
+                    .addToBackStack(TourLocationListFragment.FRAGMENT_LABEL)
+                    .commit();
+
+            // Highlight the selected item, update the title, and close the drawer.
+            mDrawerList.setItemChecked(position, true);
+            mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
 

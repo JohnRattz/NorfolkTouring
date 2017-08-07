@@ -3,7 +3,7 @@ package com.example.john.norfolktouring.Utils;
 import android.app.Activity;
 
 import com.example.john.norfolktouring.TourLocation;
-import com.example.john.norfolktouring.TourLocationAdapter;
+import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
@@ -20,32 +20,32 @@ public class PlacesUtils {
     private static GoogleApiClient mGoogleApiClient;
 
     // Parks
-    public static final String TOWN_POINT_PARK_ID = "ChIJXZz9rnSYuokRIlNgL39X8GM";
-    public static final String OCEAN_VIEW_BEACH_PARK_ID = "ChIJQdx-U4yQuokR-DRvZRAbGO0";
-    public static final String COMMUNITY_BEACH_PARK_ID = "ChIJwad7me2QuokRs6YBguwYQz4";
-    public static final String SARAH_CONSTANT_BEACH_PARK_ID = "ChIJk7hLz4iQuokRD3WmA4t1hpY";
+    private static final String TOWN_POINT_PARK_ID = "ChIJXZz9rnSYuokRIlNgL39X8GM";
+    private static final String OCEAN_VIEW_BEACH_PARK_ID = "ChIJQdx-U4yQuokR-DRvZRAbGO0";
+    private static final String COMMUNITY_BEACH_PARK_ID = "ChIJwad7me2QuokRs6YBguwYQz4";
+    private static final String SARAH_CONSTANT_BEACH_PARK_ID = "ChIJk7hLz4iQuokRD3WmA4t1hpY";
 
     // Museums
-    public static final String CHRYSLER_MUSEUM_ID = "ChIJ-fHgXBOYuokRIcua3IJjjHI";
-    public static final String HAMPTON_ROADS_NAVAL_MUSEUM_ID = "ChIJiQ2IUnOYuokRty1UExbaBOY";
-    public static final String HERMITAGE_MUSEUM_AND_GARDENS_ID = "ChIJRX9T556ZuokRpSCB63_ooBE";
+    private static final String CHRYSLER_MUSEUM_ID = "ChIJ-fHgXBOYuokRIcua3IJjjHI";
+    private static final String HAMPTON_ROADS_NAVAL_MUSEUM_ID = "ChIJiQ2IUnOYuokRty1UExbaBOY";
+    private static final String HERMITAGE_MUSEUM_AND_GARDENS_ID = "ChIJRX9T556ZuokRpSCB63_ooBE";
 
     // Military
-    public static final String NAUTICUS_ID = "ChIJ1zaUT3OYuokROVBWHBE5tG0";
-    public static final String MACARTHUR_MEMORIAL_ID = "ChIJi66QIQyYuokRps2pupEVr0k";
+    private static final String NAUTICUS_ID = "ChIJ1zaUT3OYuokROVBWHBE5tG0";
+    private static final String MACARTHUR_MEMORIAL_ID = "ChIJi66QIQyYuokRps2pupEVr0k";
 
     // Restaurants
-    public static final String FRANCOS_ID = "ChIJAf8GdeCWuokREy1j3b8azqg";
-    public static final String AZALEA_INN_ID = "ChIJ71EWatOWuokRsEDmD59AARI";
-    public static final String PARADISE_PIZZERA_ID = "ChIJn4BmvBCXuokRryB9CDHl8Fk";
-    public static final String REGINOS_ID = "ChIJ9R2Bs0uRuokRurUjjaI3L9g";
-    public static final String DOUMARS_ID = "ChIJu_kvkDyYuokRRLq_fM_PsUs";
-    public static final String HANDSOME_BISCUIT_ID = "ChIJBbQLYzeYuokRLNHpW2YgiSY";
+    private static final String FRANCOS_ID = "ChIJAf8GdeCWuokREy1j3b8azqg";
+    private static final String AZALEA_INN_ID = "ChIJ71EWatOWuokRsEDmD59AARI";
+    private static final String PARADISE_PIZZERA_ID = "ChIJn4BmvBCXuokRryB9CDHl8Fk";
+    private static final String REGINOS_ID = "ChIJ9R2Bs0uRuokRurUjjaI3L9g";
+    private static final String DOUMARS_ID = "ChIJu_kvkDyYuokRRLq_fM_PsUs";
+    private static final String HANDSOME_BISCUIT_ID = "ChIJBbQLYzeYuokRLNHpW2YgiSY";
 
     // Other
-    public static final String NORFOLK_BOTANICAL_GARDEN_ID = "ChIJETolPM-WuokR7LPd_NPbPXA";
-    public static final String VIRIGNIA_ZOO_ID = "ChIJoXYXhiuYuokRQMe7LLQSdRc";
-    public static final String AMERICAN_ROVER_ID = "ChIJqcRevAuYuokRerkT09cYkCA";
+    private static final String NORFOLK_BOTANICAL_GARDEN_ID = "ChIJETolPM-WuokR7LPd_NPbPXA";
+    private static final String VIRIGNIA_ZOO_ID = "ChIJoXYXhiuYuokRQMe7LLQSdRc";
+    private static final String AMERICAN_ROVER_ID = "ChIJqcRevAuYuokRerkT09cYkCA";
 
     private static final Map<String, String> PLACE_NAME_TO_ID =
             new HashMap<String, String>() {{
@@ -100,7 +100,7 @@ public class PlacesUtils {
      */
     public static void getInfoForTourLocations(Activity activity,
                                                List<TourLocation> tourLocations,
-                                               TourLocationAdapter adapter) {
+                                               TourLocationListFragment.TourLocationAdapter adapter) {
         List<String> placeNames = new ArrayList<>(tourLocations.size());
         // Get all `TourLocation` names.
         for (TourLocation tourLocation : tourLocations)

@@ -1,23 +1,11 @@
 package com.example.john.norfolktouring.TourLocationListFragment;
 
-import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.example.john.norfolktouring.LocationFeature;
 import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
 
 /**
  * Created by John on 5/16/2017.
@@ -47,8 +35,8 @@ public class MilitaryFragment extends TourLocationListFragment {
                 )),
                 "1 Waterside Dr, Norfolk, VA 23510",
                 "(757) 664-1000",
-                new ArrayList<LocationFeature>(Arrays.asList(
-                        new LocationFeature(
+                new ArrayList<TourLocation.LocationFeature>(Arrays.asList(
+                        new TourLocation.LocationFeature(
                                 "USS Wisconsin (BB-64)",
                                 getString(R.string.military_nauticus_uss_wisconsin),
                                 new ArrayList<Integer>(Arrays.asList(
@@ -56,7 +44,7 @@ public class MilitaryFragment extends TourLocationListFragment {
                                         R.drawable.military_battleship_wisconsin2
                                 ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Hampton Roads Naval Museum (2nd Floor)",
                                 getString(R.string.military_nauticus_hampton_roads_naval_museum),
                                 new ArrayList<Integer>(Arrays.asList(
@@ -64,7 +52,7 @@ public class MilitaryFragment extends TourLocationListFragment {
                                         R.drawable.military_hampton_roads_naval_museum2
                                 ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Power of the Sea Galleries (3rd Floor)",
                                 getString(R.string.military_nauticus_power_of_the_sea_galleries),
                                 new ArrayList<Integer>(Arrays.asList(
@@ -75,14 +63,14 @@ public class MilitaryFragment extends TourLocationListFragment {
                                         R.drawable.military_nauticus_power_of_the_sea5
                                 ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Wisconsin Vista",
                                 getString(R.string.military_nauticus_wisconsin_vista),
                                 new ArrayList<Integer>(Arrays.asList(
                                         R.drawable.military_nauticus_wisconsin_vista1
                                 ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Living Sea Landing",
                                 getString(R.string.military_nauticus_living_sea_landing),
                                 new ArrayList<Integer>(Arrays.asList(
@@ -91,7 +79,7 @@ public class MilitaryFragment extends TourLocationListFragment {
                                         R.drawable.military_nauticus_living_sea_landing3
                                         ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Living Sea Theater",
                                 getString(R.string.military_nauticus_living_sea_theater),
                                 new ArrayList<Integer>(Arrays.asList(
@@ -99,7 +87,7 @@ public class MilitaryFragment extends TourLocationListFragment {
                                         R.drawable.military_nauticus_living_sea_theater2
                                 ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Lighthouse Portico",
                                 getString(R.string.military_nauticus_lighthouse_portico),
                                 new ArrayList<Integer>(Arrays.asList(
@@ -107,7 +95,7 @@ public class MilitaryFragment extends TourLocationListFragment {
                                         R.drawable.military_nauticus_lighthouse_portico2
                                 ))
                         ),
-                        new LocationFeature(
+                        new TourLocation.LocationFeature(
                                 "Elizabeth River Pavilion",
                                 getString(R.string.military_nauticus_elizabeth_river_pavilion),
                                 new ArrayList<Integer>(Arrays.asList(

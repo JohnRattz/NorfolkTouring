@@ -153,8 +153,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
     @Override
     public void onPlaying() {
         Log.i(LOG_TAG, "Calling onPlaying()!");
-//        Log.i(LOG_TAG, String.format("onPlaying() - mSeekTimeMillis: %d", mSeekTimeMillis));
-//        Log.i(LOG_TAG, String.format("onPlaying() - current video time: %d", mYouTubePlayer.getCurrentTimeMillis()));
         updateSeekTime();
         updateMediaSessionAndNotification(PlaybackStateCompat.STATE_PLAYING);
     }
@@ -162,8 +160,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
     @Override
     public void onPaused() {
         Log.i(LOG_TAG, "Calling onPaused()!");
-//        Log.i(LOG_TAG, String.format("onPaused() - mSeekTimeMillis: %d", mSeekTimeMillis));
-//        Log.i(LOG_TAG, String.format("onPaused() - current video time: %d", mYouTubePlayer.getCurrentTimeMillis()));
         updateSeekTime();
         updateMediaSessionAndNotification(PlaybackStateCompat.STATE_PAUSED);
     }
@@ -174,8 +170,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
         // This is called when the video has finished cuing (coincidentally), so don't overwrite
         // the seek time before seeking to it in `onLoaded()` after reinitializing
         // the `YouTubePlayerFragment`.
-//        Log.i(LOG_TAG, String.format("onStopped() - mSeekTimeMillis: %d", mSeekTimeMillis));
-//        Log.i(LOG_TAG, String.format("onStopped() - current video time: %d", mYouTubePlayer.getCurrentTimeMillis()));
         if (mYouTubePlayer.getCurrentTimeMillis() != 0)
             updateSeekTime();
         updateMediaSessionAndNotification(PlaybackStateCompat.STATE_STOPPED);
@@ -184,8 +178,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
     @Override
     public void onBuffering(boolean b) {
         Log.i(LOG_TAG, "Calling onBuffering()!");
-//        Log.i(LOG_TAG, String.format("onBuffering() - mSeekTimeMillis: %d", mSeekTimeMillis));
-//        Log.i(LOG_TAG, String.format("onBuffering() - current video time: %d", mYouTubePlayer.getCurrentTimeMillis()));
         updateSeekTime();
         updateMediaSessionAndNotification(PlaybackStateCompat.STATE_BUFFERING);
     }
@@ -193,8 +185,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
     @Override
     public void onSeekTo(int i) {
         Log.i(LOG_TAG, "Calling onSeekTo()!");
-//        Log.i(LOG_TAG, String.format("onSeekTo() - mSeekTimeMillis: %d", mSeekTimeMillis));
-//        Log.i(LOG_TAG, String.format("onSeekTo() - current video time: %d", mYouTubePlayer.getCurrentTimeMillis()));
         updateSeekTime();
     }
 
@@ -208,8 +198,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
         Log.i(LOG_TAG, "Calling onLoaded()!");
         // This is called when the video has finished cuing, so check if we need to seek
         // to the current time after reinitializing the YouTubePlayerFragment.
-//        Log.i(LOG_TAG, String.format("onLoaded() - mSeekTimeMillis: %d", mSeekTimeMillis));
-//        Log.i(LOG_TAG, String.format("onLoaded() - current video time: %d", mYouTubePlayer.getCurrentTimeMillis()));
         if (mYouTubePlayer.getCurrentTimeMillis() == 0 && mSeekTimeMillis != 0)
             mYouTubePlayer.seekToMillis(mSeekTimeMillis);
     }

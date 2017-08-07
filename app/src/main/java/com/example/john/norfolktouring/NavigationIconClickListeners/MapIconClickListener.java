@@ -1,4 +1,4 @@
-package com.example.john.norfolktouring;
+package com.example.john.norfolktouring.NavigationIconClickListeners;
 
 import android.location.Location;
 import android.view.View;

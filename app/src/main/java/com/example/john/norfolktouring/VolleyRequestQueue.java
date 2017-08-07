@@ -13,7 +13,7 @@ import com.android.volley.toolbox.Volley;
 
 /**
  * A singleton for a `Volley` `RequestQueue` (used for networking).
- * Code inspired by
+ * Code derived from
  * <a href="https://developer.android.com/training/volley/requestqueue.html">this documentation</a>.
  */
 public class VolleyRequestQueue {
@@ -34,7 +34,7 @@ public class VolleyRequestQueue {
 
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
-            // getApplicationContext() is key, it keeps you from leaking the
+            // getApplicationContext() is key - it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
             mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
         }
