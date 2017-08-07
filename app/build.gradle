@@ -1,0 +1,98 @@
+//apply plugin: 'com.android.application'
+//
+//android {
+//    compileSdkVersion 26
+//    buildToolsVersion "25.0.2"
+//    defaultConfig {
+//        applicationId "com.example.john.norfolktouring"
+//        minSdkVersion 23
+//        targetSdkVersion 26
+//        versionCode 1
+//        versionName "1.0"
+//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//    }
+//    buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
+//    }
+//}
+//
+//dependencies {
+//    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    })
+//    compile 'com.android.support:appcompat-v7:26.+'
+//    testCompile 'junit:junit:4.12'
+//}
+apply plugin: 'com.android.application'
+
+configurations.all {
+    resolutionStrategy.force 'com.android.support:support-annotations:23.1.1'
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.example.john.norfolktouring"
+        minSdkVersion 22
+        targetSdkVersion 25
+        multiDexEnabled true
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    // Google Play Services
+    compile 'com.google.android.gms:play-services:11.0.1'
+    // GSON (JSON serialization library)
+    compile 'com.google.code.gson:gson:2.8.0'
+    // Support Design Library (used for Snackbar)
+    compile "com.android.support:support-core-utils:25.2.0"
+    compile 'com.android.support:design:25.2.0'
+    // YouTube Android Player API
+    compile files('libs/YouTubeAndroidPlayerApi.jar')
+    // Expandable Layout (https://github.com/AAkira/ExpandableLayout)
+    compile 'com.github.aakira:expandable-layout:1.6.0@aar'
+    // Volley (for retrieving addresses given `Location` objects)
+    compile 'com.android.volley:volley:1.0.0'
+    compile 'com.android.support:support-annotations:25.1.0'
+
+    /*** Testing ***/
+
+    testCompile 'junit:junit:4.12'
+
+    /** Espresso Testing Framework **/
+    // Add test compile dependencies for the Espresso testing framework.
+    androidTestCompile 'com.android.support:support-annotations:23.1.1'
+//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    // Used for opening and closing Navigation Drawers when testing MainActivity.
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2'){
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude module: 'support-v13'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
+    }
+}
