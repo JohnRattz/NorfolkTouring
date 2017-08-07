@@ -12,6 +12,9 @@ Some APIs used in this project include the Google Maps API
 the Google Places API (again, using both URI queries and the Android API),
 the YouTube Android Player API, and the Volley networking library.
 
+Instrumented tests were conducted with the Espresso testing framework.
+These tests can be found in *app/src/androidTest*.
+
 <h3>Executive Overview</h3>
 
 The application opens with an introductory video and navigation instructions.
