@@ -116,7 +116,6 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
     }
 
     private void initializeYouTubePlayerFragment() {
-        // TODO: Is this check necessary?
         if (mYouTubePlayerFragment == null) {
             mYouTubePlayerFragment = new YouTubePlayerFragment();
             getChildFragmentManager().beginTransaction()
