@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
             if (currentFragment instanceof TourLocationListFragment) {
                 ((TourLocationListFragment) currentFragment).locationCallback(mCurrentLocation);
             } else if (currentFragment instanceof TourLocationDetailFragment) {
-                ((TourLocationDetailFragment) currentFragment).locationCallback(mCurrentLocation);
+                ((TourLocationDetailFragment) currentFragment).locationCallback();
             }
         }
     };
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity
         private List<String> mCategories;
 
         DrawerItemClickListener(MainActivity activity, ListView drawerList,
-                                List<String> categories/*, ActionBar actionBar*/){
+                                List<String> categories){
             this.mActivity = activity;
             this.mDrawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
             this.mDrawerList = drawerList;

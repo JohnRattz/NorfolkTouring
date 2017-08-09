@@ -30,6 +30,10 @@ import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
 import static com.example.john.norfolktouring.Utils.AttributedPhoto.getAttributionText;
 
@@ -41,16 +45,25 @@ public class TourLocationDetailFragment extends Fragment {
     /*** Member Variables ***/
     MainActivity mActivity;
     TourLocation mTourLocation;
-    View mRootView;
-    View mSmallViewPoweredByGoogle;
-    View mEnlargedViewPoweredByGoogle;
-    TextView mEnlargedViewImageAttribution;
-    LinearLayout mFeaturesListView;
     ArrayList<TourLocation.LocationFeature> mFeatures;
+    View mRootView;
+    @BindView(R.id.location_details_google_image_powered_by_google_image_view)
+    ImageView mSmallViewPoweredByGoogle;
+    @BindView(R.id.expanded_image_powered_by_google_image_view)
+    ImageView mEnlargedViewPoweredByGoogle;
+    @BindView(R.id.expanded_image_attribution_text_view)
+    TextView mEnlargedViewImageAttribution;
+    @BindView(R.id.feature_list)
+    LinearLayout mFeaturesListView;
+
+    /** ButterKnife **/
+    // Unbind views for this `Fragment` in `onDestroyView()`
+    private Unbinder mButterKnifeUnbinder;
 
     /** Image Cycling **/
     // Resource images.
     ArrayList<Integer> mResourceImages;
+    @BindView(R.id.location_details_resource_image_view)
     ImageView mLocationResourcesImageView;
     // The index into an array of image resources to cycle through
     // in this detailed view.
@@ -58,7 +71,9 @@ public class TourLocationDetailFragment extends Fragment {
     // Google images (acquired with Google Places API).
     // This needs to be a synchronized List.
     ArrayList<AttributedPhoto> mGoogleImages;
+    @BindView(R.id.location_details_google_image_view)
     ImageView mLocationGoogleImageView;
+    @BindView(R.id.location_details_google_image_attribution_text_view)
     TextView mLocationGoogleImageAttributionView;
     int mGoogleImageIndx = 0;
     // All image cyclers.
@@ -72,16 +87,30 @@ public class TourLocationDetailFragment extends Fragment {
     // The system "short" animation time duration, in milliseconds.
     private int mShortAnimationDuration;
     // The arrows used to select the image in the enlarged view.
-    private ImageView mEnlargedImageView;
-    private View mEnlargedImageViewAnimTarget;
-    private ImageView mBackArrowImageView;
-    private ImageView mForwardArrowImageView;
+    @BindView(R.id.expanded_image)                  ImageView mEnlargedImageView;
+    @BindView(R.id.expanded_image_animation_target) View mEnlargedImageViewAnimTarget;
+    @BindView(R.id.prev_image_arrow)                ImageView mBackArrowImageView;
+    @BindView(R.id.next_image_arrow)                ImageView mForwardArrowImageView;
 
     // Used to determine which set of images are currently in the enlarged image view.
     private enum EnlargedImageSet {
         RESOURCE_IMAGES, GOOGLE_IMAGES
     }
     private EnlargedImageSet mEnlargedImageSet;
+
+    /** Remaining Views (below resource and Google images) **/
+    @BindView(R.id.location_details_name_view)            TextView mNameTextView;
+    @BindView(R.id.location_rating_detail_view)           LinearLayout mRatingView;
+    @BindView(R.id.location_hours_detail_view_container)  LinearLayout mHoursContainerView;
+    @BindView(R.id.location_open_status_detail_view)      TextView mOpenStatusView;
+    @BindView(R.id.location_website_detail_view)          TextView mWebsiteView;
+    @BindView(R.id.location_details_address_view)         TextView mAddressTextView;
+    @BindView(R.id.location_details_contact_info_view)    TextView mContactInfoTextView;
+    @BindView(R.id.location_details_features_header_view) TextView mFeaturesHeaderView;
+    @BindView(R.id.location_details_description_view)     TextView mDescriptionTextView;
+    @BindView(R.id.location_details_distance_view)        TextView mLocationDistanceView;
+    @BindView(R.id.google_maps_detail_view)               View mGoogleMapsView;
+    @BindView(R.id.google_maps_route_plan_detail_view)    View mGoogleMapsRoutePlanView;
 
     /** Constants **/
     private static final int NUM_FEATURES_COLUMNS = 2;
@@ -189,7 +218,7 @@ public class TourLocationDetailFragment extends Fragment {
     /*** Methods ***/
 
     /**
-     * Creates and adds feature `View`s to the list of features.
+     * Creates and adds feature `View`s to the list of features (done "statically").
      */
     private void addFeatures() {
         for (int featureIndx = 0; featureIndx < mFeatures.size(); featureIndx++) {
@@ -200,6 +229,11 @@ public class TourLocationDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * Creates a `View` for a location feature (`LocationFeature`).
+     * @param parent  The containing `ViewGroup`.
+     * @param feature The `LocationFeature` to create a `View` for.
+     */
     private View getFeatureView(ViewGroup parent, TourLocation.LocationFeature feature) {
         View featureView = LayoutInflater.from(mActivity).inflate(
                 R.layout.feature, parent, false);
@@ -314,6 +348,8 @@ public class TourLocationDetailFragment extends Fragment {
         mImageCyclers = new ArrayList<>();
 
         mRootView = inflater.inflate(R.layout.location_detail_view, container, false);
+        // Set up the ButterKnife unbinder.
+        mButterKnifeUnbinder = ButterKnife.bind(this, mRootView);
 
         // Load saved variable values.
         if (savedInstanceState != null) {
@@ -337,27 +373,6 @@ public class TourLocationDetailFragment extends Fragment {
         String name = mTourLocation.getLocationName();
 
         setActionBarTitle(mActivity, name);
-
-        // Get references to the views
-        mSmallViewPoweredByGoogle = (ImageView)
-                mRootView.findViewById
-                        (R.id.location_details_google_image_powered_by_google_image_view);
-        mEnlargedViewPoweredByGoogle = (ImageView)
-                mRootView.findViewById(R.id.expanded_image_powered_by_google_image_view);
-        mEnlargedViewImageAttribution = (TextView)
-                mRootView.findViewById(R.id.expanded_image_attribution_text_view);
-        mLocationResourcesImageView = (ImageView)
-                mRootView.findViewById(R.id.location_details_resource_image_view);
-        mLocationGoogleImageView = (ImageView)
-                mRootView.findViewById(R.id.location_details_google_image_view);
-        mEnlargedImageView = (ImageView)
-                mRootView.findViewById(R.id.expanded_image);
-        mEnlargedImageViewAnimTarget = (View)
-                mRootView.findViewById(R.id.expanded_image_animation_target);
-        mBackArrowImageView = (ImageView)
-                mRootView.findViewById(R.id.prev_image_arrow);
-        mForwardArrowImageView = (ImageView)
-                mRootView.findViewById(R.id.next_image_arrow);
 
         // Set the first images in the Resources and Google image views.
         updateResourceImage();
@@ -386,9 +401,6 @@ public class TourLocationDetailFragment extends Fragment {
         mImageCyclers.add(new Cycler(resourceImageCyclingHandler, resourceImageCycler));
 
         // Set the Google images in the view (cycle through them automatically, one at a time).
-        mLocationGoogleImageAttributionView =
-                (TextView) mRootView.findViewById(
-                        R.id.location_details_google_image_attribution_text_view);
         final Handler googleImageCyclingHandler = new Handler();
         Runnable googleImageCycler = new Runnable() {
             public void run() {
@@ -440,16 +452,12 @@ public class TourLocationDetailFragment extends Fragment {
         String description = mTourLocation.getDescription();
 
         // Set the name in the view.
-        TextView nameTextView =
-                (TextView) mRootView.findViewById(R.id.location_details_name_view);
-        nameTextView.setText(name);
+        mNameTextView.setText(name);
 
         // Set the rating in the view.
-        LinearLayout ratingView =
-                (LinearLayout) mRootView.findViewById(R.id.location_rating_detail_view);
         int rating = mTourLocation.getRating();
         for (int starIndx = 0; starIndx < 5; starIndx++) {
-            ImageView starView = (ImageView) ratingView.getChildAt(starIndx);
+            ImageView starView = (ImageView) mRatingView.getChildAt(starIndx);
             if (starIndx < rating)
                 starView.setImageResource(R.drawable.ic_star_black_24dp);
             else
@@ -457,8 +465,6 @@ public class TourLocationDetailFragment extends Fragment {
         }
 
         // Set the hours of operation in the view if there are any.
-        LinearLayout hoursContainerView =
-                (LinearLayout) mRootView.findViewById(R.id.location_hours_detail_view_container);
         for (int day = 0; day < 7; day++) {
             TourLocation.DailyHours dailyHours = mTourLocation.getDailyHours(day);
             if (dailyHours != null) {
@@ -479,79 +485,64 @@ public class TourLocationDetailFragment extends Fragment {
                         .append(closingPM ? "PM" : "AM").toString();
                 // Acquire a reference to the `View` and set the text.
                 TextView hoursView =
-                        (TextView) ((LinearLayout) hoursContainerView.getChildAt(day)).getChildAt(1);
+                        (TextView) ((LinearLayout) mHoursContainerView.getChildAt(day)).getChildAt(1);
                 hoursView.setText(openingHoursFormatted + " - \n" + closingHoursFormatted);
             }
         }
 
         // Set the open status (whether this location is currently open).
-        TextView openStatusView =
-                (TextView) mRootView.findViewById(R.id.location_open_status_detail_view);
         Boolean locationIsOpen = mTourLocation.getOpenNow();
         if (locationIsOpen == null)
-            openStatusView.setText(R.string.open_status_unavailable);
+            mOpenStatusView.setText(R.string.open_status_unavailable);
         else if (locationIsOpen)
-            openStatusView.setText(R.string.location_open);
+            mOpenStatusView.setText(R.string.location_open);
         else
-            openStatusView.setText(R.string.location_closed);
+            mOpenStatusView.setText(R.string.location_closed);
 
         // Set the website in the view.
-        TextView websiteView = (TextView) mRootView.findViewById(R.id.location_website_detail_view);
         String websiteURL = mTourLocation.getWebsite();
         if (websiteURL != null) {
-            websiteView.setText(websiteURL);
+            mWebsiteView.setText(websiteURL);
         } else {
             TextView websiteHeaderView = (TextView) mRootView.findViewById(R.id.location_website_header_detail_view);
             websiteHeaderView.setVisibility(View.GONE);
-            websiteView.setVisibility(View.GONE);
+            mWebsiteView.setVisibility(View.GONE);
         }
 
         // Set the address in the view.
-        TextView addressTextView =
-                (TextView) mRootView.findViewById(R.id.location_details_address_view);
-        addressTextView.setText(address);
+        mAddressTextView.setText(address);
 
         // Set the contact info in the view if there is any.
-        TextView contactInfoTextView =
-                (TextView) mRootView.findViewById(R.id.location_details_contact_info_view);
         if (contactInfo != null) {
-            contactInfoTextView.setText(contactInfo);
+            mContactInfoTextView.setText(contactInfo);
         } else {
             // Remove the "Contact Info:" header and contact info.
             TextView contactInfoHeaderView =
                     (TextView) mRootView.findViewById(R.id.location_details_contact_info_header_view);
             contactInfoHeaderView.setVisibility(View.GONE);
-            contactInfoTextView.setVisibility(View.GONE);
+            mContactInfoTextView.setVisibility(View.GONE);
         }
 
         // Set the features in the view.
-        mFeaturesListView = (LinearLayout) mRootView.findViewById(R.id.feature_list);
         if (mFeatures.size() > 0) {
             addFeatures();
         } else {
             // Remove the "Features:" header and the list.
-            TextView featuresHeaderView =
-                    (TextView) mRootView.findViewById(R.id.location_details_features_header_view);
-            featuresHeaderView.setVisibility(View.GONE);
+            mFeaturesHeaderView.setVisibility(View.GONE);
             mFeaturesListView.setVisibility(View.GONE);
         }
 
         // Set the detailed description in the view.
-        TextView descriptionTextView =
-                (TextView) mRootView.findViewById(R.id.location_details_description_view);
-        descriptionTextView.setText(description);
+        mDescriptionTextView.setText(description);
 
         // Set the distance text for this location.
         updateUILocationDistance();
 
         // Set a click listener on the Google Maps icon and text.
-        View googleMapsView = mRootView.findViewById(R.id.google_maps_detail_view);
-        googleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
+        mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
 
         // Set a click listener on the Google Maps Route Plan icon and text.
-        View googleMapsRoutePlanView =
-                mRootView.findViewById(R.id.google_maps_route_plan_detail_view);
-        googleMapsRoutePlanView.setOnClickListener(
+        mGoogleMapsRoutePlanView.setOnClickListener(
                 new DirectionsIconClickListener(mActivity,
                         mTourLocation, mActivity.getCurrentLocation()));
 
@@ -574,6 +565,12 @@ public class TourLocationDetailFragment extends Fragment {
         super.onStop();
         // Stop the image cycling Handlers.
         stopCyclers();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mButterKnifeUnbinder.unbind();
     }
 
     /** Animation Methods **/
@@ -1051,7 +1048,7 @@ public class TourLocationDetailFragment extends Fragment {
      * Location Updates Methods
      **/
 
-    public void locationCallback(Location location) {
+    public void locationCallback() {
         updateUILocationDistance();
     }
 
@@ -1063,14 +1060,13 @@ public class TourLocationDetailFragment extends Fragment {
      */
     private boolean updateUILocationDistance() {
         // Set the distance text for this location.
-        TextView locationDistance = (TextView) mRootView.findViewById(R.id.location_details_distance_view);
         Location location = mTourLocation.getLocation();
         Location deviceLocation = mActivity.getCurrentLocation();
         // If the `Location`s for both this `TourLocation` and the device have been determined...
         if (location != null && deviceLocation != null) {
             // Set the appropriate text in the corresponding `View` in the list.
             String formatString = getActivity().getString(R.string.location_distance_detail_view);
-            locationDistance.setText(
+            mLocationDistanceView.setText(
                     String.format(formatString, (int) deviceLocation.distanceTo(location)));
         }
         return location != null;
