@@ -51,7 +51,7 @@ a MediaStyle notification (used by media playback applications such as Spotify).
 
 `TourLocation:` All information regarding a tour location is stored in a object of this type.
 
-`LocationFeature`: A feature for a `TourLocation`. Has a name, description, and images.
+`TourLocation.LocationFeature`: A feature for a `TourLocation`. Has a name, description, and images.
 
 `TourLocationListFragment/TourLocationListFragment`: The description of a list of
 `TourLocation` objects. Subclasses only define the `TourLocation` objects that are to be displayed.
@@ -66,23 +66,23 @@ All image cycling stops and starts with the lifecycle of the `TourLocationDetail
 
 <h4>Click Listeners</h4>
 
-`DrawerItemClickListener`: Replaces the main view with the `Fragment` (a `TourLocationListFragment`) 
+`MainActivity.DrawerItemClickListener`: Replaces the main view with the `Fragment` (a `TourLocationListFragment`) 
 corresponding to a clicked drawer item. The `Fragment` launched will be one of the following: 
 `MilitaryFragment`, `MuseumsFragment`, `OtherFragment`, `ParksFragment`, or `RestaurantsFragment`.
 
-`TourLocationClickListener`: Replaces the main view with a `TourLocationDetailFragment` displaying
+`TourLocationListFragment.TourLocationClickListener`: Replaces the main view with a `TourLocationDetailFragment` displaying
 more information than the `TourLocationListFragment`.
 
-`DirectionsIconClickListener`: Uses an implicit `Intent` to launch an application that plots a path
+`NavigationIconClickListeners.DirectionsIconClickListener`: Uses an implicit `Intent` to launch an application that plots a path
 between the device's location and the location of the corresponding `TourLocation`.
 
-`MapIconClickListener`: Opens a Google Maps view, places a marker at the location of the 
+`NavigationIconClickListeners.MapIconClickListener`: Opens a Google Maps view, places a marker at the location of the 
 corresponding `TourLocation`, and zooms to it. Also allows navigation to the device location 
 with a button.
 
 <h4>Adapters</h4>
 
-`TourLocationAdapter`: Used by subclasses of `TourLocationListFragment` to fill a list of 
+`TourLocationListFragment.TourLocationAdapter`: Used by subclasses of `TourLocationListFragment` to fill a list of 
 `TourLocation` objects.
 
 <h4>Services</h4>
