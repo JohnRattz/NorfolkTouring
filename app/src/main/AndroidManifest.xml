@@ -4,7 +4,8 @@
 
     <!-- Used to retrieve device location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- Used to steam introductory video from YouTube and query device address from `Location` -->
+    <!-- Used to steam introductory video from YouTube and retrieve location information
+         from the Google Places API -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -63,19 +64,3 @@
     </application>
 
 </manifest>
-
-<!--<manifest xmlns:android="http://schemas.android.com/apk/res/android"-->
-
-<!--package="com.example.john.norfolktouring">-->
-
-<!--<application-->
-<!--android:allowBackup="true"-->
-<!--android:icon="@mipmap/ic_launcher"-->
-<!--android:label="@string/app_name"-->
-<!--android:roundIcon="@mipmap/ic_launcher_round"-->
-<!--android:supportsRtl="true"-->
-<!--android:theme="@style/AppTheme">-->
-
-<!--</application>-->
-
-<!--</manifest>-->

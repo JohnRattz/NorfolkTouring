@@ -38,6 +38,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
@@ -47,8 +50,8 @@ public class MainActivity extends AppCompatActivity
 
     /** Navigation Drawer **/
     private List<String> mCategories;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @BindView(R.id.left_drawer)   ListView mDrawerList;
 
     /** Location Updates **/
     private LocationService mLocationService;
@@ -121,9 +124,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Start ButterKnife.
+        ButterKnife.bind(this);
+
         mCategories = getNavigationDrawerCategories();
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addApi(Places.GEO_DATA_API)
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity
                 R.layout.drawer_category_item, mCategories));
         // Set the drawer's click listener.
         DrawerItemClickListener drawerItemClickListener = new DrawerItemClickListener(this, mDrawerList,
-                mCategories/*, getSupportActionBar()*/) ;
+                mCategories) ;
         mDrawerList.setOnItemClickListener(drawerItemClickListener);
 
         // Set the introductory `Fragment`.
