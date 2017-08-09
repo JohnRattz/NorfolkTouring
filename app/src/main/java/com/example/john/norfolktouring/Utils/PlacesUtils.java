@@ -91,16 +91,14 @@ public class PlacesUtils {
      */
     public static void getInfoForTourLocation(Activity activity, TourLocation tourLocation) {
         List<TourLocation> tourLocations = new ArrayList<>(Arrays.asList(tourLocation));
-        getInfoForTourLocations(activity, tourLocations, null);
+        getInfoForTourLocations(activity, tourLocations);
     }
 
     /**
      * Acquires location, hours of operation, rating, and the website for `tourLocations`.
-     * @param adapter TourLocationAdapter An adapter to notify of a dataset change on completion.
      */
     public static void getInfoForTourLocations(Activity activity,
-                                               List<TourLocation> tourLocations,
-                                               TourLocationListFragment.TourLocationAdapter adapter) {
+                                               List<TourLocation> tourLocations) {
         List<String> placeNames = new ArrayList<>(tourLocations.size());
         // Get all `TourLocation` names.
         for (TourLocation tourLocation : tourLocations)
@@ -110,7 +108,7 @@ public class PlacesUtils {
         String[] placeIDarr = new String[placeIDs.size()];
         placeIDarr = placeIDs.toArray(placeIDarr);
         // Acquire the desired data asynchronously.
-        InfoByIdsTask infoByIdsTask = new InfoByIdsTask(activity, tourLocations, adapter);
+        InfoByIdsTask infoByIdsTask = new InfoByIdsTask(activity, tourLocations);
         infoByIdsTask.execute(placeIDarr);
     }
 

@@ -14,6 +14,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import com.example.john.norfolktouring.NavigationIconClickListeners.DirectionsIconClickListener;
 import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClickListener;
 import com.example.john.norfolktouring.Utils.AttributedPhoto;
+import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
@@ -41,7 +43,8 @@ import static com.example.john.norfolktouring.Utils.AttributedPhoto.getAttributi
  * Created by John on 6/1/2017.
  */
 
-public class TourLocationDetailFragment extends Fragment {
+public class TourLocationDetailFragment extends Fragment
+        implements InfoByIdsTask.InfoByIdResultCallback {
     /*** Member Variables ***/
     MainActivity mActivity;
     TourLocation mTourLocation;
@@ -325,6 +328,21 @@ public class TourLocationDetailFragment extends Fragment {
     }
 
     /**
+     * Callback for `InfoByIdsTask`.
+     */
+    @Override
+    public void infoByIdResultCallback() {
+        // Recreate this Fragment.
+        Fragment currentFragment = null;
+        currentFragment = getFragmentManager().findFragmentByTag(FRAGMENT_LABEL);
+        mActivity.getFragmentManager()
+                .beginTransaction()
+                .detach(currentFragment)
+                .attach(currentFragment)
+                .commit();
+    }
+
+    /**
      * Lifecycle Methods
      **/
 
@@ -340,6 +358,7 @@ public class TourLocationDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "calling onCreateView()!");
         mActivity = (MainActivity) getActivity();
         // Record that this Fragment is the currently displayed one in `MainActivity`.
         mActivity.setCurrentFragment(this);

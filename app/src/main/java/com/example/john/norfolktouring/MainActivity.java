@@ -26,6 +26,7 @@ import com.example.john.norfolktouring.TourLocationListFragment.OtherFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.ParksFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.RestaurantsFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
+import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -43,7 +44,8 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+        ActivityCompat.OnRequestPermissionsResultCallback,
+        InfoByIdsTask.InfoByIdResultCallback {
     /*** Member Variables ***/
     private GoogleApiClient mGoogleApiClient;
     private Fragment mCurrentFragment;
@@ -358,5 +360,15 @@ public class MainActivity extends AppCompatActivity
 
     public Location getCurrentLocation() {
         return mCurrentLocation;
+    }
+
+    /**
+     * Callback for `InfoByIdsTask`.
+     */
+    @Override
+    public void infoByIdResultCallback() {
+        // TODO: If a tablet view is to be supported, there may be multiple callbacks to call.
+        if (mCurrentFragment instanceof InfoByIdsTask.InfoByIdResultCallback)
+            ((InfoByIdsTask.InfoByIdResultCallback) mCurrentFragment).infoByIdResultCallback();
     }
 }

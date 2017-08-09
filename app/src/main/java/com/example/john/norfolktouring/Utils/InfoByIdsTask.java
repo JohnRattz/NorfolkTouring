@@ -30,22 +30,21 @@ import java.util.Map;
  * Acquires location, hours of operation, rating, and the website for `tourLocations`
  * using URI queries to the Google Places API and the Volley networking library.
  */
-class InfoByIdsTask extends AsyncTask<String, Void, Void> {
+public class InfoByIdsTask extends AsyncTask<String, Void, Void> {
     /*** Member Variables ***/
     private Activity mActivity;
+    private InfoByIdResultCallback mCallback;
     private List<TourLocation> mTourLocations;
-    private TourLocationListFragment.TourLocationAdapter mAdapter;
 
     // Constants
     private static final String LOG_TAG = InfoByIdsTask.class.getCanonicalName();
 
     /*** Methods ***/
 
-    InfoByIdsTask(Activity activity, List<TourLocation> tourLocations,
-                  TourLocationListFragment.TourLocationAdapter adapter) {
+    InfoByIdsTask(Activity activity, List<TourLocation> tourLocations) {
         mActivity = activity;
+        mCallback = (InfoByIdResultCallback) mActivity;
         mTourLocations = tourLocations;
-        mAdapter = adapter;
     }
 
     @Override
@@ -145,8 +144,13 @@ class InfoByIdsTask extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        // Signal the relevant adapter to refresh its display.
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        mCallback.infoByIdResultCallback();
+    }
+
+    /**
+     * Interface for callbacks for this method on completion.
+     */
+    public interface InfoByIdResultCallback {
+        void infoByIdResultCallback();
     }
 }

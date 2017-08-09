@@ -19,6 +19,7 @@ import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClick
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
 import com.example.john.norfolktouring.TourLocationDetailFragment;
+import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
 /**
  * A general formulation of a Fragment that displays `TourLocation` objects.
  */
-public abstract class TourLocationListFragment extends Fragment {
+public abstract class TourLocationListFragment extends Fragment
+        implements InfoByIdsTask.InfoByIdResultCallback {
     /*** Member Variables ***/
     protected MainActivity mActivity;
     protected ArrayList<TourLocation> mLocations;
@@ -102,7 +104,7 @@ public abstract class TourLocationListFragment extends Fragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         // Get the `Location`, hours of operation, rating, and website for these places.
-        PlacesUtils.getInfoForTourLocations(mActivity, mLocations, mAdapter);
+        PlacesUtils.getInfoForTourLocations(mActivity, mLocations);
 
         return rootView;
     }
@@ -134,9 +136,17 @@ public abstract class TourLocationListFragment extends Fragment {
     }
 
     /**
+     * Callback for `InfoByIdsTask`.
+     */
+    @Override
+    public void infoByIdResultCallback() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    /**
      * Populates a TourLocationListFragment with views populated with TourLocation information.
      */
-    public static class TourLocationAdapter extends RecyclerView.Adapter<TourLocationAdapter.TourLocationViewHolder>/*ArrayAdapter<TourLocation>*/ {
+    public static class TourLocationAdapter extends RecyclerView.Adapter<TourLocationAdapter.TourLocationViewHolder> {
         /*** Member Variables ***/
         private MainActivity mActivity;
 
