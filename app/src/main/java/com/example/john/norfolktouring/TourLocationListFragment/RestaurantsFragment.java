@@ -1,5 +1,10 @@
 package com.example.john.norfolktouring.TourLocationListFragment;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
@@ -15,10 +20,15 @@ public class RestaurantsFragment extends TourLocationListFragment {
     /*** Member Variables ***/
     // Constants
     static {LOG_TAG = RestaurantsFragment.class.getCanonicalName();}
-    static {ACTION_BAR_TITLE =
-            NorfolkTouring.getContext().getResources().getString(R.string.restaurants_category_label);}
 
     /*** Methods ***/
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ACTION_BAR_TITLE = NorfolkTouring.getContext().getResources()
+                .getString(R.string.restaurants_category_label);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
     protected void createLocations() {
         // Create a list of locations.
