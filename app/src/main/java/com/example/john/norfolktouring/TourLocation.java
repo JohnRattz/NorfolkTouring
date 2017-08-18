@@ -77,15 +77,11 @@ public class TourLocation implements Parcelable {
         this.mFeatures = (features != null) ? features : new ArrayList<LocationFeature>(0);
     }
 
-    /** Getters **/
+    /** Getters and Setters **/
 
-    public String getLocationName() {
-        return mLocationName;
-    }
+    public String getLocationName() {return mLocationName;}
 
-    public String getDescription() {
-        return mDescription;
-    }
+    public String getDescription() {return mDescription;}
 
     public ArrayList<Integer> getResourceImages() {
         return mResourceImages;
@@ -110,31 +106,25 @@ public class TourLocation implements Parcelable {
     public Location getLocation() {
         return mLocation;
     }
-
-    public Boolean getOpenNow() {return mOpenNow;}
-
-    public DailyHours[] getWeeklyHours() {return mWeeklyHours;}
-
-    public DailyHours getDailyHours(int day) {return getWeeklyHours()[day];}
-
-    public int getRating() {return mRating;}
-
-    public String getWebsite() {return mWebsite;}
-
-    /** Setters **/
-
     public void setLocation(Location location) {
         mLocation = location;
     }
 
+
+    public Boolean getOpenNow() {return mOpenNow;}
     public void setOpenNow(Boolean openNow) {mOpenNow = openNow;}
 
+
+    public DailyHours[] getWeeklyHours() {return mWeeklyHours;}
+    public DailyHours getDailyHours(int day) {return getWeeklyHours()[day];}
     public void setHours(int day, int openTime, int closeTime) {
         mWeeklyHours[day] = new DailyHours(openTime, closeTime);
     }
 
+    public int getRating() {return mRating;}
     public void setRating(int rating) {mRating = rating;}
 
+    public String getWebsite() {return mWebsite;}
     public void setWebsite(String website) {mWebsite = website;}
 
     /**
