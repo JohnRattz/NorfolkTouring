@@ -23,8 +23,7 @@ public class NorfolkTouring extends Application {
     public static final String YOUTUBE_DEVELOPER_KEY = "AIzaSyAqSUHLKobTJR1dYTcIDPUD8_NYbl0qc9c";
     public static final String GEO_DATA_API_KEY = "AIzaSyAWMdYhZZ8SfyveoIGgnXZBhQpM1Rcl-rA";
     // Used for URL queries with the Google Maps API.
-    public static final String GEO_DATA_WEB_API_KEY =
-            "AIzaSyAg8xr6kE81Dv2OtjoVQt6F3J33hBlcJA8";
+    public static final String GEO_DATA_WEB_API_KEY = "AIzaSyAg8xr6kE81Dv2OtjoVQt6F3J33hBlcJA8";
 
     /*** Methods ***/
 

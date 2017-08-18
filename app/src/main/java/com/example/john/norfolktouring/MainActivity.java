@@ -238,9 +238,9 @@ public class MainActivity extends AppCompatActivity
      * Click listener for drawer items that opens the corresponding TourLocationListFragments.
      */
     private static class DrawerItemClickListener implements ListView.OnItemClickListener {
-        private ListView mDrawerList;
-        private DrawerLayout mDrawerLayout;
         private MainActivity mActivity;
+        private DrawerLayout mDrawerLayout;
+        private ListView mDrawerList;
         private List<String> mCategories;
 
         DrawerItemClickListener(MainActivity activity, ListView drawerList,
