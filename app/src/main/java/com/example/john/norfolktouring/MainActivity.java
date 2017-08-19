@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
@@ -14,7 +15,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -45,10 +50,13 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
-        InfoByIdsTask.InfoByIdResultCallback {
+        InfoByIdsTask.InfoByIdResultCallback,
+        SharedPreferences.OnSharedPreferenceChangeListener{
     /*** Member Variables ***/
     private GoogleApiClient mGoogleApiClient;
     private Fragment mCurrentFragment;
+    // Denotes whether wifi and cell data usage is allowed.
+    private boolean mWifiCellEnabled;
 
     /** Navigation Drawer **/
     private List<String> mCategories;
@@ -117,6 +125,23 @@ public class MainActivity extends AppCompatActivity
 
     /*** Methods ***/
 
+    /** Shared Preferences **/
+
+    private void setupSharedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mWifiCellEnabled = sharedPreferences.getBoolean(
+                getString(R.string.pref_enable_wifi_cell_data_usage_key),
+                getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key)))
+            mWifiCellEnabled = sharedPreferences.getBoolean(key,
+                    getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+    }
+
     /**
      * Lifecycle Methods
      **/
@@ -128,6 +153,8 @@ public class MainActivity extends AppCompatActivity
 
         // Start ButterKnife.
         ButterKnife.bind(this);
+
+        setupSharedPreferences();
 
         mCategories = getNavigationDrawerCategories();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -194,6 +221,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -221,6 +255,26 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
         }
+    }
+
+    /** Menu **/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.preferences_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /** Navigation Drawer **/

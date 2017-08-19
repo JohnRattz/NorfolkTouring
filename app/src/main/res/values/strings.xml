@@ -255,4 +255,11 @@
     <string name="introductory_video_media_notification_title">NorfolkTouring YouTube player controls</string>
     <string name="introductory_video_media_notification_text">Click the icons to control the player</string>
 
+    <string name="action_settings">Settings</string>
+    <!-- NOTE: All keys should have translatable="false" to avoid unneeded localization. -->
+    <string name="pref_enable_wifi_cell_data_usage_key" translatable="false">enable_wifi_cell_data_usage</string>
+    <string name="pref_enable_wifi_cell_data_usage_summary_off">Disabled</string>
+    <string name="pref_enable_wifi_cell_data_usage_summary_on">Enabled</string>
+    <string name="pref_enable_wifi_cell_data_usage_title">Enable WiFi/Cell Data Usage</string>
+
 </resources>
