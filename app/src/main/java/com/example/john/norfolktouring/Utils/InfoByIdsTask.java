@@ -128,12 +128,14 @@ public class InfoByIdsTask extends AsyncTask<String, Void, Void> {
                                 // JSON structure are invalid.
                                 e.printStackTrace();
                             }
+                            mCallback.infoByIdResultCallback();
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e(LOG_TAG, "Error occurred ", error);
+                            mCallback.infoByIdResultCallback();
                         }
                     });
             // Add the request to the request queue.
@@ -142,10 +144,8 @@ public class InfoByIdsTask extends AsyncTask<String, Void, Void> {
         return null;
     }
 
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        mCallback.infoByIdResultCallback();
-    }
+//    @Override
+//    protected void onPostExecute(Void aVoid) {mCallback.infoByIdResultCallback();}
 
     /**
      * Interface for callbacks for this method on completion.

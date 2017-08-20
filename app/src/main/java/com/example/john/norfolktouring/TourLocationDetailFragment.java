@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -14,6 +15,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
+import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED;
 import static com.example.john.norfolktouring.Utils.AttributedPhoto.getAttributionText;
 
 /**
@@ -44,23 +47,22 @@ import static com.example.john.norfolktouring.Utils.AttributedPhoto.getAttributi
  */
 
 public class TourLocationDetailFragment extends Fragment
-        implements InfoByIdsTask.InfoByIdResultCallback {
+        implements InfoByIdsTask.InfoByIdResultCallback,
+        SharedPreferences.OnSharedPreferenceChangeListener {
     /*** Member Variables ***/
     MainActivity mActivity;
     TourLocation mTourLocation;
     ArrayList<TourLocation.LocationFeature> mFeatures;
     View mRootView;
-    @BindView(R.id.location_details_google_image_powered_by_google_image_view)
-    ImageView mSmallViewPoweredByGoogle;
-    @BindView(R.id.expanded_image_powered_by_google_image_view)
-    ImageView mEnlargedViewPoweredByGoogle;
-    @BindView(R.id.expanded_image_attribution_text_view)
-    TextView mEnlargedViewImageAttribution;
+
+    // Denotes whether the rating UI needs to be refreshed.
+    private boolean mRatingNeedsRefresh = false;
+
     @BindView(R.id.feature_list)
     LinearLayout mFeaturesListView;
 
     /** ButterKnife **/
-    // Unbind views for this `Fragment` in `onDestroyView()`
+    // Unbind views in `onDestroyView()`
     private Unbinder mButterKnifeUnbinder;
 
     /** Image Cycling **/
@@ -76,13 +78,20 @@ public class TourLocationDetailFragment extends Fragment
     ArrayList<AttributedPhoto> mGoogleImages;
     @BindView(R.id.location_details_google_image_view)
     ImageView mLocationGoogleImageView;
+    @BindView(R.id.location_details_google_image_powered_by_google_image_view)
+    ImageView mSmallViewPoweredByGoogle;
     @BindView(R.id.location_details_google_image_attribution_text_view)
     TextView mLocationGoogleImageAttributionView;
+    @BindView(R.id.expanded_image_powered_by_google_image_view)
+    ImageView mEnlargedViewPoweredByGoogle;
+    @BindView(R.id.expanded_image_attribution_text_view)
+    TextView mEnlargedViewImageAttribution;
     int mGoogleImageIndx = 0;
     // All image cyclers.
     ArrayList<Cycler> mImageCyclers;
     // Milliseconds between cycling images.
     final int mMillisBetweenCycles = 6000;
+
     /** Image Zoom Variables **/
     // Hold a reference to the current animator,
     // so that it can be canceled mid-way.
@@ -103,14 +112,18 @@ public class TourLocationDetailFragment extends Fragment
 
     /** Remaining Views (below resource and Google images) **/
     @BindView(R.id.location_details_name_view)            TextView mNameTextView;
+    @BindView(R.id.location_rating_header_detail_view)    TextView mRatingHeaderView;
     @BindView(R.id.location_rating_detail_view)           LinearLayout mRatingView;
+    @BindView(R.id.location_hours_header_detail_view)     TextView mHoursHeaderView;
     @BindView(R.id.location_hours_detail_view_container)  LinearLayout mHoursContainerView;
     @BindView(R.id.location_open_status_detail_view)      TextView mOpenStatusView;
+    @BindView(R.id.location_website_header_detail_view)   TextView mWebsiteHeaderView;
     @BindView(R.id.location_website_detail_view)          TextView mWebsiteView;
     @BindView(R.id.location_details_address_view)         TextView mAddressTextView;
     @BindView(R.id.location_details_contact_info_view)    TextView mContactInfoTextView;
     @BindView(R.id.location_details_features_header_view) TextView mFeaturesHeaderView;
     @BindView(R.id.location_details_description_view)     TextView mDescriptionTextView;
+    @BindView(R.id.location_details_distance_header_view) TextView mLocationDistanceHeaderView;
     @BindView(R.id.location_details_distance_view)        TextView mLocationDistanceView;
     @BindView(R.id.google_maps_detail_view)               View mGoogleMapsView;
     @BindView(R.id.google_maps_route_plan_detail_view)    View mGoogleMapsRoutePlanView;
@@ -332,26 +345,44 @@ public class TourLocationDetailFragment extends Fragment
      */
     @Override
     public void infoByIdResultCallback() {
-        // Recreate this Fragment.
-        Fragment currentFragment = null;
-        currentFragment = getFragmentManager().findFragmentByTag(FRAGMENT_LABEL);
-        mActivity.getFragmentManager()
-                .beginTransaction()
-                .detach(currentFragment)
-                .attach(currentFragment)
-                .commit();
+        updateRatingUI(mActivity.IsWifiCellEnabled());
+        updateLocationDistanceUI();
+//        // Recreate this Fragment.
+//        Fragment currentFragment = null;
+//        currentFragment = getFragmentManager().findFragmentByTag(FRAGMENT_LABEL);
+//        mActivity.getFragmentManager()
+//                .beginTransaction()
+//                .detach(currentFragment)
+//                .attach(currentFragment)
+//                .commit();
+    }
+
+    /**
+     * Shared Preferences
+     **/
+
+    /**
+     * Called when the shared preferences change.
+     */
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
+            if (this == mActivity.getCurrentFragment()) {
+                boolean wifiCellEnabled = sharedPreferences.getBoolean(key,
+                        getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+                updateRatingUI(wifiCellEnabled);
+                updateLocationDistanceUI();
+                updateGoogleMapsViews(wifiCellEnabled);
+                if (wifiCellEnabled)
+                    // This should trigger `locationCallback()` in the near future.
+                    PlacesUtils.getInfoForTourLocationIfNeeded(mActivity, mTourLocation);
+            }
+        }
     }
 
     /**
      * Lifecycle Methods
      **/
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Start the image cycling Handlers.
-        restartCyclers();
-    }
 
     @Nullable
     @Override
@@ -362,6 +393,11 @@ public class TourLocationDetailFragment extends Fragment
         mActivity = (MainActivity) getActivity();
         // Record that this Fragment is the currently displayed one in `MainActivity`.
         mActivity.setCurrentFragment(this);
+
+        // Register this Fragment as a listener for shared preference changes.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(mActivity);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         // Create a list of image cyclers to start and stop along with this fragment.
         mImageCyclers = new ArrayList<>();
@@ -474,59 +510,81 @@ public class TourLocationDetailFragment extends Fragment
         mNameTextView.setText(name);
 
         // Set the rating in the view.
-        int rating = mTourLocation.getRating();
-        for (int starIndx = 0; starIndx < 5; starIndx++) {
-            ImageView starView = (ImageView) mRatingView.getChildAt(starIndx);
-            if (starIndx < rating)
-                starView.setImageResource(R.drawable.ic_star_black_24dp);
-            else
-                starView.setImageResource(R.drawable.ic_star_border_black_24dp);
-        }
+        updateRatingUI(mActivity.IsWifiCellEnabled());
+//        int rating = mTourLocation.getRating();
+//        // If the rating is known or should be known soon, show the stars.
+//        if (rating != RATING_NOT_DETERMINED || mActivity.IsWifiCellEnabled()) {
+//            mRatingHeaderView.setVisibility(View.VISIBLE);
+//            mRatingView.setVisibility(View.VISIBLE);
+//            for (int starIndx = 0; starIndx < 5; starIndx++) {
+//                ImageView starView = (ImageView) mRatingView.getChildAt(starIndx);
+//                starView.setVisibility(View.VISIBLE);
+//                if (starIndx < rating)
+//                    starView.setImageResource(R.drawable.ic_star_black_24dp);
+//                else
+//                    starView.setImageResource(R.drawable.ic_star_border_black_24dp);
+//            }
+//        }// If the rating is not known and wireless data is disabled, do not show stars.
+//        else {
+//            mRatingHeaderView.setVisibility(View.GONE);
+//            mRatingView.setVisibility(View.GONE);
+//        }
 
         // Set the hours of operation in the view if there are any.
-        for (int day = 0; day < 7; day++) {
-            TourLocation.DailyHours dailyHours = mTourLocation.getDailyHours(day);
-            if (dailyHours != null) {
-                int openingHours = dailyHours.getOpenTime();
-                int closingHours = dailyHours.getCloseTime();
-                boolean openingPM = openingHours >= 1200;
-                boolean closingPM = closingHours >= 1200;
-                if (openingHours >= 1300) openingHours -= 1200;
-                if (closingHours >= 1300) closingHours -= 1200;
-                // Determine where to put the colons in the formatted text.
-                int openingHoursColonIndx = openingHours >= 1000 ? 2 : 1;
-                int closingHoursColonIndx = closingHours >= 1000 ? 2 : 1;
-                String openingHoursFormatted = new StringBuilder(Integer.toString(openingHours))
-                        .insert(openingHoursColonIndx, ':')
-                        .append(openingPM ? "PM" : "AM").toString();
-                String closingHoursFormatted = new StringBuilder(Integer.toString(closingHours))
-                        .insert(closingHoursColonIndx, ':')
-                        .append(closingPM ? "PM" : "AM").toString();
-                // Acquire a reference to the `View` and set the text.
-                TextView hoursView =
-                        (TextView) ((LinearLayout) mHoursContainerView.getChildAt(day)).getChildAt(1);
-                hoursView.setText(openingHoursFormatted + " - \n" + closingHoursFormatted);
-            }
-        }
+        updateHoursUI();
+//        // If the hours are known or should be known soon, show the hours.
+//        if (mTourLocation.hoursAreSet()) {
+//            mHoursHeaderView.setVisibility(View.VISIBLE);
+//            mHoursContainerView.setVisibility(View.VISIBLE);
+//            for (int day = 0; day < 7; day++) {
+//                TourLocation.DailyHours dailyHours = mTourLocation.getDailyHours(day);
+//                if (dailyHours != null) {
+//                    int openingHours = dailyHours.getOpenTime();
+//                    int closingHours = dailyHours.getCloseTime();
+//                    boolean openingPM = openingHours >= 1200;
+//                    boolean closingPM = closingHours >= 1200;
+//                    if (openingHours >= 1300) openingHours -= 1200;
+//                    if (closingHours >= 1300) closingHours -= 1200;
+//                    // Determine where to put the colons in the formatted text.
+//                    int openingHoursColonIndx = openingHours >= 1000 ? 2 : 1;
+//                    int closingHoursColonIndx = closingHours >= 1000 ? 2 : 1;
+//                    String openingHoursFormatted = new StringBuilder(Integer.toString(openingHours))
+//                            .insert(openingHoursColonIndx, ':')
+//                            .append(openingPM ? "PM" : "AM").toString();
+//                    String closingHoursFormatted = new StringBuilder(Integer.toString(closingHours))
+//                            .insert(closingHoursColonIndx, ':')
+//                            .append(closingPM ? "PM" : "AM").toString();
+//                    // Acquire a reference to the `View` and set the text.
+//                    TextView hoursView =
+//                            (TextView) ((LinearLayout) mHoursContainerView.getChildAt(day)).getChildAt(1);
+//                    hoursView.setText(openingHoursFormatted + " - \n" + closingHoursFormatted);
+//                }
+//            }
+//        } // If the hours are not known and wireless data is disabled, do not show hours.
+//        else {
+//            mHoursHeaderView.setVisibility(View.GONE);
+//            mHoursContainerView.setVisibility(View.GONE);
+//        }
 
         // Set the open status (whether this location is currently open).
-        Boolean locationIsOpen = mTourLocation.getOpenNow();
-        if (locationIsOpen == null)
-            mOpenStatusView.setText(R.string.open_status_unavailable);
-        else if (locationIsOpen)
-            mOpenStatusView.setText(R.string.location_open);
-        else
-            mOpenStatusView.setText(R.string.location_closed);
+        updateOpenStatusUI();
+//        Boolean locationIsOpen = mTourLocation.getOpenNow();
+//        if (locationIsOpen == null)
+//            mOpenStatusView.setText(R.string.open_status_unavailable);
+//        else if (locationIsOpen)
+//            mOpenStatusView.setText(R.string.location_open);
+//        else
+//            mOpenStatusView.setText(R.string.location_closed);
 
         // Set the website in the view.
-        String websiteURL = mTourLocation.getWebsite();
-        if (websiteURL != null) {
-            mWebsiteView.setText(websiteURL);
-        } else {
-            TextView websiteHeaderView = (TextView) mRootView.findViewById(R.id.location_website_header_detail_view);
-            websiteHeaderView.setVisibility(View.GONE);
-            mWebsiteView.setVisibility(View.GONE);
-        }
+        updateWebsiteUI();
+//        String websiteURL = mTourLocation.getWebsite();
+//        if (websiteURL != null) {
+//            mWebsiteView.setText(websiteURL);
+//        } else {
+//            mWebsiteHeaderView.setVisibility(View.GONE);
+//            mWebsiteView.setVisibility(View.GONE);
+//        }
 
         // Set the address in the view.
         mAddressTextView.setText(address);
@@ -555,28 +613,56 @@ public class TourLocationDetailFragment extends Fragment
         mDescriptionTextView.setText(description);
 
         // Set the distance text for this location.
-        updateUILocationDistance();
+        updateLocationDistanceUI();
 
-        // Set a click listener on the Google Maps icon and text.
-        mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
+        // Handle the Google Maps view and Route Plan view.
+        updateGoogleMapsViews(mActivity.IsWifiCellEnabled());
+//        if (mActivity.IsWifiCellEnabled()) {
+//            mGoogleMapsView.setVisibility(View.VISIBLE);
+//            mGoogleMapsRoutePlanView.setVisibility(View.VISIBLE);
+//            // Set a click listener on the Google Maps icon and text.
+//            mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
+//            // Set a click listener on the Google Maps Route Plan icon and text.
+//            mGoogleMapsRoutePlanView.setOnClickListener(
+//                    new DirectionsIconClickListener(mActivity,
+//                            mTourLocation, mActivity.getCurrentLocation()));
+//        } else {
+//            mGoogleMapsView.setVisibility(View.GONE);
+//            mGoogleMapsRoutePlanView.setVisibility(View.GONE);
+//        }
 
-        // Set a click listener on the Google Maps Route Plan icon and text.
-        mGoogleMapsRoutePlanView.setOnClickListener(
-                new DirectionsIconClickListener(mActivity,
-                        mTourLocation, mActivity.getCurrentLocation()));
+//        // Set a click listener on the Google Maps icon and text.
+//        mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
+//
+//        // Set a click listener on the Google Maps Route Plan icon and text.
+//        mGoogleMapsRoutePlanView.setOnClickListener(
+//                new DirectionsIconClickListener(mActivity,
+//                        mTourLocation, mActivity.getCurrentLocation()));
 
         return mRootView;
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        // We may need to update the rating in the UI.
+        if (mRatingNeedsRefresh) {
+            updateRatingUI(mActivity.IsWifiCellEnabled());
+            mRatingNeedsRefresh = false;
+        }
+        // Start the image cycling Handlers.
+        restartCyclers();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putParcelable(TOUR_LOCATION, mTourLocation);
         savedInstanceState.putIntegerArrayList(RESOURCE_IMAGES, mResourceImages);
         savedInstanceState.putInt(IMAGE_RESOURCE_INDX, mImageResourceIndx);
         savedInstanceState.putParcelableArrayList(GOOGLE_IMAGES, mGoogleImages);
         savedInstanceState.putInt(GOOGLE_IMAGE_INDX, mGoogleImageIndx);
         savedInstanceState.putInt(SHORT_ANIMATION_DURATION, mShortAnimationDuration);
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -590,6 +676,13 @@ public class TourLocationDetailFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         mButterKnifeUnbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(mActivity)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /** Animation Methods **/
@@ -1068,7 +1161,103 @@ public class TourLocationDetailFragment extends Fragment
      **/
 
     public void locationCallback() {
-        updateUILocationDistance();
+        updateLocationDistanceUI();
+    }
+
+    /** UI Updates**/
+
+    /**
+     * Updates the UI elements related to the rating.
+     */
+    private void updateRatingUI(boolean isWifiCellEnabled) {
+        int rating = mTourLocation.getRating();
+        // If the rating is known or should be known soon, show the stars.
+        if (mRatingHeaderView != null && mRatingView != null) {
+            if (rating != RATING_NOT_DETERMINED || isWifiCellEnabled) {
+                mRatingHeaderView.setVisibility(View.VISIBLE);
+                mRatingView.setVisibility(View.VISIBLE);
+                for (int starIndx = 0; starIndx < 5; starIndx++) {
+                    ImageView starView = (ImageView) mRatingView.getChildAt(starIndx);
+                    starView.setVisibility(View.VISIBLE);
+                    if (starIndx < rating)
+                        starView.setImageResource(R.drawable.ic_star_black_24dp);
+                    else
+                        starView.setImageResource(R.drawable.ic_star_border_black_24dp);
+                }
+            }// If the rating is not known and wireless data is disabled, do not show stars.
+            else {
+                mRatingHeaderView.setVisibility(View.GONE);
+                mRatingView.setVisibility(View.GONE);
+            }
+        }// The relevant views were null, so log that we need to refresh the rating in `onStart()`.
+        else {
+            mRatingNeedsRefresh = true;
+        }
+    }
+
+    /**
+     * Updates the UI elements related to the hours of operations.
+     */
+    private void updateHoursUI() {
+        // If the hours are known or should be known soon, show the hours.
+        if (mTourLocation.hoursAreSet()) {
+            mHoursHeaderView.setVisibility(View.VISIBLE);
+            mHoursContainerView.setVisibility(View.VISIBLE);
+            for (int day = 0; day < 7; day++) {
+                TourLocation.DailyHours dailyHours = mTourLocation.getDailyHours(day);
+                if (dailyHours != null) {
+                    int openingHours = dailyHours.getOpenTime();
+                    int closingHours = dailyHours.getCloseTime();
+                    boolean openingPM = openingHours >= 1200;
+                    boolean closingPM = closingHours >= 1200;
+                    if (openingHours >= 1300) openingHours -= 1200;
+                    if (closingHours >= 1300) closingHours -= 1200;
+                    // Determine where to put the colons in the formatted text.
+                    int openingHoursColonIndx = openingHours >= 1000 ? 2 : 1;
+                    int closingHoursColonIndx = closingHours >= 1000 ? 2 : 1;
+                    String openingHoursFormatted = new StringBuilder(Integer.toString(openingHours))
+                            .insert(openingHoursColonIndx, ':')
+                            .append(openingPM ? "PM" : "AM").toString();
+                    String closingHoursFormatted = new StringBuilder(Integer.toString(closingHours))
+                            .insert(closingHoursColonIndx, ':')
+                            .append(closingPM ? "PM" : "AM").toString();
+                    // Acquire a reference to the `View` and set the text.
+                    TextView hoursView =
+                            (TextView) ((LinearLayout) mHoursContainerView.getChildAt(day)).getChildAt(1);
+                    hoursView.setText(openingHoursFormatted + " - \n" + closingHoursFormatted);
+                }
+            }
+        } // If the hours are not known and wireless data is disabled, do not show hours.
+        else {
+            mHoursHeaderView.setVisibility(View.GONE);
+            mHoursContainerView.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Updates the UI elements related to the open status.
+     */
+    private void updateOpenStatusUI() {
+        Boolean locationIsOpen = mTourLocation.getOpenNow();
+        if (locationIsOpen == null)
+            mOpenStatusView.setText(R.string.open_status_unavailable);
+        else if (locationIsOpen)
+            mOpenStatusView.setText(R.string.location_open);
+        else
+            mOpenStatusView.setText(R.string.location_closed);
+    }
+
+    /**
+     * Updates the UI elements related to the website.
+     */
+    private void updateWebsiteUI() {
+        String websiteURL = mTourLocation.getWebsite();
+        if (websiteURL != null) {
+            mWebsiteView.setText(websiteURL);
+        } else {
+            mWebsiteHeaderView.setVisibility(View.GONE);
+            mWebsiteView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -1077,17 +1266,36 @@ public class TourLocationDetailFragment extends Fragment
      *
      * @return `true` if the `TourLocation` has a `Location`, and `false` otherwise.
      */
-    private boolean updateUILocationDistance() {
-        // Set the distance text for this location.
-        Location location = mTourLocation.getLocation();
-        Location deviceLocation = mActivity.getCurrentLocation();
-        // If the `Location`s for both this `TourLocation` and the device have been determined...
-        if (location != null && deviceLocation != null) {
-            // Set the appropriate text in the corresponding `View` in the list.
-            String formatString = getActivity().getString(R.string.location_distance_detail_view);
-            mLocationDistanceView.setText(
-                    String.format(formatString, (int) deviceLocation.distanceTo(location)));
+    private void updateLocationDistanceUI() {
+        if (mLocationDistanceHeaderView != null &&
+                mLocationDistanceView != null) {
+            // Set the distance text for this location.
+            Location location = mTourLocation.getLocation();
+            Location deviceLocation = mActivity.getCurrentLocation();
+            mActivity.setDistanceText(mLocationDistanceView, location, deviceLocation);
+            if (location != null && deviceLocation != null) {
+                mLocationDistanceHeaderView.setVisibility(View.VISIBLE);
+                mLocationDistanceView.setVisibility(View.VISIBLE);
+            } else {
+                mLocationDistanceHeaderView.setVisibility(View.GONE);
+                mLocationDistanceView.setVisibility(View.GONE);
+            }
         }
-        return location != null;
+    }
+
+    private void updateGoogleMapsViews(boolean isWifiCellEnabled) {
+        if (isWifiCellEnabled) {
+            mGoogleMapsView.setVisibility(View.VISIBLE);
+            mGoogleMapsRoutePlanView.setVisibility(View.VISIBLE);
+            // Set a click listener on the Google Maps icon and text.
+            mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
+            // Set a click listener on the Google Maps Route Plan icon and text.
+            mGoogleMapsRoutePlanView.setOnClickListener(
+                    new DirectionsIconClickListener(mActivity,
+                            mTourLocation, mActivity.getCurrentLocation()));
+        } else {
+            mGoogleMapsView.setVisibility(View.GONE);
+            mGoogleMapsRoutePlanView.setVisibility(View.GONE);
+        }
     }
 }

@@ -4,12 +4,10 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +29,6 @@ import java.util.List;
 
 import static com.example.john.norfolktouring.Constants.SAVED_STATE;
 import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
-import static com.example.john.norfolktouring.TourLocation.DailyHours.UNKNOWN_TIME;
 import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED;
 
 /**
@@ -73,41 +70,22 @@ public abstract class TourLocationListFragment extends Fragment
     protected abstract void createLocations();
 
     /**
-     * Get the `Location`, hours of operation, rating, and website for the `TourLocation`s.
-     */
-    private void getInfoForTourLocationsIfNeeded() {
-        boolean infoNeeded = false;
-        checks:
-        // No checks for hours of operation or website because they are not consistently available.
-        for (TourLocation tourLocation : mLocations) {
-            // Check the location.
-            if (tourLocation.getLocation() == null) {
-                infoNeeded = true;
-                break checks;
-            }
-            // Check the rating.
-            if (tourLocation.getRating() == RATING_NOT_DETERMINED) {
-                infoNeeded = true;
-                break checks;
-            }
-        }
-        if (infoNeeded)
-            PlacesUtils.getInfoForTourLocations(mActivity, mLocations);
-    }
-
-
-    /**
      * Shared Preferences
      **/
 
+    /**
+     * Called when the shared preferences change.
+     */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
-            mAdapter.notifyDataSetChanged();
-            boolean wifiCellEnabled = sharedPreferences.getBoolean(key,
-                    getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
-            if (wifiCellEnabled)
-                getInfoForTourLocationsIfNeeded();
+            if (this == mActivity.getCurrentFragment()) {
+                mAdapter.notifyDataSetChanged();
+                boolean wifiCellEnabled = sharedPreferences.getBoolean(key,
+                        getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+                if (wifiCellEnabled)
+                    PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mLocations);
+            }
         }
     }
 
@@ -155,7 +133,7 @@ public abstract class TourLocationListFragment extends Fragment
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         if (mActivity.IsWifiCellEnabled())
-            getInfoForTourLocationsIfNeeded();
+            PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mLocations);
 
         return rootView;
     }
@@ -163,6 +141,23 @@ public abstract class TourLocationListFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    protected Bundle saveState() {
+        Bundle state = new Bundle();
+        state.putParcelableArrayList(LOCATIONS, mLocations);
+        return state;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBundle(SAVED_STATE, (savedState != null) ? savedState : saveState());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override
@@ -177,18 +172,6 @@ public abstract class TourLocationListFragment extends Fragment
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(mActivity)
                 .unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    protected Bundle saveState() {
-        Bundle state = new Bundle();
-        state.putParcelableArrayList(LOCATIONS, mLocations);
-        return state;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBundle(SAVED_STATE, (savedState != null) ? savedState : saveState());
     }
 
     /** Location Updates Methods **/
@@ -243,25 +226,28 @@ public abstract class TourLocationListFragment extends Fragment
         public void onBindViewHolder(TourLocationViewHolder holder, int position) {
             // Get the {@link TourLocation} object located at this position in the list.
             final TourLocation currentTourLocation = mTourLocations.get(position);
+
             // Set the image resource (select the first for these summary views).
             holder.locationImageView.setImageResource(currentTourLocation.getResourceImages().get(0));
+
             // Set location name.
             holder.locationNameView.setText(currentTourLocation.getLocationName());
+
             // Set the rating (represented as stars).
             int rating = currentTourLocation.getRating();
-            for (int starIndx = 0; starIndx < 5; starIndx++) {
-                ImageView starView = (ImageView) holder.ratingView.getChildAt(starIndx);
-                // If the rating is known or should be known soon, show the stars.
-                if (rating != RATING_NOT_DETERMINED || mActivity.IsWifiCellEnabled()) {
-                    starView.setVisibility(View.VISIBLE);
+            // If the rating is known or should be known soon, show the stars.
+            if (rating != RATING_NOT_DETERMINED || mActivity.IsWifiCellEnabled()) {
+                holder.ratingView.setVisibility(View.VISIBLE);
+                for (int starIndx = 0; starIndx < 5; starIndx++) {
+                    ImageView starView = (ImageView) holder.ratingView.getChildAt(starIndx);
                     if (starIndx < rating)
                         starView.setImageResource(R.drawable.ic_star_black_24dp);
                     else
                         starView.setImageResource(R.drawable.ic_star_border_black_24dp);
-                } // If the rating is not known and wireless data is disabled, do not show stars.
-                else {
-                    starView.setVisibility(View.GONE);
                 }
+            }// If the rating is not known and wireless data is disabled, do not show stars.
+            else {
+                holder.ratingView.setVisibility(View.GONE);
             }
 
             // Set the open status (whether this location is currently open).
@@ -279,19 +265,16 @@ public abstract class TourLocationListFragment extends Fragment
                 holder.openStatusView.setText(R.string.location_open);
             else
                 holder.openStatusView.setText(R.string.location_closed);
+
             // Set the distance text for this location.
             final Location location = currentTourLocation.getLocation();
-            // If the `Location`s for both this `TourLocation` and the device are known...
-            if (location != null && mCurrentLocation != null) {
-                // Set the appropriate text in the corresponding `View` in the list.
-                String formatString = mActivity.getString(R.string.location_distance_main_view);
-                // If wireless data is disabled, note that is information may not be reliable.
-                if (!mActivity.IsWifiCellEnabled())
-                    formatString =
-                            formatString.concat(" (data disabled)");
-                holder.locationDistanceView.setText(
-                        String.format(formatString, (int) mCurrentLocation.distanceTo(location)));
-            }
+            mActivity.setDistanceText(holder.locationDistanceView, location, mCurrentLocation);
+            if (location != null && mCurrentLocation != null)
+                holder.locationDistanceView.setVisibility(View.VISIBLE);
+            else
+                holder.locationDistanceView.setVisibility(View.GONE);
+
+            // Handle the Google Maps view and Route Plan view.
             if (mActivity.IsWifiCellEnabled()) {
                 holder.googleMapsView.setVisibility(View.VISIBLE);
                 holder.googleMapsRoutePlanView.setVisibility(View.VISIBLE);
@@ -304,6 +287,7 @@ public abstract class TourLocationListFragment extends Fragment
                 holder.googleMapsView.setVisibility(View.GONE);
                 holder.googleMapsRoutePlanView.setVisibility(View.GONE);
             }
+
             // Set a click listener for a detail view of this tour location.
             TourLocationClickListener detailViewClickListener =
                     new TourLocationClickListener(mActivity, currentTourLocation);

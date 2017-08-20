@@ -81,6 +81,22 @@ public class TourLocation implements Parcelable {
         this.mFeatures = (features != null) ? features : new ArrayList<LocationFeature>(0);
     }
 
+    /**
+     * Determines whether or not the hours of operation have been set.
+     */
+    public boolean hoursAreSet() {
+        boolean areSet = false;
+        // If the hours of operation for at least one day are known, the hours have been set.
+        for (DailyHours dailyHours : mWeeklyHours) {
+            if (dailyHours != null) {
+                if (dailyHours.getOpenTime() != DailyHours.UNKNOWN_TIME ||
+                        dailyHours.getCloseTime() != DailyHours.UNKNOWN_TIME)
+                    return true;
+            }
+        }
+        return false;
+    }
+
     /** Getters and Setters **/
 
     public String getLocationName() {return mLocationName;}

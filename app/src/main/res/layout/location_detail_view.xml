@@ -134,6 +134,7 @@
                 <!--Location Rating-->
                 <TextView
                     style="@style/location_main_info_header_detail_view"
+                    android:id="@+id/location_rating_header_detail_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/detail_view_rating_header_text" />

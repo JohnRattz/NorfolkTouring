@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.john.norfolktouring.TourLocationListFragment.MilitaryFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.MuseumsFragment;
@@ -132,9 +133,34 @@ public class MainActivity extends AppCompatActivity
     public boolean IsWifiCellEnabled() {return mWifiCellEnabled;}
 
     /**
+     * Sets appropriate text for a TextView denoting the distance to a location.
+     * @param distanceView The View for which text indicating the distance needs to be set.
+     * @param location The target location.
+     * @param deviceLocation The location of the device.
+     */
+    public void setDistanceText(TextView distanceView, Location location, Location deviceLocation) {
+        if (distanceView != null) {
+            // If both the target location and the device's location are known...
+            if (location != null && deviceLocation != null) {
+                // Set the appropriate text in the corresponding `View` in the list.
+                String formatString = getString(R.string.location_distance_main_view);
+                // If wireless data is disabled, note that this information may not be reliable.
+                if (!IsWifiCellEnabled())
+                    formatString =
+                            formatString.concat(" (data disabled)");
+                distanceView.setText(
+                        String.format(formatString, (int) deviceLocation.distanceTo(location)));
+            }
+        }
+    }
+
+    /**
      * Shared Preferences
      **/
 
+    /**
+     * Initializes shared preferences and registers this Activity as a listener for changes.
+     */
     private void setupSharedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mWifiCellEnabled = sharedPreferences.getBoolean(
@@ -143,6 +169,9 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
+    /**
+     * Called when the shared preferences change.
+     */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
@@ -224,6 +253,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         unbindLocationService();
@@ -234,11 +268,6 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override

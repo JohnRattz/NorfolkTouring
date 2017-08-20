@@ -2,6 +2,7 @@ package com.example.john.norfolktouring.Utils;
 
 import android.app.Activity;
 
+import com.example.john.norfolktouring.MainActivity;
 import com.example.john.norfolktouring.TourLocation;
 import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -11,6 +12,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED;
 
 /**
  * Created by John on 6/20/2017.
@@ -85,6 +88,40 @@ public class PlacesUtils {
     }
 
     /**
+     * Get the `Location`, hours of operation, rating, and website for a `TourLocation`
+     * if appropriate.
+     */
+    public static void getInfoForTourLocationIfNeeded(Activity activity,
+                                                      TourLocation tourLocation) {
+        List<TourLocation> tourLocations = new ArrayList<>(Arrays.asList(tourLocation));
+        getInfoForTourLocations(activity, tourLocations);
+    }
+
+    /**
+     * Get the `Location`, hours of operation, rating, and website for the `TourLocation`s
+     * if appropriate.
+     */
+    public static void getInfoForTourLocationsIfNeeded(Activity activity,
+                                                       ArrayList<TourLocation> locations) {
+        boolean infoNeeded = false;
+        // No checks for hours of operation or website because they are not consistently available.
+        for (TourLocation tourLocation : locations) {
+            // Check the location.
+            if (tourLocation.getLocation() == null) {
+                infoNeeded = true;
+                break;
+            }
+            // Check the rating.
+            if (tourLocation.getRating() == RATING_NOT_DETERMINED) {
+                infoNeeded = true;
+                break;
+            }
+        }
+        if (infoNeeded)
+            getInfoForTourLocations(activity, locations);
+    }
+
+    /**
      * Retrieves information for `tourLocation` asynchronously.
      * See `getInfoForTourLocations()` documentation for information acquired.
      * @param tourLocation A `TourLocation` to acquire information for.
@@ -97,7 +134,7 @@ public class PlacesUtils {
     /**
      * Acquires location, hours of operation, rating, and the website for `tourLocations`.
      */
-    public static void getInfoForTourLocations(Activity activity,
+    private static void getInfoForTourLocations(Activity activity,
                                                List<TourLocation> tourLocations) {
         List<String> placeNames = new ArrayList<>(tourLocations.size());
         // Get all `TourLocation` names.
@@ -112,7 +149,7 @@ public class PlacesUtils {
         infoByIdsTask.execute(placeIDarr);
     }
 
-    public static ArrayList<String> getPlaceIdsByNames(List<String> placeNames) {
+    private static ArrayList<String> getPlaceIdsByNames(List<String> placeNames) {
         ArrayList<String> placeIDs = new ArrayList<>(placeNames.size());
         for(String placeName : placeNames)
             placeIDs.add(getPlaceIdByName(placeName));
