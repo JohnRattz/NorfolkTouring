@@ -32,17 +32,21 @@ public class TourLocation implements Parcelable {
     // The opening and closing hours for this location per day of the week.
     private DailyHours[] mWeeklyHours = new DailyHours[7];
     // The aggregated rating for this location based on Google reviews.
-    private int mRating;
+    private int mRating = RATING_NOT_DETERMINED;
     // The URL for this location's website.
     private String mWebsite;
 
     // Constants
     private static final String LOG_TAG = TourLocation.class.getCanonicalName();
 
+    public static final int RATING_NOT_DETERMINED = -1;
+
     /*** Nested Classes ***/
-    class DailyHours {
-        private int openTime;
-        private int closeTime;
+    public class DailyHours {
+        private int openTime = UNKNOWN_TIME;
+        private int closeTime = UNKNOWN_TIME;
+
+        public static final int UNKNOWN_TIME = -1;
 
         DailyHours(int openTime, int closeTime) {
             setOpenTime(openTime);

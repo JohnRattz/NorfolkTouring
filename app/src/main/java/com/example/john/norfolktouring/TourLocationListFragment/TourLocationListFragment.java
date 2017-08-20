@@ -31,6 +31,8 @@ import java.util.List;
 
 import static com.example.john.norfolktouring.Constants.SAVED_STATE;
 import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
+import static com.example.john.norfolktouring.TourLocation.DailyHours.UNKNOWN_TIME;
+import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED;
 
 /**
  * Created by John on 7/3/2017.
@@ -71,13 +73,42 @@ public abstract class TourLocationListFragment extends Fragment
     protected abstract void createLocations();
 
     /**
+     * Get the `Location`, hours of operation, rating, and website for the `TourLocation`s.
+     */
+    private void getInfoForTourLocationsIfNeeded() {
+        boolean infoNeeded = false;
+        checks:
+        // No checks for hours of operation or website because they are not consistently available.
+        for (TourLocation tourLocation : mLocations) {
+            // Check the location.
+            if (tourLocation.getLocation() == null) {
+                infoNeeded = true;
+                break checks;
+            }
+            // Check the rating.
+            if (tourLocation.getRating() == RATING_NOT_DETERMINED) {
+                infoNeeded = true;
+                break checks;
+            }
+        }
+        if (infoNeeded)
+            PlacesUtils.getInfoForTourLocations(mActivity, mLocations);
+    }
+
+
+    /**
      * Shared Preferences
      **/
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key)))
+        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
             mAdapter.notifyDataSetChanged();
+            boolean wifiCellEnabled = sharedPreferences.getBoolean(key,
+                    getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+            if (wifiCellEnabled)
+                getInfoForTourLocationsIfNeeded();
+        }
     }
 
     /** Lifecycle Methods **/
@@ -123,8 +154,8 @@ public abstract class TourLocationListFragment extends Fragment
                         recyclerViewLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        // Get the `Location`, hours of operation, rating, and website for these places.
-        PlacesUtils.getInfoForTourLocations(mActivity, mLocations);
+        if (mActivity.IsWifiCellEnabled())
+            getInfoForTourLocationsIfNeeded();
 
         return rootView;
     }
@@ -220,25 +251,44 @@ public abstract class TourLocationListFragment extends Fragment
             int rating = currentTourLocation.getRating();
             for (int starIndx = 0; starIndx < 5; starIndx++) {
                 ImageView starView = (ImageView) holder.ratingView.getChildAt(starIndx);
-                if (starIndx < rating)
-                    starView.setImageResource(R.drawable.ic_star_black_24dp);
-                else
-                    starView.setImageResource(R.drawable.ic_star_border_black_24dp);
+                // If the rating is known or should be known soon, show the stars.
+                if (rating != RATING_NOT_DETERMINED || mActivity.IsWifiCellEnabled()) {
+                    starView.setVisibility(View.VISIBLE);
+                    if (starIndx < rating)
+                        starView.setImageResource(R.drawable.ic_star_black_24dp);
+                    else
+                        starView.setImageResource(R.drawable.ic_star_border_black_24dp);
+                } // If the rating is not known and wireless data is disabled, do not show stars.
+                else {
+                    starView.setVisibility(View.GONE);
+                }
             }
+
             // Set the open status (whether this location is currently open).
+//            if (mActivity.IsWifiCellEnabled())
+//                holder.openStatusView.setVisibility(View.VISIBLE);
             Boolean locationIsOpen = currentTourLocation.getOpenNow();
-            if (locationIsOpen == null)
+            if (locationIsOpen == null) {
                 holder.openStatusView.setText(R.string.open_status_unavailable);
+                // The open status should only be hidden if wireless data is disabled and
+                // the open status is unknown.
+//                if (!mActivity.IsWifiCellEnabled())
+//                    holder.openStatusView.setVisibility(View.GONE);
+            }
             else if (locationIsOpen)
                 holder.openStatusView.setText(R.string.location_open);
             else
                 holder.openStatusView.setText(R.string.location_closed);
             // Set the distance text for this location.
             final Location location = currentTourLocation.getLocation();
-            // If the `Location`s for both this `TourLocation` and the device have been determined...
+            // If the `Location`s for both this `TourLocation` and the device are known...
             if (location != null && mCurrentLocation != null) {
                 // Set the appropriate text in the corresponding `View` in the list.
                 String formatString = mActivity.getString(R.string.location_distance_main_view);
+                // If wireless data is disabled, note that is information may not be reliable.
+                if (!mActivity.IsWifiCellEnabled())
+                    formatString =
+                            formatString.concat(" (data disabled)");
                 holder.locationDistanceView.setText(
                         String.format(formatString, (int) mCurrentLocation.distanceTo(location)));
             }
