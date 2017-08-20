@@ -144,9 +144,6 @@ public class InfoByIdsTask extends AsyncTask<String, Void, Void> {
         return null;
     }
 
-//    @Override
-//    protected void onPostExecute(Void aVoid) {mCallback.infoByIdResultCallback();}
-
     /**
      * Interface for callbacks for this method on completion.
      */

@@ -347,14 +347,6 @@ public class TourLocationDetailFragment extends Fragment
     public void infoByIdResultCallback() {
         updateRatingUI(mActivity.IsWifiCellEnabled());
         updateLocationDistanceUI();
-//        // Recreate this Fragment.
-//        Fragment currentFragment = null;
-//        currentFragment = getFragmentManager().findFragmentByTag(FRAGMENT_LABEL);
-//        mActivity.getFragmentManager()
-//                .beginTransaction()
-//                .detach(currentFragment)
-//                .attach(currentFragment)
-//                .commit();
     }
 
     /**
@@ -511,80 +503,15 @@ public class TourLocationDetailFragment extends Fragment
 
         // Set the rating in the view.
         updateRatingUI(mActivity.IsWifiCellEnabled());
-//        int rating = mTourLocation.getRating();
-//        // If the rating is known or should be known soon, show the stars.
-//        if (rating != RATING_NOT_DETERMINED || mActivity.IsWifiCellEnabled()) {
-//            mRatingHeaderView.setVisibility(View.VISIBLE);
-//            mRatingView.setVisibility(View.VISIBLE);
-//            for (int starIndx = 0; starIndx < 5; starIndx++) {
-//                ImageView starView = (ImageView) mRatingView.getChildAt(starIndx);
-//                starView.setVisibility(View.VISIBLE);
-//                if (starIndx < rating)
-//                    starView.setImageResource(R.drawable.ic_star_black_24dp);
-//                else
-//                    starView.setImageResource(R.drawable.ic_star_border_black_24dp);
-//            }
-//        }// If the rating is not known and wireless data is disabled, do not show stars.
-//        else {
-//            mRatingHeaderView.setVisibility(View.GONE);
-//            mRatingView.setVisibility(View.GONE);
-//        }
 
         // Set the hours of operation in the view if there are any.
         updateHoursUI();
-//        // If the hours are known or should be known soon, show the hours.
-//        if (mTourLocation.hoursAreSet()) {
-//            mHoursHeaderView.setVisibility(View.VISIBLE);
-//            mHoursContainerView.setVisibility(View.VISIBLE);
-//            for (int day = 0; day < 7; day++) {
-//                TourLocation.DailyHours dailyHours = mTourLocation.getDailyHours(day);
-//                if (dailyHours != null) {
-//                    int openingHours = dailyHours.getOpenTime();
-//                    int closingHours = dailyHours.getCloseTime();
-//                    boolean openingPM = openingHours >= 1200;
-//                    boolean closingPM = closingHours >= 1200;
-//                    if (openingHours >= 1300) openingHours -= 1200;
-//                    if (closingHours >= 1300) closingHours -= 1200;
-//                    // Determine where to put the colons in the formatted text.
-//                    int openingHoursColonIndx = openingHours >= 1000 ? 2 : 1;
-//                    int closingHoursColonIndx = closingHours >= 1000 ? 2 : 1;
-//                    String openingHoursFormatted = new StringBuilder(Integer.toString(openingHours))
-//                            .insert(openingHoursColonIndx, ':')
-//                            .append(openingPM ? "PM" : "AM").toString();
-//                    String closingHoursFormatted = new StringBuilder(Integer.toString(closingHours))
-//                            .insert(closingHoursColonIndx, ':')
-//                            .append(closingPM ? "PM" : "AM").toString();
-//                    // Acquire a reference to the `View` and set the text.
-//                    TextView hoursView =
-//                            (TextView) ((LinearLayout) mHoursContainerView.getChildAt(day)).getChildAt(1);
-//                    hoursView.setText(openingHoursFormatted + " - \n" + closingHoursFormatted);
-//                }
-//            }
-//        } // If the hours are not known and wireless data is disabled, do not show hours.
-//        else {
-//            mHoursHeaderView.setVisibility(View.GONE);
-//            mHoursContainerView.setVisibility(View.GONE);
-//        }
 
         // Set the open status (whether this location is currently open).
         updateOpenStatusUI();
-//        Boolean locationIsOpen = mTourLocation.getOpenNow();
-//        if (locationIsOpen == null)
-//            mOpenStatusView.setText(R.string.open_status_unavailable);
-//        else if (locationIsOpen)
-//            mOpenStatusView.setText(R.string.location_open);
-//        else
-//            mOpenStatusView.setText(R.string.location_closed);
 
         // Set the website in the view.
         updateWebsiteUI();
-//        String websiteURL = mTourLocation.getWebsite();
-//        if (websiteURL != null) {
-//            mWebsiteView.setText(websiteURL);
-//        } else {
-//            mWebsiteHeaderView.setVisibility(View.GONE);
-//            mWebsiteView.setVisibility(View.GONE);
-//        }
 
         // Set the address in the view.
         mAddressTextView.setText(address);
@@ -617,27 +544,6 @@ public class TourLocationDetailFragment extends Fragment
 
         // Handle the Google Maps view and Route Plan view.
         updateGoogleMapsViews(mActivity.IsWifiCellEnabled());
-//        if (mActivity.IsWifiCellEnabled()) {
-//            mGoogleMapsView.setVisibility(View.VISIBLE);
-//            mGoogleMapsRoutePlanView.setVisibility(View.VISIBLE);
-//            // Set a click listener on the Google Maps icon and text.
-//            mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
-//            // Set a click listener on the Google Maps Route Plan icon and text.
-//            mGoogleMapsRoutePlanView.setOnClickListener(
-//                    new DirectionsIconClickListener(mActivity,
-//                            mTourLocation, mActivity.getCurrentLocation()));
-//        } else {
-//            mGoogleMapsView.setVisibility(View.GONE);
-//            mGoogleMapsRoutePlanView.setVisibility(View.GONE);
-//        }
-
-//        // Set a click listener on the Google Maps icon and text.
-//        mGoogleMapsView.setOnClickListener(new MapIconClickListener(mActivity, mTourLocation));
-//
-//        // Set a click listener on the Google Maps Route Plan icon and text.
-//        mGoogleMapsRoutePlanView.setOnClickListener(
-//                new DirectionsIconClickListener(mActivity,
-//                        mTourLocation, mActivity.getCurrentLocation()));
 
         return mRootView;
     }

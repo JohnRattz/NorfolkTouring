@@ -251,15 +251,11 @@ public abstract class TourLocationListFragment extends Fragment
             }
 
             // Set the open status (whether this location is currently open).
-//            if (mActivity.IsWifiCellEnabled())
-//                holder.openStatusView.setVisibility(View.VISIBLE);
             Boolean locationIsOpen = currentTourLocation.getOpenNow();
             if (locationIsOpen == null) {
                 holder.openStatusView.setText(R.string.open_status_unavailable);
                 // The open status should only be hidden if wireless data is disabled and
                 // the open status is unknown.
-//                if (!mActivity.IsWifiCellEnabled())
-//                    holder.openStatusView.setVisibility(View.GONE);
             }
             else if (locationIsOpen)
                 holder.openStatusView.setText(R.string.location_open);
