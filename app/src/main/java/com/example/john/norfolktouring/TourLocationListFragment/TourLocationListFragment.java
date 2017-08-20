@@ -1,8 +1,11 @@
 package com.example.john.norfolktouring.TourLocationListFragment;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,7 +40,8 @@ import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
  * A general formulation of a Fragment that displays `TourLocation` objects.
  */
 public abstract class TourLocationListFragment extends Fragment
-        implements InfoByIdsTask.InfoByIdResultCallback {
+        implements InfoByIdsTask.InfoByIdResultCallback,
+        SharedPreferences.OnSharedPreferenceChangeListener {
     /*** Member Variables ***/
     protected MainActivity mActivity;
     protected ArrayList<TourLocation> mLocations;
@@ -66,11 +70,26 @@ public abstract class TourLocationListFragment extends Fragment
      */
     protected abstract void createLocations();
 
+    /**
+     * Shared Preferences
+     **/
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key)))
+            mAdapter.notifyDataSetChanged();
+    }
+
     /** Lifecycle Methods **/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
+
+        // Register this Fragment as a listener for shared preference changes.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(mActivity);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         // Set the Action Bar title to the name of this category.
         setActionBarTitle(mActivity, ACTION_BAR_TITLE);
@@ -111,10 +130,22 @@ public abstract class TourLocationListFragment extends Fragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         // Accommodates this fragment being added to the back stack.
         savedState = saveState();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(mActivity)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     protected Bundle saveState() {
@@ -211,11 +242,18 @@ public abstract class TourLocationListFragment extends Fragment
                 holder.locationDistanceView.setText(
                         String.format(formatString, (int) mCurrentLocation.distanceTo(location)));
             }
-            // Set a click listener on the Google Maps icon and text.
-            holder.googleMapsView.setOnClickListener(new MapIconClickListener(mActivity, currentTourLocation));
-            // Set a click listener on the Google Maps Route Plan icon and text.
-            holder.googleMapsRoutePlanView.setOnClickListener(
-                    new DirectionsIconClickListener(mActivity, currentTourLocation, mCurrentLocation));
+            if (mActivity.IsWifiCellEnabled()) {
+                holder.googleMapsView.setVisibility(View.VISIBLE);
+                holder.googleMapsRoutePlanView.setVisibility(View.VISIBLE);
+                // Set a click listener on the Google Maps icon and text.
+                holder.googleMapsView.setOnClickListener(new MapIconClickListener(mActivity, currentTourLocation));
+                // Set a click listener on the Google Maps Route Plan icon and text.
+                holder.googleMapsRoutePlanView.setOnClickListener(
+                        new DirectionsIconClickListener(mActivity, currentTourLocation, mCurrentLocation));
+            } else {
+                holder.googleMapsView.setVisibility(View.GONE);
+                holder.googleMapsRoutePlanView.setVisibility(View.GONE);
+            }
             // Set a click listener for a detail view of this tour location.
             TourLocationClickListener detailViewClickListener =
                     new TourLocationClickListener(mActivity, currentTourLocation);

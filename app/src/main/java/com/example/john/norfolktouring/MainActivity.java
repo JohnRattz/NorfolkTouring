@@ -129,6 +129,8 @@ public class MainActivity extends AppCompatActivity
 
     /*** Methods ***/
 
+    public boolean IsWifiCellEnabled() {return mWifiCellEnabled;}
+
     /**
      * Shared Preferences
      **/
