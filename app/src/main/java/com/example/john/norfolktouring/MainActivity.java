@@ -51,19 +51,23 @@ public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         InfoByIdsTask.InfoByIdResultCallback,
-        SharedPreferences.OnSharedPreferenceChangeListener{
+        SharedPreferences.OnSharedPreferenceChangeListener {
     /*** Member Variables ***/
     private GoogleApiClient mGoogleApiClient;
     private Fragment mCurrentFragment;
     // Denotes whether wifi and cell data usage is allowed.
     private boolean mWifiCellEnabled;
 
-    /** Navigation Drawer **/
+    /**
+     * Navigation Drawer
+     **/
     private List<String> mCategories;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.left_drawer)   ListView mDrawerList;
 
-    /** Location Updates **/
+    /**
+     * Location Updates
+     **/
     private LocationService mLocationService;
     private boolean mLocationServiceBound = false;
     private boolean mReceivingLocationUpdates = false;
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    // Constants
+    /** Constants **/
 
     // Arbitrary integer constant denoting a request for access to fine location.
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -125,7 +129,9 @@ public class MainActivity extends AppCompatActivity
 
     /*** Methods ***/
 
-    /** Shared Preferences **/
+    /**
+     * Shared Preferences
+     **/
 
     private void setupSharedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -137,9 +143,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key)))
+        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
             mWifiCellEnabled = sharedPreferences.getBoolean(key,
                     getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+            // Reconnecting is handled in `onResume()`.
+            if (!mWifiCellEnabled) {
+                stopLocationUpdates();
+                unbindLocationService();
+            }
+        }
     }
 
     /**
@@ -172,7 +184,7 @@ public class MainActivity extends AppCompatActivity
                 R.layout.drawer_category_item, mCategories));
         // Set the drawer's click listener.
         DrawerItemClickListener drawerItemClickListener = new DrawerItemClickListener(this, mDrawerList,
-                mCategories) ;
+                mCategories);
         mDrawerList.setOnItemClickListener(drawerItemClickListener);
 
         // Set the introductory `Fragment`.
@@ -191,33 +203,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        // Connect to `LocationService` to receive location updates.
-        LocationService.bind(this, mLocationServiceConnection);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
+        if (mWifiCellEnabled)
+            // Connect to `LocationService` to receive location updates.
+            LocationService.bind(this, mLocationServiceConnection);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mGoogleApiClient.disconnect();
-
-        // Remove location updates to save battery.
-        if (mLocationServiceBound && mReceivingLocationUpdates)
-            mLocationService.stopLocationUpdates(mLocationCallback);
+        stopLocationUpdates();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mLocationServiceBound) {
-            unbindService(mLocationServiceConnection);
-            mLocationServiceBound = false;
-        }
+        unbindLocationService();
     }
 
     @Override
@@ -298,7 +305,7 @@ public class MainActivity extends AppCompatActivity
         private List<String> mCategories;
 
         DrawerItemClickListener(MainActivity activity, ListView drawerList,
-                                List<String> categories){
+                                List<String> categories) {
             this.mActivity = activity;
             this.mDrawerLayout = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
             this.mDrawerList = drawerList;
@@ -317,7 +324,7 @@ public class MainActivity extends AppCompatActivity
             Fragment fragment = null;
             String category = mCategories.get(position);
             // Note that these must be in the same order as listed in @arrays/categories_array.
-            switch (category){
+            switch (category) {
                 case "Parks":
                     fragment = new ParksFragment();
                     break;
@@ -408,12 +415,28 @@ public class MainActivity extends AppCompatActivity
             mLocationService.requestPermissions(this);
     }
 
+    /**
+     * Stop processing location updates.
+     */
+    private void stopLocationUpdates() {
+        if (mLocationServiceBound && mReceivingLocationUpdates)
+            mLocationService.stopLocationUpdates(mLocationCallback);
+    }
+
     public LocationService getLocationService() {
         return mLocationService;
     }
 
     public Location getCurrentLocation() {
         return mCurrentLocation;
+    }
+
+    private void unbindLocationService() {
+        if (mLocationServiceBound) {
+            // This will terminate the local Service and stop location updates completely.
+            unbindService(mLocationServiceConnection);
+            mLocationServiceBound = false;
+        }
     }
 
     /**

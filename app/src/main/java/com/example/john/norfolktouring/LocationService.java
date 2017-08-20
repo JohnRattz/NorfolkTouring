@@ -203,7 +203,7 @@ public class LocationService extends Service {
     }
 
     /**
-     * Removes location updates from the FusedLocationApi.
+     * Cancels location updates from the FusedLocationApi for a callback.
      */
     public void stopLocationUpdates(LocationCallback locationCallback) {
         mFusedLocationClient.removeLocationUpdates(locationCallback);
