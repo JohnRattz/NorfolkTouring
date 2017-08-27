@@ -19,7 +19,8 @@ import java.util.Arrays;
 public class ParksFragment extends TourLocationListFragment {
     /*** Member Variables ***/
     // Constants
-    static {LOG_TAG = ParksFragment.class.getCanonicalName();}
+    private static final String LOG_TAG = ParksFragment.class.getCanonicalName();;
+    public static String getFragmentLabel() {return "parks_list";}
 
     /*** Methods ***/
 
@@ -30,13 +31,13 @@ public class ParksFragment extends TourLocationListFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    protected void createLocations() {
+    protected ArrayList<TourLocation> createLocations() {
         // Create a list of locations.
         final int numLocations = 4;
-        mLocations = new ArrayList<>(numLocations);
+        ArrayList<TourLocation> locations = new ArrayList<>(numLocations);
 
         // Town Point Park
-        mLocations.add(new TourLocation("Town Point Park",
+        locations.add(new TourLocation("Town Point Park",
                 getResources().getString(R.string.parks_town_point_park_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.parks_town_point_park1,
@@ -65,7 +66,7 @@ public class ParksFragment extends TourLocationListFragment {
                         )))));
 
         // Ocean View Beach Park
-        mLocations.add(new TourLocation("Ocean View Beach Park",
+        locations.add(new TourLocation("Ocean View Beach Park",
                 getResources().getString(R.string.parks_ocean_view_beach_park_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.parks_ocean_view_beach_park1,
@@ -77,7 +78,7 @@ public class ParksFragment extends TourLocationListFragment {
                 null));
 
         // Community Beach Park
-        mLocations.add(new TourLocation("Community Beach Park",
+        locations.add(new TourLocation("Community Beach Park",
                 null,
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.parks_community_beach_park1,
@@ -89,7 +90,7 @@ public class ParksFragment extends TourLocationListFragment {
                 null));
 
         // Sarah Constant Beach Park
-        mLocations.add(new TourLocation("Sarah Constant Beach Park",
+        locations.add(new TourLocation("Sarah Constant Beach Park",
                 null,
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.parks_sarah_constant_beach_park1,
@@ -99,5 +100,6 @@ public class ParksFragment extends TourLocationListFragment {
                 "300 W. Ocean View Avenue, Norfolk, VA 23510",
                 null,
                 null));
+        return locations;
     }
 }

@@ -19,7 +19,8 @@ import java.util.Arrays;
 public class OtherFragment extends TourLocationListFragment {
     /*** Member Variables ***/
     // Constants
-    static {LOG_TAG = OtherFragment.class.getCanonicalName();}
+    private static final String LOG_TAG = OtherFragment.class.getCanonicalName();;
+    public static String getFragmentLabel() {return "other_list";}
 
     /*** Methods ***/
 
@@ -30,13 +31,13 @@ public class OtherFragment extends TourLocationListFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    protected void createLocations() {
+    protected ArrayList<TourLocation> createLocations() {
         // Create a list of locations.
         final int numLocations = 3;
-        mLocations = new ArrayList<>(numLocations);
+        ArrayList<TourLocation> locations = new ArrayList<>(numLocations);
 
         // Norfolk Botanical Garden
-        mLocations.add(new TourLocation("Norfolk Botanical Garden",
+        locations.add(new TourLocation("Norfolk Botanical Garden",
                 getResources().getString(R.string.other_norfolk_botanical_garden_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.other_norfolk_botanical_garden1,
@@ -49,7 +50,7 @@ public class OtherFragment extends TourLocationListFragment {
                 null));
 
         // The Virginia Zoo
-        mLocations.add(new TourLocation("The Virginia Zoo",
+        locations.add(new TourLocation("The Virginia Zoo",
                 getResources().getString(R.string.other_virginia_zoo_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.other_virginia_zoo1,
@@ -62,7 +63,7 @@ public class OtherFragment extends TourLocationListFragment {
                 null));
 
         // American Rover
-        mLocations.add(new TourLocation("American Rover",
+        locations.add(new TourLocation("American Rover",
                 getResources().getString(R.string.other_american_rover_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.other_american_rover1,
@@ -73,5 +74,6 @@ public class OtherFragment extends TourLocationListFragment {
                 "333 Waterside Dr, Norfolk, VA 23510",
                 "(757) 627-7245",
                 null));
+        return locations;
     }
 }

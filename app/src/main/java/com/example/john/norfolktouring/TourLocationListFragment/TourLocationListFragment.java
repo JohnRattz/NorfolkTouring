@@ -53,10 +53,8 @@ public abstract class TourLocationListFragment extends Fragment
     // Strings for storing state information.
     private static final String LOCATIONS = "mLocations";
 
-    protected static String LOG_TAG;
-    static {LOG_TAG = TourLocationListFragment.class.getCanonicalName();}
-
-    public static final String FRAGMENT_LABEL = "list";
+    private static final String LOG_TAG = TourLocationListFragment.class.getCanonicalName();;
+    public static String getFragmentLabel() {return "list";}
 
     // This should always be a category label from strings.xml.
     static String ACTION_BAR_TITLE = "";
@@ -67,7 +65,7 @@ public abstract class TourLocationListFragment extends Fragment
      * Creates the `TourLocation`s to fill the view (via the adapter `mAdapter`).
      * Must fill `mLocations`.
      */
-    protected abstract void createLocations();
+    protected abstract ArrayList<TourLocation> createLocations();
 
     /**
      * Shared Preferences
@@ -117,7 +115,7 @@ public abstract class TourLocationListFragment extends Fragment
             mLocations = savedState.getParcelableArrayList(LOCATIONS);
         } else {
             // Create a list of locations.
-            createLocations();
+            mLocations = createLocations();
         }
         savedState = null;
 

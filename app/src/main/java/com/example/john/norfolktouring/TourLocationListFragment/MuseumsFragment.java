@@ -19,7 +19,8 @@ import java.util.Arrays;
 public class MuseumsFragment extends TourLocationListFragment {
     /*** Member Variables ***/
     // Constants
-    static {LOG_TAG = MuseumsFragment.class.getCanonicalName();}
+    private static final String LOG_TAG = MuseumsFragment.class.getCanonicalName();;
+    public static String getFragmentLabel() {return "museums_list";}
 
     /*** Methods ***/
 
@@ -30,13 +31,13 @@ public class MuseumsFragment extends TourLocationListFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    protected void createLocations() {
+    protected ArrayList<TourLocation> createLocations() {
         // Create a list of locations.
         final int numLocations = 3;
-        mLocations = new ArrayList<>(numLocations);
+        ArrayList<TourLocation> locations = new ArrayList<>(numLocations);
 
         // Chrysler Museum of Art.
-        mLocations.add(new TourLocation("Chrysler Museum of Art",
+        locations.add(new TourLocation("Chrysler Museum of Art",
                 getResources().getString(R.string.museum_chrysler_museum_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.museums_chrysler_museum_of_art1,
@@ -53,7 +54,7 @@ public class MuseumsFragment extends TourLocationListFragment {
                 null));
 
         // Hampton Roads Naval Museum
-        mLocations.add(new TourLocation("Hampton Roads Naval Museum",
+        locations.add(new TourLocation("Hampton Roads Naval Museum",
                 getResources().getString(R.string.museum_hampton_roads_naval_museum_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.military_hampton_roads_naval_museum1,
@@ -64,7 +65,7 @@ public class MuseumsFragment extends TourLocationListFragment {
                 null));
 
         // Hermitage Museum & Gardens
-        mLocations.add(new TourLocation("Hermitage Museum & Gardens",
+        locations.add(new TourLocation("Hermitage Museum & Gardens",
                 getResources().getString(R.string.museum_hermitage_museum_and_gardens_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.museums_hermitage_museum_and_gardens1,
@@ -73,5 +74,6 @@ public class MuseumsFragment extends TourLocationListFragment {
                 "7637 N Shore Rd, Norfolk, VA 23505",
                 "(757) 423-2052",
                 null));
+        return locations;
     }
 }

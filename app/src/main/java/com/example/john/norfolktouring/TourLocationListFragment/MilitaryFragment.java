@@ -19,7 +19,8 @@ import java.util.Arrays;
 public class MilitaryFragment extends TourLocationListFragment {
     /*** Member Variables ***/
     // Constants
-    static {LOG_TAG = MilitaryFragment.class.getCanonicalName();}
+    private static final String LOG_TAG = MilitaryFragment.class.getCanonicalName();;
+    public static String getFragmentLabel() {return "military_list";}
 
     /*** Methods ***/
 
@@ -30,14 +31,14 @@ public class MilitaryFragment extends TourLocationListFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    protected void createLocations() {
+    protected ArrayList<TourLocation> createLocations() {
         // Create a list of locations.
         final int numLocations = 2;
-        mLocations = new ArrayList<>(numLocations);
+        ArrayList<TourLocation> locations = new ArrayList<>(numLocations);
 
         // Add the locations.
         // Nauticus
-        mLocations.add(new TourLocation("Nauticus",
+        locations.add(new TourLocation("Nauticus",
                 getResources().getString(R.string.military_nauticus_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.military_nauticus1,
@@ -114,7 +115,7 @@ public class MilitaryFragment extends TourLocationListFragment {
                         )))));
 
         // MacArthur Memorial
-        mLocations.add(new TourLocation("MacArthur Memorial",
+        locations.add(new TourLocation("MacArthur Memorial",
                 getResources().getString(R.string.military_macarthur_memorial_desc),
                 new ArrayList<Integer>(Arrays.asList(
                            R.drawable.military_macarthur_memorial1,
@@ -125,5 +126,6 @@ public class MilitaryFragment extends TourLocationListFragment {
                 "198 Bank St, Norfolk, VA 23510",
                 "(757) 441-2965",
                 null));
+        return locations;
     }
 }

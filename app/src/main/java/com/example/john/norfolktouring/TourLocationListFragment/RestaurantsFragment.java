@@ -19,7 +19,8 @@ import java.util.Arrays;
 public class RestaurantsFragment extends TourLocationListFragment {
     /*** Member Variables ***/
     // Constants
-    static {LOG_TAG = RestaurantsFragment.class.getCanonicalName();}
+    private static final String LOG_TAG = RestaurantsFragment.class.getCanonicalName();;
+    public static String getFragmentLabel() {return "restaurants_list";}
 
     /*** Methods ***/
 
@@ -30,13 +31,13 @@ public class RestaurantsFragment extends TourLocationListFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    protected void createLocations() {
+    protected ArrayList<TourLocation> createLocations() {
         // Create a list of locations.
         final int numLocations = 6;
-        mLocations = new ArrayList<>(numLocations);
+        ArrayList<TourLocation> locations = new ArrayList<>(numLocations);
 
         // Franco's
-        mLocations.add(new TourLocation("Franco's",
+        locations.add(new TourLocation("Franco's",
                 getResources().getString(R.string.restaurants_francos_desc),
                 new ArrayList<Integer>(Arrays.asList(
                         R.drawable.restaurants_francos1
@@ -46,7 +47,7 @@ public class RestaurantsFragment extends TourLocationListFragment {
                 null));
 
         // Azalea Inn & Time Out Sports Bar
-        mLocations.add(new TourLocation("Azalea Inn & Time Out Sports Bar",
+        locations.add(new TourLocation("Azalea Inn & Time Out Sports Bar",
                 getResources().getString(
                         R.string.restaurants_azalea_inn_desc),
                 new ArrayList<Integer>(Arrays.asList(
@@ -57,7 +58,7 @@ public class RestaurantsFragment extends TourLocationListFragment {
                 null));
 
         // Paradise Pizzeria
-        mLocations.add(new TourLocation("Paradise Pizzeria",
+        locations.add(new TourLocation("Paradise Pizzeria",
                 getResources().getString(
                         R.string.restaurants_paradise_pizzera_desc),
                 new ArrayList<Integer>(Arrays.asList(
@@ -68,7 +69,7 @@ public class RestaurantsFragment extends TourLocationListFragment {
                 null));
 
         // Regino's Italian Restaurant
-        mLocations.add(new TourLocation("Regino's Italian Restaurant",
+        locations.add(new TourLocation("Regino's Italian Restaurant",
                 getResources().getString(
                         R.string.restaurants_reginos_desc),
                 new ArrayList<Integer>(Arrays.asList(
@@ -79,7 +80,7 @@ public class RestaurantsFragment extends TourLocationListFragment {
                 null));
 
         // Doumar's Cones & Barbecue
-        mLocations.add(new TourLocation("Doumar's Cones & Barbecue",
+        locations.add(new TourLocation("Doumar's Cones & Barbecue",
                 getResources().getString(
                         R.string.restaurants_doumars_desc),
                 new ArrayList<Integer>(Arrays.asList(
@@ -94,7 +95,7 @@ public class RestaurantsFragment extends TourLocationListFragment {
                 null));
 
         // Handsome Biscuit
-        mLocations.add(new TourLocation("Handsome Biscuit",
+        locations.add(new TourLocation("Handsome Biscuit",
                 getResources().getString(
                         R.string.restaurants_handsome_biscuit_desc),
                 new ArrayList<Integer>(Arrays.asList(
@@ -108,5 +109,6 @@ public class RestaurantsFragment extends TourLocationListFragment {
                 "2511 Colonial Ave, Norfolk, VA 23517",
                 null,
                 null));
+        return locations;
     }
 }
