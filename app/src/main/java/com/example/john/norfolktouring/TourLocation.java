@@ -8,7 +8,9 @@ import com.example.john.norfolktouring.Utils.AttributedPhoto;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by John on 5/17/2017.
@@ -36,7 +38,14 @@ public class TourLocation implements Parcelable {
     // The URL for this location's website.
     private String mWebsite;
 
-    // Constants
+    /** Static Member Variables **/
+
+    /**
+     * Holds the TourLocations for each category.
+     */
+    private static Map<String, ArrayList<TourLocation>> sTourLocations = new HashMap<>();
+
+    /** Constants **/
     private static final String LOG_TAG = TourLocation.class.getCanonicalName();
 
     public static final int RATING_NOT_DETERMINED = -1;
@@ -69,6 +78,25 @@ public class TourLocation implements Parcelable {
     }
 
     /*** Methods ***/
+
+//    public static ArrayList<TourLocation> getAllTourLocations() {
+//
+//    }
+
+    /**
+     * Gets all TourLocations for a given category if they are currently loaded.
+     * If the category has not been loaded yet (i.e. has not been selected yet), null is returned.
+     */
+    public static ArrayList<TourLocation> getTourLocationsByCategory(String category) {
+        return sTourLocations.get(category);
+    }
+
+    /**
+     * Records TourLocations for a given category.
+     */
+    public static void addTourLocations(String categoryLabel, ArrayList<TourLocation> mLocations) {
+        sTourLocations.put(categoryLabel, mLocations);
+    }
 
     public TourLocation(String locationName, String description,
                         ArrayList<Integer> resourceImages,

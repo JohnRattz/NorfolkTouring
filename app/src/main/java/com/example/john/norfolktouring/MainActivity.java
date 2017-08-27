@@ -2,6 +2,7 @@ package com.example.john.norfolktouring;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -26,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.john.norfolktouring.Location.LocationService;
 import com.example.john.norfolktouring.TourLocationListFragment.MilitaryFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.MuseumsFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.OtherFragment;
@@ -63,8 +65,10 @@ public class MainActivity extends AppCompatActivity
      * Navigation Drawer
      **/
     private List<String> mCategories;
-    @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @BindView(R.id.left_drawer)   ListView mDrawerList;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+    @BindView(R.id.left_drawer)
+    ListView mDrawerList;
 
     /**
      * Location Updates
@@ -117,7 +121,9 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    /** Constants **/
+    /**
+     * Constants
+     **/
 
     // Arbitrary integer constant denoting a request for access to fine location.
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -130,12 +136,15 @@ public class MainActivity extends AppCompatActivity
 
     /*** Methods ***/
 
-    public boolean IsWifiCellEnabled() {return mWifiCellEnabled;}
+    public boolean IsWifiCellEnabled() {
+        return mWifiCellEnabled;
+    }
 
     /**
      * Sets appropriate text for a TextView denoting the distance to a location.
-     * @param distanceView The View for which text indicating the distance needs to be set.
-     * @param location The target location.
+     *
+     * @param distanceView   The View for which text indicating the distance needs to be set.
+     * @param location       The target location.
      * @param deviceLocation The location of the device.
      */
     public void setDistanceText(TextView distanceView, Location location, Location deviceLocation) {
@@ -295,7 +304,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Menu **/
+    /**
+     * Menu
+     **/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -329,7 +340,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Click listener for drawer items that opens the corresponding TourLocationListFragments.
      */
-    private static class DrawerItemClickListener implements ListView.OnItemClickListener {
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
         private MainActivity mActivity;
         private DrawerLayout mDrawerLayout;
         private ListView mDrawerList;
@@ -353,32 +364,71 @@ public class MainActivity extends AppCompatActivity
          */
         void selectItem(int position) {
             Fragment fragment = null;
+            String fragmentLabel = null;
+            Fragment currentFragment = MainActivity.this.getCurrentFragment();
+            boolean selectedFragmentIsCurrentFragment = false;
+            FragmentManager fragmentManager = mActivity.getFragmentManager();
             String category = mCategories.get(position);
+
             // Note that these must be in the same order as listed in @arrays/categories_array.
             switch (category) {
                 case "Parks":
-                    fragment = new ParksFragment();
+                    fragmentLabel = ParksFragment.FRAGMENT_LABEL;
+                    // If the current fragment is an instance of this Fragment, we will do nothing.
+                    if (currentFragment instanceof ParksFragment) {
+                        selectedFragmentIsCurrentFragment = true;
+                    } else {
+                        // Check for an instance of this Fragment (in this case on the back stack)
+                        fragment = fragmentManager.findFragmentByTag(fragmentLabel);
+                        // If there is none, create a new instance.
+                        if (fragment == null) fragment = new ParksFragment();
+                    }
                     break;
                 case "Museums":
-                    fragment = new MuseumsFragment();
+                    fragmentLabel = MuseumsFragment.FRAGMENT_LABEL;
+                    if (currentFragment instanceof MuseumsFragment) {
+                        selectedFragmentIsCurrentFragment = true;
+                    } else {
+                        fragment = fragmentManager.findFragmentByTag(fragmentLabel);
+                        if (fragment == null) fragment = new MuseumsFragment();
+                    }
                     break;
                 case "Military":
-                    fragment = new MilitaryFragment();
+                    fragmentLabel = MilitaryFragment.FRAGMENT_LABEL;
+                    if (currentFragment instanceof MilitaryFragment) {
+                        selectedFragmentIsCurrentFragment = true;
+                    } else {
+                        fragment = fragmentManager.findFragmentByTag(fragmentLabel);
+                        if (fragment == null) fragment = new MilitaryFragment();
+                    }
                     break;
                 case "Restaurants":
-                    fragment = new RestaurantsFragment();
+                    fragmentLabel = RestaurantsFragment.FRAGMENT_LABEL;
+                    if (currentFragment instanceof RestaurantsFragment) {
+                        selectedFragmentIsCurrentFragment = true;
+                    } else {
+                        fragment = fragmentManager.findFragmentByTag(fragmentLabel);
+                        if (fragment == null) fragment = new RestaurantsFragment();
+                    }
                     break;
                 case "Other":
-                    fragment = new OtherFragment();
+                    fragmentLabel = OtherFragment.FRAGMENT_LABEL;
+                    if (currentFragment instanceof OtherFragment) {
+                        selectedFragmentIsCurrentFragment = true;
+                    } else {
+                        fragment = fragmentManager.findFragmentByTag(fragmentLabel);
+                        if (fragment == null) fragment = new OtherFragment();
+                    }
                     break;
             }
 
-            // Insert the fragment by replacing any existing fragment.
-            FragmentManager fragmentManager = mActivity.getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment, TourLocationListFragment.FRAGMENT_LABEL)
-                    .addToBackStack(TourLocationListFragment.FRAGMENT_LABEL)
-                    .commit();
+            if (!selectedFragmentIsCurrentFragment) {
+                // Insert the fragment by replacing any existing fragment.
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, fragment, fragmentLabel)
+                        .addToBackStack(fragmentLabel)
+                        .commit();
+            }
 
             // Highlight the selected item, update the title, and close the drawer.
             mDrawerList.setItemChecked(position, true);

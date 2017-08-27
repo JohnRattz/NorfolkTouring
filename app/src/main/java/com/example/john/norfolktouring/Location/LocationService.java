@@ -1,4 +1,4 @@
-package com.example.john.norfolktouring;
+package com.example.john.norfolktouring.Location;
 
 import android.app.Activity;
 import android.app.Service;
@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.john.norfolktouring.NorfolkTouring;
+import com.example.john.norfolktouring.R;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -263,8 +265,8 @@ public class LocationService extends Service {
     /**
      * The class of the binder returned by `onBind()`.
      */
-    class LocationServiceBinder extends Binder {
-        LocationService getService() {
+    public class LocationServiceBinder extends Binder {
+        public LocationService getService() {
             return LocationService.this;
         }
     }

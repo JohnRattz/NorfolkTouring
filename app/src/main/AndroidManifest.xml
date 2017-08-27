@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".LocationService"
+            android:name=".Location.LocationService"
             android:description="@string/LocationServiceDescription"
             android:permission="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -31,9 +31,9 @@
         <!-- android:launchMode="singleTop" -->
         <!-- android:launchMode="singleTask" -->
         <activity
-            android:launchMode="singleTop"
             android:name=".MainActivity"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -74,6 +74,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <service
+            android:name=".Location.NearestLocationIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

@@ -72,7 +72,7 @@ public class GridWidgetService extends RemoteViewsService {
         public RemoteViews getViewAt(int position) {
             RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.widget_grid_item);
             // Set the text.
-            views.setTextViewText(R.id.root_view/*category_name*/, NorfolkTouring.getCategoriesList().get(position));
+            views.setTextViewText(R.id.root_view, NorfolkTouring.getCategoriesList().get(position));
             // Add some extra information to the Intent given to the GridView with
             // setPendingIntentTemplate() in WidgetProvider.getGridRemoteView().
             // Setting PendingIntents on individual collection items in widgets is not allowed.
