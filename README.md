@@ -5,7 +5,8 @@ interest in Norfolk, Virginia.
 Its primary purpose is to showcase various features of Android - including RecyclerViews,
 DrawerLayouts, Adapters, Fragments (extensively used), click listeners, AsyncTasks, 
 Handlers (used for automatic image cycling), Services, MediaSessions 
-(including MediaStyle notifications that allow control of media playback), Widgets, and more.
+(including MediaStyle notifications that allow control of media playback as in apps like Spotify), 
+Widgets, Menus, SharedPreferences, Jobs (using Firebase JobDispatcher), and more.
 
 Some APIs used in this project include the Google Maps API 
 (both for Web and Android - using both URI queries and the Android API),
@@ -34,15 +35,24 @@ Clicking on the tour location view will open a detailed view of that location.
 This view shows additional information, such as the operating hours, website,
 address, contact information, and a description for the corresponding location.
 
+Notifications regarding the nearest location are issued every 5 to 10 minutes.
+Only locations that have been loaded so far are considered - i.e. only the categories opened
+since the app launched.
+
+The Settings menu can be accessed from the 3 vertical ellipses in the top right corner.
+Wifi and cell data usage can be toggled, which stops location updates and changes View 
+visibility and contents accordingly. Notifications may be toggled as well.
+
 <h3>Description of Software Components</h3>
 <h4>Main Components</h4>
 
-`NorfolkTouring`: Used to acquire the application instance in a more reliable way than
-through `getApplicationContext()`, defines some API keys, and provides functions for 
+`NorfolkTouring`: Used to acquire a static instance of the application `Context` through 
+`getApplicationContext()`, defines some API keys, and provides functions for 
 setting the `ActionBar` title. 
 
 `MainActivity`: Initializes a Google API Client, contains and initializes 
-the Navigation Drawer (a `DrawerLayout`), and launches the `IntroductoryFragment`.
+the Navigation Drawer (a `DrawerLayout`), launches the `IntroductoryFragment`, and
+receives location updates from `Location/LocationService` if wifi and cell data usage is enabled.
 
 `IntroductoryFragment`: Contains and initializes a `YouTubePlayerFragment` and the
 introductory text. Contains a `MediaSession` (though this is often part of a containing `Activity`

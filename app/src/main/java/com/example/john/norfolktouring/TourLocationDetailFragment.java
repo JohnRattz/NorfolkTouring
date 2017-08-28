@@ -53,6 +53,7 @@ public class TourLocationDetailFragment extends Fragment
     /*** Member Variables ***/
     MainActivity mActivity;
     TourLocation mTourLocation;
+    private String mLocationName;
     ArrayList<TourLocation.LocationFeature> mFeatures;
     View mRootView;
 
@@ -104,6 +105,7 @@ public class TourLocationDetailFragment extends Fragment
     @BindView(R.id.expanded_image_animation_target) View mEnlargedImageViewAnimTarget;
     @BindView(R.id.prev_image_arrow)                ImageView mBackArrowImageView;
     @BindView(R.id.next_image_arrow)                ImageView mForwardArrowImageView;
+    private boolean mWifiCellEnabled;
 
     // Used to determine which set of images are currently in the enlarged image view.
     private enum EnlargedImageSet {
@@ -361,16 +363,17 @@ public class TourLocationDetailFragment extends Fragment
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_KEY)) {
             if (this == mActivity.getCurrentFragment()) {
-                boolean wifiCellEnabled =
-                        SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
+                mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
                         /*sharedPreferences.getBoolean(key,
                         getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));*/
-                updateRatingUI(wifiCellEnabled);
+                updateRatingUI(mWifiCellEnabled);
                 updateLocationDistanceUI();
-                updateGoogleMapsViews(wifiCellEnabled);
-                if (wifiCellEnabled)
+                updateGoogleMapsViews(mWifiCellEnabled);
+                if (mWifiCellEnabled) {
+                    PlacesUtils.getPlaceImagesInBackground(mLocationName, mGoogleImages);
                     // This should trigger `locationCallback()` in the near future.
                     PlacesUtils.getInfoForTourLocationIfNeeded(mActivity, mTourLocation);
+                }
             }
         }
     }
@@ -390,9 +393,9 @@ public class TourLocationDetailFragment extends Fragment
         mActivity.setCurrentFragment(this);
 
         // Register this Fragment as a listener for shared preference changes.
-        // TODO: Make sure this works (it is using application context rather than activity).
         SharedPreferences sharedPreferences = SharedPreferencesUtils.getDefaultSharedPreferences();
                 /*PreferenceManager.getDefaultSharedPreferences(mActivity);*/
+        mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         // Create a list of image cyclers to start and stop along with this fragment.
@@ -421,9 +424,9 @@ public class TourLocationDetailFragment extends Fragment
             mShortAnimationDuration = getResources().getInteger(
                     android.R.integer.config_shortAnimTime);
         }
-        String name = mTourLocation.getLocationName();
+        mLocationName = mTourLocation.getLocationName();
 
-        setActionBarTitle(mActivity, name);
+        setActionBarTitle(mActivity, mLocationName);
 
         // Set the first images in the Resources and Google image views.
         updateResourceImage();
@@ -434,16 +437,19 @@ public class TourLocationDetailFragment extends Fragment
         mForwardArrowImageView.setOnClickListener(new OnImageForwardNavigationClickListener());
 
         // Start acquiring the Google images in the background.
-        PlacesUtils.getPlaceImagesInBackground(name, mGoogleImages);
+        if (mWifiCellEnabled)
+            PlacesUtils.getPlaceImagesInBackground(mLocationName, mGoogleImages);
 
         // Set the resource images in the view (cycle through them automatically, one at a time).
         final Handler resourceImageCyclingHandler = new Handler();
         Runnable resourceImageCycler = new Runnable() {
             public void run() {
-                // Go to the next image.
-                setResourceImageIndexNext();
-                // Set the image.
-                updateResourceImage();
+                if (mResourceImages.size() != 0) {
+                    // Go to the next image.
+                    setResourceImageIndexNext();
+                    // Set the image.
+                    updateResourceImage();
+                }
                 // Schedule this function to run again (cycling images).
                 resourceImageCyclingHandler.postDelayed(this, mMillisBetweenCycles);
             }
@@ -456,11 +462,13 @@ public class TourLocationDetailFragment extends Fragment
         Runnable googleImageCycler = new Runnable() {
             public void run() {
                 // Wait for there to be at least one image.
-                waitForGoogleImages();
-                // Go to the next image.
-                setGoogleImageIndexNext();
-                // Set the image and attribution.
-                updateGoogleImage();
+//                waitForGoogleImages();
+                if (mGoogleImages.size() != 0) {
+                    // Go to the next image.
+                    setGoogleImageIndexNext();
+                    // Set the image and attribution.
+                    updateGoogleImage();
+                }
                 // Schedule this function to run again (cycling images).
                 googleImageCyclingHandler.postDelayed(this, mMillisBetweenCycles);
             }
@@ -503,7 +511,7 @@ public class TourLocationDetailFragment extends Fragment
         String description = mTourLocation.getDescription();
 
         // Set the name in the view.
-        mNameTextView.setText(name);
+        mNameTextView.setText(mLocationName);
 
         // Set the rating in the view.
         updateRatingUI(mActivity.IsWifiCellEnabled());

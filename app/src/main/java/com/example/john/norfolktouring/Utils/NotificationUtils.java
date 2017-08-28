@@ -37,7 +37,6 @@ public class NotificationUtils {
     public static void notifyOfNearestLocation(Context context, String locationName,
                                                String category, int distance) {
         Resources resources = context.getResources();
-        // TODO: Format the title text and body text.
         String titleTextFormat = resources.getString(R.string.nearest_location_notification_title);
         String formattedTitle = String.format(titleTextFormat, locationName);
         String bodyTextFormat = resources.getString(R.string.nearest_location_notification_body);

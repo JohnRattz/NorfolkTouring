@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationResult;
 /**
  * Issues recurring notifications regarding the closest location.
  */
+// TODO: Remove this if unused.
 public class NearestLocationIntentService extends IntentService {
     /*** Member Variables ***/
     // The Activity that this service is currently running for.
