@@ -14,11 +14,10 @@ import com.firebase.jobdispatcher.Trigger;
  */
 
 public class NearestLocationNotificationUtilities {
-    // TODO: Correct these 2 numbers when done debugging.
     // 5 minutes between reminders
-    private static final int REMINDER_INTERVAL_SECONDS = 5/* * 60*/;
+    private static final int REMINDER_INTERVAL_SECONDS = 5 * 60;
     // 5 minutes of flex time (window of time for notification after REMINDER_INTERVAL_SECONDS)
-    private static final int SYNC_FLEXTIME_SECONDS = 20/* * 60*/;
+    private static final int SYNC_FLEXTIME_SECONDS = 5 * 60;
     private static final String NEAREST_LOCATION_JOB_TAG = "nearest_location_tag";
     private static boolean sInitialized;
 
