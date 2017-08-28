@@ -21,7 +21,9 @@ import java.util.Map;
 public class NearestLocationTasks {
     /*** Member Variables ***/
 
-    /** Static Member Variables **/
+    /**
+     * Static Member Variables
+     **/
 
     // The application context is just a default.
     private static Context sContext = NorfolkTouring.getContext();
@@ -30,19 +32,19 @@ public class NearestLocationTasks {
             new SharedPreferenceListener();
     // The source of the current location information (should be an Activity).
     private static LocationService.IReceivesLocationUpdates sLocationReceiver;
-    // Denotes whether wifi and cell data usage is allowed.
-    private static boolean sWifiCellEnabled;
     // Denotes whether notifications will be issued.
     private static boolean sNotificationsEnabled;
+
     // Initialize the static variables from shared preferences.
     static {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(sContext);
-        sWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
         sNotificationsEnabled = SharedPreferencesUtils.getNotificationsEnabled(sharedPreferences);
         sharedPreferences.registerOnSharedPreferenceChangeListener(sSharedPreferenceListener);
     }
 
-    /** Constants **/
+    /**
+     * Constants
+     **/
 
     public static final String ACTION_CLOSEST_LOCATION_NOTIFICATION =
             "com.example.john.norfolktouring.action.CLOSEST_LOCATION_NOTIFICATION";
@@ -52,13 +54,11 @@ public class NearestLocationTasks {
     /*** Nested Classes ***/
 
     private static class SharedPreferenceListener
-            implements SharedPreferences.OnSharedPreferenceChangeListener{
+            implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (sContext != null) {
-                if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_KEY)) {
-                    sWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
-                } else if (key.equals(SharedPreferencesUtils.NOTIFICATIONS_ENABLED_KEY)) {
+                if (key.equals(SharedPreferencesUtils.NOTIFICATIONS_ENABLED_KEY)) {
                     sNotificationsEnabled = SharedPreferencesUtils.getNotificationsEnabled(sharedPreferences);
                     NotificationUtils.clearAllNotifications(sContext);
                 }
@@ -68,10 +68,9 @@ public class NearestLocationTasks {
 
     /*** Methods ***/
 
-    /** Getters and Setters **/
-
-//    public static AppCompatActivity getCurrentActivity() {return sCurrentActivity;}
-//    public static void setCurrentActivity(AppCompatActivity activity) {sCurrentActivity = activity;}
+    /**
+     * Getters and Setters
+     **/
 
     public static void setLocationReceiver(LocationService.IReceivesLocationUpdates locationReceiver) {
         sLocationReceiver = locationReceiver;
@@ -79,20 +78,10 @@ public class NearestLocationTasks {
 
     /*** Main Methods ***/
 
-    /**
-     * Initiates regular notifications indicating the closest location and the distance to it.
-     */
-    // TODO: Remove this if unused.
-    public static void startClosestLocationNotifications(Context context) {
-        Intent intent = new Intent(context, NearestLocationIntentService.class);
-        intent.setAction(ACTION_CLOSEST_LOCATION_NOTIFICATION);
-        context.startService(intent);
-    }
-
     public static void executeTask(Context context, String action) {
         sContext = context;
         if (action != null) {
-            switch(action) {
+            switch (action) {
                 case ACTION_CLOSEST_LOCATION_NOTIFICATION:
                     if (sNotificationsEnabled)
                         closestLocationNotification();
@@ -108,40 +97,37 @@ public class NearestLocationTasks {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    // TODO: Finish this.
     private static void closestLocationNotification() {
-        if (sWifiCellEnabled) {
-            // Get the device location.
-            Location deviceLocation = sLocationReceiver.getCurrentLocation();
-            if (deviceLocation == null) return;
-            // Get all loaded TourLocations.
-            Map<String, ArrayList<TourLocation>> tourLocationsByCategory =
-                    TourLocation.getTourLocations();
-            // Get the closest location and its associated category.
-            String closestLocationName = null;
-            String categoryForShortestDistance = null;
-            int shortestDistance = Integer.MAX_VALUE;
-            for (Map.Entry<String, ArrayList<TourLocation>> tourLocationsEntry :
-                    tourLocationsByCategory.entrySet()) {
-                String currentCategory = tourLocationsEntry.getKey();
-                ArrayList<TourLocation> tourLocations = tourLocationsEntry.getValue();
-                for (TourLocation tourLocation : tourLocations) {
-                    Location destinationLocation = tourLocation.getLocation();
-                    if (destinationLocation == null) continue;
-                    int distance = (int) deviceLocation.distanceTo(destinationLocation);
-                    if (distance < shortestDistance) {
-                        closestLocationName = tourLocation.getLocationName();
-                        categoryForShortestDistance = currentCategory;
-                        shortestDistance = distance;
-                    }
+        // Get the device location.
+        Location deviceLocation = sLocationReceiver.getCurrentLocation();
+        if (deviceLocation == null) return;
+        // Get all loaded TourLocations.
+        Map<String, ArrayList<TourLocation>> tourLocationsByCategory =
+                TourLocation.getTourLocations();
+        // Get the closest location and its associated category.
+        String closestLocationName = null;
+        String categoryForShortestDistance = null;
+        int shortestDistance = Integer.MAX_VALUE;
+        for (Map.Entry<String, ArrayList<TourLocation>> tourLocationsEntry :
+                tourLocationsByCategory.entrySet()) {
+            String currentCategory = tourLocationsEntry.getKey();
+            ArrayList<TourLocation> tourLocations = tourLocationsEntry.getValue();
+            for (TourLocation tourLocation : tourLocations) {
+                Location destinationLocation = tourLocation.getLocation();
+                if (destinationLocation == null) continue;
+                int distance = (int) deviceLocation.distanceTo(destinationLocation);
+                if (distance < shortestDistance) {
+                    closestLocationName = tourLocation.getLocationName();
+                    categoryForShortestDistance = currentCategory;
+                    shortestDistance = distance;
                 }
             }
-            // Create and show a notification (if any TourLocations have been loaded).
-            if (categoryForShortestDistance != null) {
-                NotificationUtils.notifyOfNearestLocation(
-                        NorfolkTouring.getContext()/*sContext*/, closestLocationName,
-                        categoryForShortestDistance, shortestDistance);
-            }
+        }
+        // Create and show a notification (if any TourLocations have been loaded).
+        if (categoryForShortestDistance != null) {
+            NotificationUtils.notifyOfNearestLocation(
+                    NorfolkTouring.getContext()/*sContext*/, closestLocationName,
+                    categoryForShortestDistance, shortestDistance);
         }
     }
 }
