@@ -264,11 +264,17 @@
 
     <!--SharedPreferences-->
 
+    <!-- Wifi and Cell Data -->
     <!-- NOTE: All keys should have translatable="false" to avoid unneeded localization. -->
     <string name="pref_enable_wifi_cell_data_usage_key" translatable="false">enable_wifi_cell_data_usage</string>
     <string name="pref_enable_wifi_cell_data_usage_summary_off">Disabled</string>
     <string name="pref_enable_wifi_cell_data_usage_summary_on">Enabled</string>
     <string name="pref_enable_wifi_cell_data_usage_title">Enable WiFi/Cell Data Usage</string>
+    <!-- Notifications -->
+    <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
+    <string name="pref_enable_notifications_summary_off">Disabled</string>
+    <string name="pref_enable_notifications_summary_on">Enabled</string>
+    <string name="pref_enable_notifications_title">Enable Notifications</string>
 
     <!--Nearest Location Updates-->
 

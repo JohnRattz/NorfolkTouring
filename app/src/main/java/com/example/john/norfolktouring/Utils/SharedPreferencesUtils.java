@@ -13,14 +13,22 @@ import com.example.john.norfolktouring.R;
  */
 
 public class SharedPreferencesUtils {
+    /*** Member Variables ***/
     private static final Context sAppContext = NorfolkTouring.getContext();
     private static final Resources sResources = sAppContext.getResources();
 
-    // Wifi and cell data
-    public static final String WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY =
+    /** Constants **/
+
+    // Wifi and Cell Data
+    public static final String WIFI_CELL_ENABLED_KEY =
             sResources.getString(R.string.pref_enable_wifi_cell_data_usage_key);
-    public static final boolean WIFI_CELL_ENABLED_SHARED_PREFERENCE_DEFAULT =
+    public static final boolean WIFI_CELL_ENABLED_DEFAULT =
             sResources.getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default);
+    // Notifications
+    public static final String NOTIFICATIONS_ENABLED_KEY =
+            sResources.getString(R.string.pref_enable_notifications_key);
+    public static final boolean NOTIFICATIONS_ENABLED_DEFAULT =
+            sResources.getBoolean(R.bool.pref_enable_notifications_default);
 
     /*** Methods ***/
 
@@ -28,15 +36,50 @@ public class SharedPreferencesUtils {
         return PreferenceManager.getDefaultSharedPreferences(sAppContext);
     }
 
+    /** Wifi and Cell Data **/
+
     /**
      * Returns whether or not wifi and cell data are enabled according to the SharedPreferences.
      * @param sharedPreferences The shared preferences to use. Pass null to use the default shared preferences.
      */
-    public static boolean getWifiCellEnabledSharedPreference(SharedPreferences sharedPreferences) {
+    public static boolean getWifiCellEnabled(SharedPreferences sharedPreferences) {
         if (sharedPreferences == null)
             sharedPreferences = getDefaultSharedPreferences();
-        String key = WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY;
-        boolean defaultValue = WIFI_CELL_ENABLED_SHARED_PREFERENCE_DEFAULT;
-        return sharedPreferences.getBoolean(key, defaultValue);
+        return sharedPreferences.getBoolean(WIFI_CELL_ENABLED_KEY, WIFI_CELL_ENABLED_DEFAULT);
     }
+
+    /**
+     * Sets whether wifi and cell data are enabled in the SharedPreferences.
+     * @param sharedPreferences The shared preferences to use. Pass null to use the default shared preferences.
+     */
+    public static void setWifiCellEnabled(SharedPreferences sharedPreferences,
+                                          boolean wifiCellEnabled) {
+        if (sharedPreferences == null)
+            sharedPreferences = getDefaultSharedPreferences();
+        sharedPreferences.edit().putBoolean(WIFI_CELL_ENABLED_KEY, wifiCellEnabled).apply();
+    }
+
+    /** Notifications **/
+
+    /**
+     * Returns whether or not notifications are enabled according to the SharedPreferences.
+     * @param sharedPreferences The shared preferences to use. Pass null to use the default shared preferences.
+     */
+    public static boolean getNotificationsEnabled(SharedPreferences sharedPreferences) {
+        if (sharedPreferences == null)
+            sharedPreferences = getDefaultSharedPreferences();
+        return sharedPreferences.getBoolean(NOTIFICATIONS_ENABLED_KEY, NOTIFICATIONS_ENABLED_DEFAULT);
+    }
+
+    /**
+     * Sets whether wifi and cell data are enabled in the SharedPreferences.
+     * @param sharedPreferences The shared preferences to use. Pass null to use the default shared preferences.
+     */
+    public static void setNotificationsEnabled(SharedPreferences sharedPreferences,
+                                               boolean notificationsEnabled) {
+        if (sharedPreferences == null)
+            sharedPreferences = getDefaultSharedPreferences();
+        sharedPreferences.edit().putBoolean(NOTIFICATIONS_ENABLED_KEY, notificationsEnabled).apply();
+    }
+
 }

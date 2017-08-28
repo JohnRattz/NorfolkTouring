@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity
     private void setupSharedPreferences() {
         // TODO: Are these the right shared preferences? Should Activity context be used instead (this)?
         SharedPreferences sharedPreferences = SharedPreferencesUtils.getDefaultSharedPreferences();
-        mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+        mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
                 /*sharedPreferences.getBoolean(
                 getString(R.string.pref_enable_wifi_cell_data_usage_key),
                 getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));*/
@@ -189,8 +189,8 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY)) {
-            mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+        if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_KEY)) {
+            mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
             // Reconnecting is handled in `onResume()`.
             if (!mWifiCellEnabled) {
                 stopLocationUpdates();

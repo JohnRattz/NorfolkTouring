@@ -25,16 +25,20 @@ public class NearestLocationTasks {
 
     // The application context is just a default.
     private static Context sContext = NorfolkTouring.getContext();
+    // A listener for shared preferences that updates relevant fields below.
     private static SharedPreferenceListener sSharedPreferenceListener =
             new SharedPreferenceListener();
     // The source of the current location information (should be an Activity).
     private static LocationService.IReceivesLocationUpdates sLocationReceiver;
     // Denotes whether wifi and cell data usage is allowed.
     private static boolean sWifiCellEnabled;
+    // Denotes whether notifications will be issued.
+    private static boolean sNotificationsEnabled;
     // Initialize the static variables from shared preferences.
     static {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(sContext);
-        sWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+        sWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
+        sNotificationsEnabled = SharedPreferencesUtils.getNotificationsEnabled(sharedPreferences);
         sharedPreferences.registerOnSharedPreferenceChangeListener(sSharedPreferenceListener);
     }
 
@@ -52,8 +56,11 @@ public class NearestLocationTasks {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (sContext != null) {
-                if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY)) {
-                    sWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+                if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_KEY)) {
+                    sWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
+                } else if (key.equals(SharedPreferencesUtils.NOTIFICATIONS_ENABLED_KEY)) {
+                    sNotificationsEnabled = SharedPreferencesUtils.getNotificationsEnabled(sharedPreferences);
+                    NotificationUtils.clearAllNotifications(sContext);
                 }
             }
         }
@@ -87,7 +94,8 @@ public class NearestLocationTasks {
         if (action != null) {
             switch(action) {
                 case ACTION_CLOSEST_LOCATION_NOTIFICATION:
-                    closestLocationNotification();
+                    if (sNotificationsEnabled)
+                        closestLocationNotification();
                     break;
                 case ACTION_DISMISS_NOTIFICATION:
                     NotificationUtils.clearAllNotifications(context);

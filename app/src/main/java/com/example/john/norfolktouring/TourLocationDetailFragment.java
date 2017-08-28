@@ -359,10 +359,10 @@ public class TourLocationDetailFragment extends Fragment
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY)) {
+        if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_KEY)) {
             if (this == mActivity.getCurrentFragment()) {
                 boolean wifiCellEnabled =
-                        SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+                        SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
                         /*sharedPreferences.getBoolean(key,
                         getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));*/
                 updateRatingUI(wifiCellEnabled);
