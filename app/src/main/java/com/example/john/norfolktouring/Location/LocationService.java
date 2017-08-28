@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Looper;
@@ -102,6 +103,15 @@ public class LocationService extends Service {
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private static String LOG_TAG = LocationService.class.getCanonicalName();
+
+    /*** Nested Classes ***/
+
+    /**
+     * Interface for Activites that wish to receive location updates.
+     */
+    public interface IReceivesLocationUpdates {
+        Location getCurrentLocation();
+    }
 
     /*** Methods ***/
 

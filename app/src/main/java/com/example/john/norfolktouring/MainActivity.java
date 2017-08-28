@@ -2,7 +2,6 @@ package com.example.john.norfolktouring;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -28,6 +27,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.john.norfolktouring.Location.LocationService;
+import com.example.john.norfolktouring.Location.NearestLocationNotificationUtilities;
+import com.example.john.norfolktouring.Location.NearestLocationTasks;
 import com.example.john.norfolktouring.TourLocationListFragment.MilitaryFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.MuseumsFragment;
 import com.example.john.norfolktouring.TourLocationListFragment.OtherFragment;
@@ -36,6 +37,7 @@ import com.example.john.norfolktouring.TourLocationListFragment.RestaurantsFragm
 import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
+import com.example.john.norfolktouring.Utils.SharedPreferencesUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationCallback;
@@ -54,8 +56,9 @@ public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         InfoByIdsTask.InfoByIdResultCallback,
-        SharedPreferences.OnSharedPreferenceChangeListener {
-    /*** Member Variables ***/
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LocationService.IReceivesLocationUpdates {
+    /*** Memtir Variables ***/
     private GoogleApiClient mGoogleApiClient;
     private Fragment mCurrentFragment;
     // Denotes whether wifi and cell data usage is allowed.
@@ -133,6 +136,7 @@ public class MainActivity extends AppCompatActivity
     // These are used for processing PendingIntents issued by widgets.
     public static final String EXTRA_CATEGORY_INDX = "com.example.john.norfolktouring.extra.EXTRA_CATEGORY_INDX";
     public static final int INVALID_CATEGORY_INDX = -1;
+    private DrawerItemClickListener mDrawerItemClickListener;
 
     /*** Methods ***/
 
@@ -171,10 +175,12 @@ public class MainActivity extends AppCompatActivity
      * Initializes shared preferences and registers this Activity as a listener for changes.
      */
     private void setupSharedPreferences() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mWifiCellEnabled = sharedPreferences.getBoolean(
+        // TODO: Are these the right shared preferences? Should Activity context be used instead (this)?
+        SharedPreferences sharedPreferences = SharedPreferencesUtils.getDefaultSharedPreferences();
+        mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+                /*sharedPreferences.getBoolean(
                 getString(R.string.pref_enable_wifi_cell_data_usage_key),
-                getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+                getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));*/
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -183,15 +189,35 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
-            mWifiCellEnabled = sharedPreferences.getBoolean(key,
-                    getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+        if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY)) {
+            mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
             // Reconnecting is handled in `onResume()`.
             if (!mWifiCellEnabled) {
                 stopLocationUpdates();
                 unbindLocationService();
             }
         }
+    }
+
+    /** Intents **/
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        int categoryIndx = getIntent().getIntExtra(EXTRA_CATEGORY_INDX, INVALID_CATEGORY_INDX);
+        if (categoryIndx != INVALID_CATEGORY_INDX) {
+            // First clear the Fragment back stack.
+            FragmentManager fm = getFragmentManager();
+            for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+                fm.popBackStackImmediate();
+            }
+            mDrawerItemClickListener.selectItem(categoryIndx);
+        }
+        // Note that this is the source of current location information for NearestLocationTasks.
+        NearestLocationTasks.setLocationReceiver(this);
+        // Launch the nearest location notification service.
+        NearestLocationNotificationUtilities.scheduleNearestLocationNotifications(this);
     }
 
     /**
@@ -223,9 +249,9 @@ public class MainActivity extends AppCompatActivity
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.drawer_category_item, mCategories));
         // Set the drawer's click listener.
-        DrawerItemClickListener drawerItemClickListener = new DrawerItemClickListener(this, mDrawerList,
+        mDrawerItemClickListener = new DrawerItemClickListener(this, mDrawerList,
                 mCategories);
-        mDrawerList.setOnItemClickListener(drawerItemClickListener);
+        mDrawerList.setOnItemClickListener(mDrawerItemClickListener);
 
         // Set the introductory `Fragment`.
         IntroductoryFragment introductoryFragment = new IntroductoryFragment();
@@ -237,12 +263,22 @@ public class MainActivity extends AppCompatActivity
         // If this Activity was launched by a widget, a particular category may need to be viewed.
         int categoryIndx = getIntent().getIntExtra(EXTRA_CATEGORY_INDX, INVALID_CATEGORY_INDX);
         if (categoryIndx != INVALID_CATEGORY_INDX)
-            drawerItemClickListener.selectItem(categoryIndx);
+            mDrawerItemClickListener.selectItem(categoryIndx);
+
+        // Note that this is the source of current location information for NearestLocationTasks.
+        NearestLocationTasks.setLocationReceiver(this);
+        // Launch the nearest location notification service.
+        NearestLocationNotificationUtilities.scheduleNearestLocationNotifications(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+//        Intent nearestLocationNotificationIntent =
+//                new Intent(this, NearestLocationIntentService.class);
+//        nearestLocationNotificationIntent.setAction(
+//                NearestLocationIntentService.ACTION_CLOSEST_LOCATION_NOTIFICATION);
+//        startService(nearestLocationNotificationIntent);
     }
 
     @Override
@@ -277,6 +313,7 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
+        // TODO: Stop receiving nearest location notifications (use NearestLocationNotificationUtilities).
     }
 
     @Override

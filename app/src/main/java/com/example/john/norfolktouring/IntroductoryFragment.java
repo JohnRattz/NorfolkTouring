@@ -71,6 +71,9 @@ public class IntroductoryFragment extends Fragment implements YouTubePlayer.OnIn
         NorfolkTouring.setActionBarTitleToAppName((AppCompatActivity) mActivity);
         View rootView = inflater.inflate(R.layout.introduction, container, false);
 
+        // Record that this Fragment is the currently displayed one in `MainActivity`.
+        mActivity.setCurrentFragment(this);
+
         initializeMediaSession();
         initializeYouTubePlayerFragment();
 

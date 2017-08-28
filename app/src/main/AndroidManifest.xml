@@ -9,6 +9,8 @@
          from the Google Places API
     -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--Nearest location updates (issued by NearestLocationIntentService) vibrate the phone-->
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name=".NorfolkTouring"
@@ -17,10 +19,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service
-            android:name=".Location.LocationService"
-            android:description="@string/LocationServiceDescription"
-            android:permission="android.permission.ACCESS_FINE_LOCATION" />
 
         <!-- Google Geo Data API -->
         <!-- AIzaSyCW4_ie4rqF3S65xBXhDvS4W8bkef97-C8 -->
@@ -28,8 +26,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAWMdYhZZ8SfyveoIGgnXZBhQpM1Rcl-rA" />
 
-        <!-- android:launchMode="singleTop" -->
-        <!-- android:launchMode="singleTask" -->
+        <!-- Activities -->
+
+        <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
@@ -40,6 +39,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- SettingsActivity -->
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/action_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <!-- Broadcast Receivers -->
+
         <!-- Introductory Fragment Media Receiver for YouTube Playback -->
         <receiver android:name=".IntroductoryFragment$MediaReceiver">
             <intent-filter>
@@ -47,10 +59,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- Widget-Related Class Registrations -->
-
-
-        <!-- Widget Broadcast Recgit eiver -->
+        <!-- Widget Broadcast Receiver -->
         <receiver android:name=".Widget.WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -61,23 +70,31 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
-        <!-- GridWidgetService (Populates Widget Views) -->
+        <!-- Services -->
+
+        <!-- LocationService (receives location updates) -->
+        <service
+            android:name=".Location.LocationService"
+            android:description="@string/LocationServiceDescription"
+            android:permission="android.permission.ACCESS_FINE_LOCATION" />
+
+        <!-- GridWidgetService (populates widget views) -->
         <service
             android:name=".Widget.GridWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/action_settings"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
+        <!-- NearestLocationIntentService (issues regular notifications about the closest location) -->
         <service
             android:name=".Location.NearestLocationIntentService"
-            android:exported="false"></service>
+            android:exported="false"/>
+
+        <!-- NearestLocationFirebaseJobService -->
+        <service android:name=".Location.NearestLocationFirebaseJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebse.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

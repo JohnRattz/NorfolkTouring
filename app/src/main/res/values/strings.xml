@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Norfolk Touring</string>
 
     <!--Location Category Labels-->
@@ -187,6 +187,8 @@
         sides and desserts.
     </string>
 
+    <!-- Detail View -->
+
     <!--Detail View Section Headers-->
     <string name="detail_view_name_header_text">Name:</string>
     <string name="detail_view_address_header_text">Address:</string>
@@ -216,11 +218,13 @@
     <string name="location_detail_google_image_label_text">Images from Google</string>
 
     <!--Distances-->
+
     <string name="location_distance_main_view">%d meters away</string>
     <string name="location_distance_detail_view">%d meters away</string>
     <string name="detail_view_distance_header_text">Distance:</string>
 
     <!--Introduction Fragment-->
+
     <string name="introductory_header_text">Welcome to Norfolk, Virginia!</string>
     <string name="introductory_text">
         This application shows various locations of interest in Norfolk, Virgina.
@@ -229,13 +233,23 @@
         categories of locations of interest: parks, museums, military locations, restaurants,
         and other locations.
     </string>
+    <!-- Media Playback -->
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="restart">Restart</string>
+    <string name="introductory_video_media_notification_title">NorfolkTouring YouTube player controls</string>
+    <string name="introductory_video_media_notification_text">Click the icons to control the player</string>
+
+    <!-- Google Maps Icons -->
 
     <!--Google Maps Icon Text-->
     <string name="location_resource_google_maps_text">Google Maps View</string>
     <!--Google Maps Route Planning Icon Text-->
     <string name="location_resource_google_maps_route_plan_text">Plan Route</string>
 
-    <!--Permissions and Services-->
+    <!-- Permissions and Services-->
+
+    <!-- LocationService -->
     <string name="LocationServiceDescription">
         Acquires location data for the NorfolkTouring app.
     </string>
@@ -244,22 +258,30 @@
         to determine distance from touring locations.
     </string>
 
-    <!--Media Playback-->
-    <string name="play">Play</string>
-    <string name="pause">Pause</string>
-    <string name="restart">Restart</string>
-
-    <!--Miscellaneous-->
-    <string name="not_available">N/A</string>
-    <string name="open_status_unavailable">Open Status Uncertain</string>
-    <string name="introductory_video_media_notification_title">NorfolkTouring YouTube player controls</string>
-    <string name="introductory_video_media_notification_text">Click the icons to control the player</string>
+    <!--Menus-->
 
     <string name="action_settings">Settings</string>
+
+    <!--SharedPreferences-->
+
     <!-- NOTE: All keys should have translatable="false" to avoid unneeded localization. -->
     <string name="pref_enable_wifi_cell_data_usage_key" translatable="false">enable_wifi_cell_data_usage</string>
     <string name="pref_enable_wifi_cell_data_usage_summary_off">Disabled</string>
     <string name="pref_enable_wifi_cell_data_usage_summary_on">Enabled</string>
     <string name="pref_enable_wifi_cell_data_usage_title">Enable WiFi/Cell Data Usage</string>
+
+    <!--Nearest Location Updates-->
+
+    <string name="nearest_location_notification_title">
+        Nearest location is <xliff:g id="name">%s</xliff:g>
+    </string>
+    <string name="nearest_location_notification_body">
+        It is <xliff:g id="name">%d</xliff:g> meters away.
+    </string>
+
+    <!--Miscellaneous-->
+
+    <string name="not_available">N/A</string>
+    <string name="open_status_unavailable">Open Status Uncertain</string>
 
 </resources>

@@ -1,60 +1,100 @@
 package com.example.john.norfolktouring.Location;
 
+import android.app.Activity;
 import android.app.IntentService;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.Context;
+import android.content.ServiceConnection;
+import android.location.Location;
+import android.os.IBinder;
+
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
+ * Issues recurring notifications regarding the closest location.
  */
 public class NearestLocationIntentService extends IntentService {
-    private static final String ACTION_CLOSEST_LOCATION_NOTIFICATION =
-            "com.example.john.norfolktouring.action.CLOSEST_LOCATION_NOTIFICATION";
+    /*** Member Variables ***/
+    // The Activity that this service is currently running for.
+    private Activity mClientActivity;
 
-    // TODO: Add constant Strings for Intent extras if needed.
+    /**
+     * Location Updates
+     **/
+    private LocationService mLocationService;
+    private boolean mLocationServiceBound = false;
+    private boolean mReceivingLocationUpdates = false;
+    private ServiceConnection mLocationServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LocationService.LocationServiceBinder binder =
+                    (LocationService.LocationServiceBinder) service;
+            mLocationService = binder.getService();
+            mLocationServiceBound = true;
+            // Start requesting location updates if not already doing so.
+            attemptStartLocationUpdates();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mLocationServiceBound = false;
+            mLocationService = null;
+        }
+    };
+
+    /**
+     * Represents a geographical location.
+     */
+    private Location mCurrentLocation;
+
+    /**
+     * Callback that is called when the `LocationService` service receives a location update.
+     */
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+
+            // Log that we are receiving location updates and store the location.
+            mReceivingLocationUpdates = true;
+            mCurrentLocation = locationResult.getLastLocation();
+        }
+    };
+
+    /**
+     * Constants
+     **/
+
+    public static final int CLOSEST_LOCATION_NOTIFICATION_PENDING_INTENT = 1;
+    public static final int CLOSEST_LOCATION_NOTIFICATION_ID = 2;
+
+    /*** Methods ***/
+
+    /**
+     * Main Methods
+     **/
 
     public NearestLocationIntentService() {
         super("NearestLocationIntentService");
-    }
-
-    /**
-     * Initiates regular notifications indicating the closest location and the distance to it.
-     */
-    // TODO: "Notification" -> "Notifications" ?.
-    public static void startClosestLocationNotification(Context context) {
-        Intent intent = new Intent(context, NearestLocationIntentService.class);
-        intent.setAction(ACTION_CLOSEST_LOCATION_NOTIFICATION);
-        context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (action != null) {
-                switch(action) {
-                    case ACTION_CLOSEST_LOCATION_NOTIFICATION:
-                        closestLocationNotification();
-                        break;
-                }
-            }
+            NearestLocationTasks.executeTask(this, action);
         }
     }
 
     /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    // TODO: Finish this.
-    private void closestLocationNotification() {
-        // TODO: Get the closest location.
-        // TODO: Determine the distance to it.
-        // TODO: Create and show a notification.
-
-//        throw new UnsupportedOperationException("Not yet implemented");
+     * Location Information Methods
+     **/
+    // TODO: Remove this.
+    private void attemptStartLocationUpdates() {
+        if (mLocationService.checkPermissions())
+            mLocationService.startLocationUpdates(mClientActivity, mLocationCallback);
+        else
+            mLocationService.requestPermissions(mClientActivity);
     }
 }

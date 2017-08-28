@@ -30,6 +30,7 @@ import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClick
 import com.example.john.norfolktouring.Utils.AttributedPhoto;
 import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
+import com.example.john.norfolktouring.Utils.SharedPreferencesUtils;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
 import java.util.ArrayList;
@@ -358,10 +359,12 @@ public class TourLocationDetailFragment extends Fragment
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_enable_wifi_cell_data_usage_key))) {
+        if (key.equals(SharedPreferencesUtils.WIFI_CELL_ENABLED_SHARED_PREFERENCE_KEY)) {
             if (this == mActivity.getCurrentFragment()) {
-                boolean wifiCellEnabled = sharedPreferences.getBoolean(key,
-                        getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
+                boolean wifiCellEnabled =
+                        SharedPreferencesUtils.getWifiCellEnabledSharedPreference(sharedPreferences);
+                        /*sharedPreferences.getBoolean(key,
+                        getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));*/
                 updateRatingUI(wifiCellEnabled);
                 updateLocationDistanceUI();
                 updateGoogleMapsViews(wifiCellEnabled);
@@ -387,8 +390,9 @@ public class TourLocationDetailFragment extends Fragment
         mActivity.setCurrentFragment(this);
 
         // Register this Fragment as a listener for shared preference changes.
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(mActivity);
+        // TODO: Make sure this works (it is using application context rather than activity).
+        SharedPreferences sharedPreferences = SharedPreferencesUtils.getDefaultSharedPreferences();
+                /*PreferenceManager.getDefaultSharedPreferences(mActivity);*/
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         // Create a list of image cyclers to start and stop along with this fragment.

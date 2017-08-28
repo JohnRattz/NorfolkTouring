@@ -79,9 +79,9 @@ public class TourLocation implements Parcelable {
 
     /*** Methods ***/
 
-//    public static ArrayList<TourLocation> getAllTourLocations() {
-//
-//    }
+    public static Map<String, ArrayList<TourLocation>> getTourLocations() {
+        return sTourLocations;
+    }
 
     /**
      * Gets all TourLocations for a given category if they are currently loaded.
