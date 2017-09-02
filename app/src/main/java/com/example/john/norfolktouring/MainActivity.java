@@ -274,11 +274,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-//        Intent nearestLocationNotificationIntent =
-//                new Intent(this, NearestLocationIntentService.class);
-//        nearestLocationNotificationIntent.setAction(
-//                NearestLocationIntentService.ACTION_CLOSEST_LOCATION_NOTIFICATION);
-//        startService(nearestLocationNotificationIntent);
     }
 
     @Override
@@ -313,7 +308,8 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
-        // TODO: Stop receiving nearest location notifications (use NearestLocationNotificationUtilities).
+        // Stop receiving nearest location notifications (use NearestLocationNotificationUtilities).
+        NearestLocationNotificationUtilities.cancelNearestLocationNotifications();
     }
 
     @Override

@@ -32,6 +32,7 @@ public class NearestLocationTasks {
             new SharedPreferenceListener();
     // The source of the current location information (should be an Activity).
     private static LocationService.IReceivesLocationUpdates sLocationReceiver;
+    private static Location sDeviceLocation;
     // Denotes whether notifications will be issued.
     private static boolean sNotificationsEnabled;
 
@@ -99,8 +100,9 @@ public class NearestLocationTasks {
      */
     private static void closestLocationNotification() {
         // Get the device location.
-        Location deviceLocation = sLocationReceiver.getCurrentLocation();
-        if (deviceLocation == null) return;
+        if (sLocationReceiver != null)
+            sDeviceLocation = sLocationReceiver.getCurrentLocation();
+        if (sDeviceLocation == null) return;
         // Get all loaded TourLocations.
         Map<String, ArrayList<TourLocation>> tourLocationsByCategory =
                 TourLocation.getTourLocations();
@@ -115,7 +117,7 @@ public class NearestLocationTasks {
             for (TourLocation tourLocation : tourLocations) {
                 Location destinationLocation = tourLocation.getLocation();
                 if (destinationLocation == null) continue;
-                int distance = (int) deviceLocation.distanceTo(destinationLocation);
+                int distance = (int) sDeviceLocation.distanceTo(destinationLocation);
                 if (distance < shortestDistance) {
                     closestLocationName = tourLocation.getLocationName();
                     categoryForShortestDistance = currentCategory;
@@ -126,7 +128,7 @@ public class NearestLocationTasks {
         // Create and show a notification (if any TourLocations have been loaded).
         if (categoryForShortestDistance != null) {
             NotificationUtils.notifyOfNearestLocation(
-                    NorfolkTouring.getContext()/*sContext*/, closestLocationName,
+                    NorfolkTouring.getContext(), closestLocationName,
                     categoryForShortestDistance, shortestDistance);
         }
     }

@@ -20,6 +20,7 @@ public class NearestLocationNotificationUtilities {
     private static final int SYNC_FLEXTIME_SECONDS = 5 * 60;
     private static final String NEAREST_LOCATION_JOB_TAG = "nearest_location_tag";
     private static boolean sInitialized;
+    private static FirebaseJobDispatcher sJobDispatcher;
 
     /**
      * Schedules a nearest location notification roughly every REMINDER_INTERVAL_SECONDS.
@@ -28,8 +29,8 @@ public class NearestLocationNotificationUtilities {
         // If the job has already been initialized, return
         if (sInitialized) return;
         GooglePlayDriver driver = new GooglePlayDriver(context);
-        FirebaseJobDispatcher jobDispatcher = new FirebaseJobDispatcher(driver);
-        Job scheduleChargingReminderJob = jobDispatcher.newJobBuilder()
+        sJobDispatcher = new FirebaseJobDispatcher(driver);
+        Job scheduleChargingReminderJob = sJobDispatcher.newJobBuilder()
                 .setService(NearestLocationFirebaseJobService.class)
                 /* A unique tag used to identify this job */
                 .setTag(NEAREST_LOCATION_JOB_TAG)
@@ -44,8 +45,16 @@ public class NearestLocationNotificationUtilities {
                 /* Replace any currently running instance of this job */
                 .setReplaceCurrent(true)
                 .build();
-        jobDispatcher.schedule(scheduleChargingReminderJob);
+        sJobDispatcher.schedule(scheduleChargingReminderJob);
         // Note that we're done starting the job.
         sInitialized = true;
+    }
+
+    /**
+     * Cancels nearest location notifications.
+     */
+    synchronized public static void cancelNearestLocationNotifications() {
+        sJobDispatcher.cancel(NEAREST_LOCATION_JOB_TAG);
+        sInitialized = false;
     }
 }

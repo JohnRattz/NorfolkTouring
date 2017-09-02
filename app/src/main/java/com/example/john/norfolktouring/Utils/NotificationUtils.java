@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
-import com.example.john.norfolktouring.Location.NearestLocationIntentService;
 import com.example.john.norfolktouring.MainActivity;
 import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.R;
@@ -22,6 +21,12 @@ import com.example.john.norfolktouring.R;
  */
 
 public class NotificationUtils {
+    /**
+     * Constants
+     **/
+
+    public static final int CLOSEST_LOCATION_NOTIFICATION_PENDING_INTENT = 1;
+    public static final int CLOSEST_LOCATION_NOTIFICATION_ID = 2;
 
     public static void clearAllNotifications(Context context) {
         NotificationManager notificationManager = (NotificationManager)
@@ -57,7 +62,7 @@ public class NotificationUtils {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(
-                NearestLocationIntentService.CLOSEST_LOCATION_NOTIFICATION_ID,
+                CLOSEST_LOCATION_NOTIFICATION_ID,
                 notificationBuilder.build());
     }
 
@@ -72,7 +77,7 @@ public class NotificationUtils {
         extras.putInt(MainActivity.EXTRA_CATEGORY_INDX, categoryIndx);
         mainActivityIntent.putExtras(extras);
         return PendingIntent.getActivity(
-                context, NearestLocationIntentService.CLOSEST_LOCATION_NOTIFICATION_PENDING_INTENT,
+                context, CLOSEST_LOCATION_NOTIFICATION_PENDING_INTENT,
                 mainActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

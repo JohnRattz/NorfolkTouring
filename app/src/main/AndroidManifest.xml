@@ -9,7 +9,7 @@
          from the Google Places API
     -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--Nearest location updates (issued by NearestLocationIntentService) vibrate the phone-->
+    <!--Nearest location updates vibrate the phone-->
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
@@ -82,11 +82,6 @@
         <service
             android:name=".Widget.GridWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-
-        <!-- NearestLocationIntentService (issues regular notifications about the closest location) -->
-        <service
-            android:name=".Location.NearestLocationIntentService"
-            android:exported="false"/>
 
         <!-- NearestLocationFirebaseJobService -->
         <service android:name=".Location.NearestLocationFirebaseJobService"
