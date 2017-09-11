@@ -141,12 +141,12 @@ public class TourLocationContentProvider extends ContentProvider {
                         LocationFeatureResourceImage.TABLE_NAME + " ON " +
                         LocationFeatureEntry.QUALIFIED_ID + "=" + LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_ID + ")";
                 final String tables = String.format(thirdJoinFormat, secondJoin);
-                final String where = " WHERE " + TourLocationEntry.QUALIFIED_COLUMN_CATEGORY + "=" + category;
+                final String whereClause = " WHERE " + TourLocationEntry.QUALIFIED_COLUMN_CATEGORY + "='" + category + "'";
                 final String query = /*"SELECT * FROM " + TourLocationEntry.TABLE_NAME;*/
                 /*"SELECT * FROM " + TourLocationResourceImage.TABLE_NAME;*/
                 /*"SELECT * FROM " + LocationFeatureEntry.TABLE_NAME;*/
                 /*"SELECT * FROM " + LocationFeatureResourceImage.TABLE_NAME;*/
-                "SELECT " + columnsToSelect + " FROM " + tables;
+                "SELECT " + columnsToSelect + " FROM " + tables + whereClause;
                 /*"SELECT " + columnsToSelect + " FROM " + secondJoin;*/
                 // TODO: Remove these when done debugging.
                 int count;
