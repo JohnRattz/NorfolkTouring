@@ -249,9 +249,9 @@ public class TourLocationDetailFragment extends Fragment
     }
 
     /**
-     * Creates a `View` for a location feature (`LocationFeature`).
+     * Creates a `View` for a location feature (`LocationFeatureResourceImage`).
      * @param parent  The containing `ViewGroup`.
-     * @param feature The `LocationFeature` to create a `View` for.
+     * @param feature The `LocationFeatureResourceImage` to create a `View` for.
      */
     private View getFeatureView(ViewGroup parent, TourLocation.LocationFeature feature) {
         View featureView = LayoutInflater.from(mActivity).inflate(
@@ -261,7 +261,7 @@ public class TourLocationDetailFragment extends Fragment
         ImageView expandedStateCaretView =
                 (ImageView) featureView.findViewById(R.id.expanded_state_caret_view);
 
-        // Get the {@link LocationFeature} object located at this position in the list.
+        // Get the {@link LocationFeatureResourceImage} object located at this position in the list.
         String featureHeaderText = feature.getName();
         final ArrayList<Integer> images = feature.getImages();
         String description = feature.getDescription();

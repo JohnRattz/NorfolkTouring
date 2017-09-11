@@ -90,6 +90,14 @@
                 <action android:name="com.firebse.jobdispatcher.ACTION_EXECUTE"/>
             </intent-filter>
         </service>
-    </application>
 
+        <!-- Content Providers -->
+
+        <!-- TourLocationContentProvider -->
+        <provider
+            android:name=".Data.TourLocationContentProvider"
+            android:authorities="com.example.john.norfolktouring"
+            android:exported="false"/>
+
+    </application>
 </manifest>

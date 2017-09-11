@@ -2,12 +2,20 @@ package com.example.john.norfolktouring.TourLocationListFragment;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +23,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.john.norfolktouring.Data.TourLocationContentProvider;
+import com.example.john.norfolktouring.Data.TourLocationCursorAdapter;
+import com.example.john.norfolktouring.Data.TourLocationDbHelper;
 import com.example.john.norfolktouring.MainActivity;
 import com.example.john.norfolktouring.NavigationIconClickListeners.DirectionsIconClickListener;
 import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClickListener;
+import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
 import com.example.john.norfolktouring.TourLocationDetailFragment;
@@ -28,6 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.john.norfolktouring.Constants.SAVED_STATE;
+import static com.example.john.norfolktouring.Data.TourLocationContract.LocationFeatureEntry;
+import static com.example.john.norfolktouring.Data.TourLocationContract.LocationFeatureResourceImage;
+import static com.example.john.norfolktouring.Data.TourLocationContract.TourLocationEntry;
+import static com.example.john.norfolktouring.Data.TourLocationContract.TourLocationResourceImage;
 import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
 import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED;
 
@@ -40,22 +56,28 @@ import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED
  */
 public abstract class TourLocationListFragment extends Fragment
         implements InfoByIdsTask.InfoByIdResultCallback,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
     /*** Member Variables ***/
     protected MainActivity mActivity;
     protected ArrayList<TourLocation> mLocations;
-    private TourLocationAdapter mAdapter;
+    private /*TourLocationAdapter*/TourLocationCursorAdapter mAdapter;
     // Used to save and restore instance state.
     // Primarily used to save state when the fragment is put on the back stack.
     protected Bundle savedState;
+
+    // Database access.
+    // TODO: Remove this if unused.
+//    SQLiteDatabase mDb;
 
     // Constants
     // Strings for storing state information.
     private static final String LOCATIONS = "mLocations";
 
-    private static final String LOG_TAG = TourLocationListFragment.class.getCanonicalName();;
+    private static final String LOG_TAG = TourLocationListFragment.class.getCanonicalName();
     public static final String FRAGMENT_LABEL = "list";
-
+    // Identifies the `AsyncTaskLoader` for `TourLocation`s.
+    private static final int TASK_LOADER_ID = 0;
     // This should always be a category label from strings.xml.
     static String ACTION_BAR_TITLE = "";
 
@@ -65,11 +87,128 @@ public abstract class TourLocationListFragment extends Fragment
 
     /**
      * Creates the `TourLocation`s to fill the view (via the adapter `mAdapter`).
-     * Must fill `mLocations`.
+     * Must fill `mLocations` if appropriate data is in the database.
      */
+    // TODO: Modify this to work with the database.
+    // TODO: If this code structure is strongly determined by the category, do this in subclasses.
+    // TODO: Return a Cursor.
     protected void initLocations(String category) {
         // Check if these TourLocations have already been loaded.
-        mLocations = TourLocation.getTourLocationsByCategory(category);
+//        mLocations = TourLocation.getTourLocationsByCategory(category);
+
+        // Check if these entries already exist in the database.
+        // Columns to retrieve from the result table.
+//        final String columnsToSelect = "*";/*TourLocationEntry.COLUMN_LOCATION_NAME + ", " +
+//                TourLocationEntry.COLUMN_LOCATION_DESCRIPTION + ", " +
+//                TourLocationEntry.COLUMN_LOCATION_ADDRESS + ", " +
+//                TourLocationEntry.COLUMN_LOCATION_CONTACT_INFO;*/
+//        // Tables to join.
+//        // Join TourLocation table with the TourLocation resource images table.
+//        final String firstJoin = "(" + TourLocationEntry.TABLE_NAME + " FULL OUTER JOIN " +
+//                TourLocationResourceImage.TABLE_NAME + " ON " +
+//                TourLocationEntry.QUALIFIED_ID + "=" + TourLocationResourceImage.QUALIFIED_COLUMN_LOCATION_ID + ")";
+//        // Join the table just constructed with the LocationFeature table.
+//        final String secondJoinFormat = "%s FULL OUTER JOIN " +
+//                LocationFeatureEntry.TABLE_NAME + " ON " +
+//                TourLocationEntry.QUALIFIED_ID + "=" + LocationFeatureEntry.QUALIFIED_COLUMN_LOCATION_ID + ")";
+//        final String secondJoin = String.format(secondJoinFormat, firstJoin);
+//        // Join the table just constructed with the LocationFeature resource images table.
+//        final String thirdJoinFormat = "%s FULL OUTER JOIN " +
+//                LocationFeatureResourceImage.TABLE_NAME + " ON " +
+//                LocationFeatureEntry.QUALIFIED_ID + "=" + LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_ID + ")";
+//        final String tables = String.format(thirdJoinFormat, secondJoin);
+//        final String where = " WHERE " + TourLocationEntry.QUALIFIED_COLUMN_CATEGORY + "=" + category;
+//        final String query = "SELECT " + columnsToSelect + " FROM " + tables + ";";
+//        // TODO: Check if the second parameter should be new String[] {}
+//        Cursor cursor = mDb.rawQuery(query, null);
+//        getLocationsFromCursor(cursor);
+//        cursor.close();
+    }
+
+    /**
+     * Fills `mLocations` with `TourLocation`s created with data
+     * in a cursor - if that cursor has any data.
+     */
+    // TODO: Remove this if necessary.
+    private void getLocationsFromCursor(Cursor cursor) {
+//        // If no results were returned, these TourLocations are not in the database yet.
+//        if (cursor.getCount() == 0) return;
+//        while (cursor.moveToNext()) {
+//
+//        }
+    }
+
+    /**
+     * Loader Callbacks
+     */
+
+    /**
+     * Instantiates and returns a new AsyncTaskLoader with the given ID.
+     * This loader will return tour location data as a Cursor or null if an error occurs.
+     *
+     * Implements the required callbacks to take care of loading data at all stages of loading.
+     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // TODO: Determine correct Context here.
+        return new AsyncTaskLoader<Cursor>(NorfolkTouring.getContext()/*mActivity*/) {
+            // Initialize a Cursor, this will hold all the tour location data
+            Cursor mTourLocationData = null;
+
+            @Override
+            protected void onStartLoading() {
+                if (mTourLocationData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mTourLocationData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            @Override
+            public Cursor loadInBackground() {
+                // Query and load all tour location data in the background.
+                try {
+                    Uri uri = TourLocationEntry.CONTENT_URI;
+                    return NorfolkTouring.getContext().getContentResolver().query(uri,
+                            null, null, new String[]{ACTION_BAR_TITLE}, null);
+                } catch(Exception e) {
+                    Log.e(LOG_TAG, "Failed to asynchronously load tour location cursor data.");
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            public void deliverResult(Cursor data) {
+                mTourLocationData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    /**
+     * Called when a previously created loader has finished its load.
+     *
+     * @param loader The Loader that has finished.
+     * @param data The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
+
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.
+     * onLoaderReset removes any references this activity had to the loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
     /**
@@ -92,11 +231,29 @@ public abstract class TourLocationListFragment extends Fragment
         }
     }
 
-    /** Lifecycle Methods **/
+    /**
+     * Lifecycle Methods
+     **/
+
+    // TODO: Remove this if unused.
+//    @Override
+//    public void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
+
+    // TODO: Remove this if unused.
+//    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
+
+        // Initialize the database of `TourLocations`.
+//        TourLocationDbHelper dbHelper = TourLocationContentProvider.getTourLocationHelper()/*new TourLocationDbHelper(NorfolkTouring.getContext())*/;
+//        mDb = dbHelper.getWritableDatabase();
 
         // Register this Fragment as a listener for shared preference changes.
         SharedPreferences sharedPreferences =
@@ -125,7 +282,8 @@ public abstract class TourLocationListFragment extends Fragment
         savedState = null;
 
         // Create an adapter for the locations.
-        mAdapter = new TourLocationAdapter((MainActivity) getActivity(), mLocations, mActivity.getCurrentLocation());
+        mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(), mActivity.getCurrentLocation());
+            /*TourLocationAdapter((MainActivity) getActivity(), mLocations, mActivity.getCurrentLocation());*/
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.location_list);
         recyclerView.setAdapter(mAdapter);
         // Add a divider between items (like `ListView` default).
@@ -144,6 +302,13 @@ public abstract class TourLocationListFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mActivity.getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
     }
 
     protected Bundle saveState() {
@@ -175,9 +340,12 @@ public abstract class TourLocationListFragment extends Fragment
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(mActivity)
                 .unregisterOnSharedPreferenceChangeListener(this);
+//        mDb.close();
     }
 
-    /** Location Updates Methods **/
+    /**
+     * Location Updates Methods
+     **/
 
     public void locationCallback(Location location) {
         // Update the list items with the current distance to them.
@@ -210,8 +378,8 @@ public abstract class TourLocationListFragment extends Fragment
         private Location mCurrentLocation;
 
         TourLocationAdapter(MainActivity activity,
-                                   List<TourLocation> tourLocations,
-                                   Location deviceLocation) {
+                            List<TourLocation> tourLocations,
+                            Location deviceLocation) {
             mActivity = activity;
             mTourLocations = tourLocations;
             mCurrentLocation = deviceLocation;
@@ -259,8 +427,7 @@ public abstract class TourLocationListFragment extends Fragment
                 holder.openStatusView.setText(R.string.open_status_unavailable);
                 // The open status should only be hidden if wireless data is disabled and
                 // the open status is unknown.
-            }
-            else if (locationIsOpen)
+            } else if (locationIsOpen)
                 holder.openStatusView.setText(R.string.location_open);
             else
                 holder.openStatusView.setText(R.string.location_closed);
@@ -301,6 +468,7 @@ public abstract class TourLocationListFragment extends Fragment
 
         /**
          * Records a device location update for this `Adapter`.
+         *
          * @param location The new device location.
          */
         void updateLocation(Location location) {
@@ -346,7 +514,7 @@ public abstract class TourLocationListFragment extends Fragment
         /**
          * Clicking on one of these Views opens a detailed view for the corresponding TourLocation.
          */
-        private static class TourLocationClickListener implements View.OnClickListener{
+        public static class TourLocationClickListener implements View.OnClickListener {
             private MainActivity mActivity;
             private TourLocation mTourLocation;
 
@@ -354,7 +522,6 @@ public abstract class TourLocationListFragment extends Fragment
                 this.mActivity = activity;
                 this.mTourLocation = tourLocation;
             }
-
 
             @Override
             public void onClick(View v) {
