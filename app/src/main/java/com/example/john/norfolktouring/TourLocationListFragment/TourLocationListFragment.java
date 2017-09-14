@@ -82,62 +82,6 @@ public abstract class TourLocationListFragment extends Fragment
     static String ACTION_BAR_TITLE = "";
 
     /*** Methods ***/
-
-    protected abstract void initLocations();
-
-    /**
-     * Creates the `TourLocation`s to fill the view (via the adapter `mAdapter`).
-     * Must fill `mLocations` if appropriate data is in the database.
-     */
-    // TODO: Modify this to work with the database.
-    // TODO: If this code structure is strongly determined by the category, do this in subclasses.
-    // TODO: Return a Cursor.
-    protected void initLocations(String category) {
-        // Check if these TourLocations have already been loaded.
-//        mLocations = TourLocation.getTourLocationsByCategory(category);
-
-        // Check if these entries already exist in the database.
-        // Columns to retrieve from the result table.
-//        final String columnsToSelect = "*";/*TourLocationEntry.COLUMN_LOCATION_NAME + ", " +
-//                TourLocationEntry.COLUMN_LOCATION_DESCRIPTION + ", " +
-//                TourLocationEntry.COLUMN_LOCATION_ADDRESS + ", " +
-//                TourLocationEntry.COLUMN_LOCATION_CONTACT_INFO;*/
-//        // Tables to join.
-//        // Join TourLocation table with the TourLocation resource images table.
-//        final String firstJoin = "(" + TourLocationEntry.TABLE_NAME + " FULL OUTER JOIN " +
-//                TourLocationResourceImage.TABLE_NAME + " ON " +
-//                TourLocationEntry.QUALIFIED_ID + "=" + TourLocationResourceImage.QUALIFIED_COLUMN_LOCATION_ID + ")";
-//        // Join the table just constructed with the LocationFeature table.
-//        final String secondJoinFormat = "%s FULL OUTER JOIN " +
-//                LocationFeatureEntry.TABLE_NAME + " ON " +
-//                TourLocationEntry.QUALIFIED_ID + "=" + LocationFeatureEntry.QUALIFIED_COLUMN_LOCATION_ID + ")";
-//        final String secondJoin = String.format(secondJoinFormat, firstJoin);
-//        // Join the table just constructed with the LocationFeature resource images table.
-//        final String thirdJoinFormat = "%s FULL OUTER JOIN " +
-//                LocationFeatureResourceImage.TABLE_NAME + " ON " +
-//                LocationFeatureEntry.QUALIFIED_ID + "=" + LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_ID + ")";
-//        final String tables = String.format(thirdJoinFormat, secondJoin);
-//        final String where = " WHERE " + TourLocationEntry.QUALIFIED_COLUMN_CATEGORY + "=" + category;
-//        final String query = "SELECT " + columnsToSelect + " FROM " + tables + ";";
-//        // TODO: Check if the second parameter should be new String[] {}
-//        Cursor cursor = mDb.rawQuery(query, null);
-//        getLocationsFromCursor(cursor);
-//        cursor.close();
-    }
-
-    /**
-     * Fills `mLocations` with `TourLocation`s created with data
-     * in a cursor - if that cursor has any data.
-     */
-    // TODO: Remove this if necessary.
-    private void getLocationsFromCursor(Cursor cursor) {
-//        // If no results were returned, these TourLocations are not in the database yet.
-//        if (cursor.getCount() == 0) return;
-//        while (cursor.moveToNext()) {
-//
-//        }
-    }
-
     /**
      * Loader Callbacks
      */
@@ -275,9 +219,6 @@ public abstract class TourLocationListFragment extends Fragment
         }
         if (savedState != null) {
             mLocations = savedState.getParcelableArrayList(LOCATIONS);
-        } else {
-            // Create a list of locations.
-            initLocations();
         }
         savedState = null;
 
@@ -293,8 +234,9 @@ public abstract class TourLocationListFragment extends Fragment
                         recyclerViewLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        if (mActivity.IsWifiCellEnabled())
-            PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mLocations);
+        // TODO: Move this to `TourLocationCursorAdapter`.
+//        if (mActivity.IsWifiCellEnabled())
+//            PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mLocations);
 
         return rootView;
     }
@@ -360,6 +302,7 @@ public abstract class TourLocationListFragment extends Fragment
         mAdapter.notifyDataSetChanged();
     }
 
+    // TODO: Remove this if unneeded.
     /**
      * Populates a TourLocationListFragment with views populated with TourLocation information.
      */

@@ -113,7 +113,7 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 LocationFeatureResourceImage._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 LocationFeatureResourceImage.COLUMN_FEATURE_ID + " INTEGER NOT NULL, " +
                 LocationFeatureResourceImage.COLUMN_FEATURE_IMAGE + " INTEGER, " +
-                // COLUMN_FEATURE_ID is a foreign key to LocationFeatureEntry._ID.
+                // COLUMN_FEATURE_ID is a foreign key to LocationFeatureEntry._ID
                 "FOREIGN KEY (" + LocationFeatureResourceImage.COLUMN_FEATURE_ID + ") REFERENCES "
                 + LocationFeatureEntry.TABLE_NAME + " (" + LocationFeatureEntry._ID + ") " +
                 ");";
@@ -197,7 +197,7 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 null
         );
 
-        // TODO: Insert Museums.
+        // Insert Museums.
         category = appContext.getResources().getString(R.string.museums_category_label);
         // Chrysler Museum of Art
         insertTourLocation(db, category, tourLocationEntryValues, tourLocationResourceImageValues,
@@ -216,7 +216,8 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 )),
                 "1 Memorial Pl, Norfolk, VA 23510",
                 "(757) 664-6200",
-                null);
+                null
+        );
         // Hampton Roads Naval Museum
         insertTourLocation(db, category, tourLocationEntryValues, tourLocationResourceImageValues,
                 locationFeatureEntryValues, locationFeatureResourceImageValues,
@@ -228,7 +229,8 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 )),
                 "1 Waterside Dr, Norfolk, VA 23510",
                 "(757) 322-2987",
-                null);
+                null
+        );
         // Hermitage Museum & Gardens
         insertTourLocation(db, category, tourLocationEntryValues, tourLocationResourceImageValues,
                 locationFeatureEntryValues, locationFeatureResourceImageValues,
@@ -240,14 +242,229 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 )),
                 "7637 N Shore Rd, Norfolk, VA 23505",
                 "(757) 423-2052",
-                null);
+                null
+        );
 
-        // TODO: Insert Military.
+        // Insert Military.
+        category = appContext.getResources().getString(R.string.military_category_label);
+        // Nauticus
+        insertTourLocation(db, category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Nauticus",
+                resources.getString(R.string.military_nauticus_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.military_nauticus1,
+                        R.drawable.military_nauticus2
+                )),
+                "1 Waterside Dr, Norfolk, VA 23510",
+                "(757) 664-1000",
+                new ArrayList<TourLocation.LocationFeature>(Arrays.asList(
+                        new TourLocation.LocationFeature(
+                                "USS Wisconsin (BB-64)",
+                                resources.getString(R.string.military_nauticus_uss_wisconsin),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_battleship_wisconsin1,
+                                        R.drawable.military_battleship_wisconsin2
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Hampton Roads Naval Museum (2nd Floor)",
+                                resources.getString(R.string.military_nauticus_hampton_roads_naval_museum),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_hampton_roads_naval_museum1,
+                                        R.drawable.military_hampton_roads_naval_museum2
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Power of the Sea Galleries (3rd Floor)",
+                                resources.getString(R.string.military_nauticus_power_of_the_sea_galleries),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_nauticus_power_of_the_sea1,
+                                        R.drawable.military_nauticus_power_of_the_sea2,
+                                        R.drawable.military_nauticus_power_of_the_sea3,
+                                        R.drawable.military_nauticus_power_of_the_sea4,
+                                        R.drawable.military_nauticus_power_of_the_sea5
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Wisconsin Vista",
+                                resources.getString(R.string.military_nauticus_wisconsin_vista),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_nauticus_wisconsin_vista1
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Living Sea Landing",
+                                resources.getString(R.string.military_nauticus_living_sea_landing),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_nauticus_living_sea_landing1,
+                                        R.drawable.military_nauticus_living_sea_landing2,
+                                        R.drawable.military_nauticus_living_sea_landing3
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Living Sea Theater",
+                                resources.getString(R.string.military_nauticus_living_sea_theater),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_nauticus_living_sea_theater1,
+                                        R.drawable.military_nauticus_living_sea_theater2
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Lighthouse Portico",
+                                resources.getString(R.string.military_nauticus_lighthouse_portico),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_nauticus_lighthouse_portico1,
+                                        R.drawable.military_nauticus_lighthouse_portico2
+                                ))
+                        ),
+                        new TourLocation.LocationFeature(
+                                "Elizabeth River Pavilion",
+                                resources.getString(R.string.military_nauticus_elizabeth_river_pavilion),
+                                new ArrayList<Integer>(Arrays.asList(
+                                        R.drawable.military_nauticus_elizabeth_river_pavilion1
+                                ))
+                        )))
+        );
+        // MacArthur Memorial
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "MacArthur Memorial",
+                resources.getString(R.string.military_macarthur_memorial_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.military_macarthur_memorial1,
+                        R.drawable.military_macarthur_memorial2,
+                        R.drawable.military_macarthur_memorial3,
+                        R.drawable.military_macarthur_memorial4
+                )),
+                "198 Bank St, Norfolk, VA 23510",
+                "(757) 441-2965",
+                null
+        );
 
-        // TODO: Insert Restaurants.
+        // Insert Restaurants.
+        category = appContext.getResources().getString(R.string.restaurants_category_label);
+        // Franco's
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Franco's",
+                resources.getString(R.string.restaurants_francos_desc),
+                new ArrayList<Integer>(Arrays.asList(R.drawable.restaurants_francos1)),
+                "6200 N Military Hwy, Norfolk, VA 23518",
+                "(757) 853-0177",
+                null
+        );
+        // Azalea Inn & Time Out Sports Bar
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Azalea Inn & Time Out Sports Bar",
+                resources.getString(R.string.restaurants_azalea_inn_desc),
+                new ArrayList<Integer>(Arrays.asList(R.drawable.restaurants_azalea_inn1)),
+                "2344 E Little Creek Rd, Norfolk, VA 23518",
+                "(757) 587-4649",
+                null
+        );
+        // Paradise Pizzeria
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Paradise Pizzeria",
+                resources.getString(R.string.restaurants_paradise_pizzera_desc),
+                new ArrayList<Integer>(Arrays.asList(R.drawable.restaurants_paradise_pizzera1)),
+                "6144 Chesapeake Blvd, Norfolk, VA 23513",
+                "(757) 855-0100",
+                null
+        );
+        // Regino's Italian Restaurant
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Regino's Italian Restaurant",
+                resources.getString(R.string.restaurants_reginos_desc),
+                new ArrayList<Integer>(Arrays.asList(R.drawable.restaurants_reginos1)),
+                "3816 E Little Creek Rd, Norfolk, VA 23518",
+                "(757) 588-4300",
+                null
+        );
+        // Doumar's Cones & Barbecue
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Doumar's Cones & Barbecue",
+                resources.getString(R.string.restaurants_doumars_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.restaurants_doumars1,
+                        R.drawable.restaurants_doumars2,
+                        R.drawable.restaurants_doumars3,
+                        R.drawable.restaurants_doumars4,
+                        R.drawable.restaurants_doumars5
+                )),
+                "1919 Monticello Ave, Norfolk, VA 23517",
+                "(757) 627-4163",
+                null
+        );
+        // Handsome Biscuit
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Handsome Biscuit",
+                resources.getString(R.string.restaurants_handsome_biscuit_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.restaurants_handsome_biscuit1,
+                        R.drawable.restaurants_handsome_biscuit2,
+                        R.drawable.restaurants_handsome_biscuit3,
+                        R.drawable.restaurants_handsome_biscuit4,
+                        R.drawable.restaurants_handsome_biscuit5,
+                        R.drawable.restaurants_handsome_biscuit6
+                )),
+                "2511 Colonial Ave, Norfolk, VA 23517",
+                null,
+                null
+        );
 
-        // TODO: Insert Other.
-
+        // Insert Other.
+        category = appContext.getResources().getString(R.string.others_category_label);
+        // Norfolk Botanical Garden
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "Norfolk Botanical Garden",
+                resources.getString(R.string.other_norfolk_botanical_garden_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.other_norfolk_botanical_garden1,
+                        R.drawable.other_norfolk_botanical_garden2,
+                        R.drawable.other_norfolk_botanical_garden3,
+                        R.drawable.other_norfolk_botanical_garden4
+                )),
+                "6700 Azalea Garden Rd, Norfolk, VA 23518",
+                "(757) 441-5830",
+                null
+        );
+        // The Virginia Zoo
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "The Virginia Zoo",
+                resources.getString(R.string.other_virginia_zoo_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.other_virginia_zoo1,
+                        R.drawable.other_virginia_zoo2,
+                        R.drawable.other_virginia_zoo3,
+                        R.drawable.other_virginia_zoo4
+                )),
+                "3500 Granby St, Norfolk, VA 23504",
+                "(757) 441-2374",
+                null
+        );
+        // American Rover
+        insertTourLocation(db,  category, tourLocationEntryValues, tourLocationResourceImageValues,
+                locationFeatureEntryValues, locationFeatureResourceImageValues,
+                "American Rover",
+                resources.getString(R.string.other_american_rover_desc),
+                new ArrayList<Integer>(Arrays.asList(
+                        R.drawable.other_american_rover1,
+                        R.drawable.other_american_rover2,
+                        R.drawable.other_american_rover3,
+                        R.drawable.other_american_rover4
+                )),
+                "333 Waterside Dr, Norfolk, VA 23510",
+                "(757) 627-7245",
+                null
+        );
     }
 
     void insertTourLocation(SQLiteDatabase db, String category,

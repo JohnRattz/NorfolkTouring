@@ -19,6 +19,7 @@ import com.example.john.norfolktouring.TourLocation;
 import com.example.john.norfolktouring.TourLocationDetailFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by John on 9/8/2017.
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 
 public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocationCursorAdapter.TourLocationViewHolder> {
     private Cursor mCursor;
+    private List<TourLocation> mTourLocations;
     private MainActivity mActivity;
     /**
      * The current device location.
@@ -114,28 +116,6 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
     }
 
     private TourLocation getTourLocationFromDatabaseData(Cursor cursor, int position) {
-//        // TourLocationEntry columns
-//        final int tourLocationIdIndex = getTourLocationIdIndex()/*mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_ID)*/;
-//        final int nameIndex           = getTourLocationNameIndex()/*mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_NAME)*/;
-//        final int descriptionIndex    = getTourLocationDescriptionIndex()/*mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_DESCRIPTION)*/;
-//        final int addressIndex        = getTourLocationAddressIndex()/*mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_ADDRESS)*/;
-//        final int contactInfoIndex    = mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_CONTACT_INFO);
-//
-//        // TourLocationResourceImage columns
-//        final int resImgIdIndex = mCursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.QUALIFIED_ID);
-////        final int resImgLocationIdIndex = mCursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.QUALIFIED_COLUMN_LOCATION_ID);
-//        final int resImgIndex   = mCursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.QUALIFIED_COLUMN_RESOURCE_IMAGE);
-//
-//        // LocationFeatureEntry columns
-//        final int featureIdIndex          = mCursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_ID);
-//        final int featureNameIndex        = mCursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_COLUMN_FEATURE_NAME);
-//        final int featureDescriptionIndex = mCursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_COLUMN_FEATURE_DESCRIPTION);
-//
-//        // LocationFeatureResourceImage columns
-////        final int featureResImgIdIndex = mCursor.getColumnIndex(TourLocationContract.LocationFeatureResourceImage.QUALIFIED_ID);
-////        final int featureResImgFeatureIdIndex = mCursor.getColumnIndex(TourLocationContract.LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_ID);
-//        final int featureResImgIndex   = mCursor.getColumnIndex(TourLocationContract.LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_IMAGE);
-
         // Move the cursor to the correct position (mCursor.moveToPosition(position) is not correct)
         // TODO: Account for invalid values for `position` using `mCursor.moveToNext()`?
         mCursor.moveToFirst();
@@ -279,6 +259,10 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         if (c != null) {
             this.notifyDataSetChanged();
         }
+
+        // Extract the `TourLocation`s from the cursor.
+
+
         return temp;
     }
 

@@ -105,20 +105,22 @@ public class PlacesUtils {
                                                        ArrayList<TourLocation> locations) {
         boolean infoNeeded = false;
         // No checks for hours of operation or website because they are not consistently available.
-        for (TourLocation tourLocation : locations) {
-            // Check the location.
-            if (tourLocation.getLocation() == null) {
-                infoNeeded = true;
-                break;
+        if (locations != null) {
+            for (TourLocation tourLocation : locations) {
+                // Check the location.
+                if (tourLocation.getLocation() == null) {
+                    infoNeeded = true;
+                    break;
+                }
+                // Check the rating.
+                if (tourLocation.getRating() == RATING_NOT_DETERMINED) {
+                    infoNeeded = true;
+                    break;
+                }
             }
-            // Check the rating.
-            if (tourLocation.getRating() == RATING_NOT_DETERMINED) {
-                infoNeeded = true;
-                break;
-            }
+            if (infoNeeded)
+                getInfoForTourLocations(activity, locations);
         }
-        if (infoNeeded)
-            getInfoForTourLocations(activity, locations);
     }
 
     /**
