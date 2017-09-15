@@ -98,11 +98,11 @@ public class PlacesUtils {
     }
 
     /**
-     * Get the `Location`, hours of operation, rating, and website for the `TourLocation`s
+     * Get the {@code Location}, hours of operation, rating, and website for {@code TourLocations}
      * if appropriate.
      */
     public static void getInfoForTourLocationsIfNeeded(Activity activity,
-                                                       ArrayList<TourLocation> locations) {
+                                                       List<TourLocation> locations) {
         boolean infoNeeded = false;
         // No checks for hours of operation or website because they are not consistently available.
         if (locations != null) {

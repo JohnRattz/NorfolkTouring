@@ -17,6 +17,7 @@ import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClick
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
 import com.example.john.norfolktouring.TourLocationDetailFragment;
+import com.example.john.norfolktouring.Utils.PlacesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocationCursorAdapter.TourLocationViewHolder> {
     private Cursor mCursor;
-    private List<TourLocation> mTourLocations;
+    private ArrayList<TourLocation> mTourLocations;
     private MainActivity mActivity;
     /**
      * The current device location.
@@ -35,9 +36,11 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
     private Location mCurrentLocation;
 
     public TourLocationCursorAdapter(MainActivity activity,
-                                     Location deviceLocation) {
+                                     Location deviceLocation,
+                                     ArrayList<TourLocation> tourLocations) {
         mActivity = activity;
         mCurrentLocation = deviceLocation;
+        mTourLocations = tourLocations;
     }
 
     @Override
@@ -51,9 +54,10 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
     @Override
     public void onBindViewHolder(TourLocationViewHolder holder, int position) {
         // Get the TourLocation object located at this position in the cursor.
-        final TourLocation currentTourLocation = getTourLocationFromDatabaseData(mCursor, position);
+        final TourLocation currentTourLocation = mTourLocations.get(position);
+        /*getTourLocationFromDatabaseData(mCursor, position)*/
 
-        // Set the image resource (select the first for these summary views).
+        // Set the image resource (select the first-or these summary views).
         holder.locationImageView.setImageResource(currentTourLocation.getResourceImages().get(0));
 
         // Set location name.
@@ -115,18 +119,17 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         holder.rootView.setOnClickListener(detailViewClickListener);
     }
 
-    private TourLocation getTourLocationFromDatabaseData(Cursor cursor, int position) {
+    private static TourLocation getTourLocationFromDatabaseData(Cursor cursor, int position) {
         // Move the cursor to the correct position (mCursor.moveToPosition(position) is not correct)
         // TODO: Account for invalid values for `position` using `mCursor.moveToNext()`?
-        mCursor.moveToFirst();
+        cursor.moveToFirst();
         // The ID field of the `TourLocation` corresponding to the current row.
-        int previousTourLocationId = getTourLocationId();
+        int previousTourLocationId = getTourLocationId(cursor);
         int currentPosition = 0;
-        int tourLocationId = getTourLocationId();
+        int tourLocationId = getTourLocationId(cursor);
         while (currentPosition < position) {
-            mCursor.moveToNext();
-            tourLocationId = getTourLocationId();/*mCursor.getInt(tourLocationIdIndex)*/
-            ;
+            cursor.moveToNext();
+            tourLocationId = getTourLocationId(cursor);;
             if (tourLocationId != previousTourLocationId) {
                 previousTourLocationId = tourLocationId;
                 currentPosition++;
@@ -134,10 +137,10 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         }
 
         // Retrieve the desired data.
-        String locationName = getTourLocationName()/*mCursor.getString(nameIndex)*/;
-        String description = getTourLocationDescription()/*mCursor.getString(descriptionIndex)*/;
-        String address = getTourLocationAddress()/*mCursor.getString(addressIndex)*/;
-        String contactInfo = getTourLocationContactInfo()/*mCursor.getString(contactInfoIndex)*/;
+        String locationName = getTourLocationName(cursor);
+        String description = getTourLocationDescription(cursor);
+        String address = getTourLocationAddress(cursor);
+        String contactInfo = getTourLocationContactInfo(cursor);
         // Retrieve resource images and features.
         ArrayList<Integer> resourceImages = new ArrayList<>();
         ArrayList<TourLocation.LocationFeature> features = new ArrayList<>();
@@ -145,38 +148,48 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         int previousResImgId = -1, currentResImgId;
         int previousFeatureId = -1, currentFeatureId;
         while (tourLocationId == previousTourLocationId) {
-            currentResImgId = getResImgId()/*mCursor.getInt(resImgIdIndex)*/;
+            currentResImgId = getResImgId(cursor);
             // Add any new resource image.
             if (currentResImgId > previousResImgId) {
                 previousResImgId = currentResImgId;
-                int resourceImage = getResImg()/*mCursor.getInt(resImgIndex)*/;
+                int resourceImage = getResImg(cursor);
                 resourceImages.add(resourceImage);
             }
 
-            currentFeatureId = getFeatureId()/*mCursor.getInt(featureIdIndex)*/;
+            currentFeatureId = getFeatureId(cursor);
             // Every row may contain a different feature image.
-            int featureImg = getFeatureResImg()/*mCursor.getInt(featureResImgIndex)*/;
+            int featureImg = getFeatureResImg(cursor);
             if (featureImg != 0) featureImages.add(featureImg);
             // Add any new feature.
             if (currentFeatureId > previousFeatureId) {
                 previousFeatureId = currentFeatureId;
-                String featureName = getFeatureName()/*mCursor.getString(featureNameIndex)*/;
-                String featureDescription = getFeatureDescription()/*mCursor.getString(featureDescriptionIndex)*/;
-                features.add(new TourLocation.LocationFeature(featureName, featureDescription, featureImages));
+                String featureName = getFeatureName(cursor);
+                String featureDescription = getFeatureDescription(cursor);
+                // currentFeatureId can be greater than previousFeatureId, yet there is no feature in this record.
+                if (featureName != null)
+                    features.add(new TourLocation.LocationFeature(featureName, featureDescription, featureImages));
                 // Discard images for the previous feature.
                 featureImages = new ArrayList<>();
             }
 
-//            int cursorPos = mCursor.getPosition();
-//            int numCursorElems = mCursor.getCount();
-//            int numCursorCols = mCursor.getColumnCount();
-            if (mCursor.moveToNext())
-                tourLocationId = getTourLocationId()/*mCursor.getInt(tourLocationIdIndex)*/;
+            if (cursor.moveToNext())
+                tourLocationId = getTourLocationId(cursor);
             else break;
         }
 
         return new TourLocation(locationName, description,
                 resourceImages, address, contactInfo, features);
+    }
+
+    public static ArrayList<TourLocation> getTourLocationsFromDatabaseData(Cursor cursor) {
+        if (cursor == null) return new ArrayList<>();
+        final int numTourLocations = getCursorNumTourLocations(cursor);
+        ArrayList<TourLocation> tourLocations = new ArrayList<>(numTourLocations);
+        for (int i = 0; i < numTourLocations; i++) {
+            TourLocation currentTourLocation = getTourLocationFromDatabaseData(cursor, i);
+            tourLocations.add(currentTourLocation);
+        }
+        return tourLocations;
     }
 
 //    /**
@@ -204,31 +217,38 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
      */
     @Override
     public int getItemCount() {
-        if (mCursor == null) {
+//        if (mCursor == null) {
+//            return 0;
+//        }
+        if (mTourLocations != null)
+            return mTourLocations.size();
+        else
             return 0;
-        }
-        return getNumTourLocations();
+        /*getCursorNumTourLocations()*/
     }
 
     /**
      * Not every row in `mCursor` corresponds to a unique `TourLocation`, so determining
      * the item count for this `Adapter` cannot be achieved by calling `mCursor.getCount()`.
      */
-    private int getNumTourLocations() {
-        int originalCursorPosition = mCursor.getPosition();
+    public int getCursorNumTourLocations() {
+        return getCursorNumTourLocations(mCursor);
+    }
+
+    public static int getCursorNumTourLocations(Cursor cursor) {
+        int originalCursorPosition = cursor.getPosition();
         int previousTourLocationId = -1;
-//        int currentPosition = ;
         int tourLocationId;
         int numTourLocations = 0;
-        mCursor.moveToPosition(-1);
-        while (mCursor.moveToNext()) {
-            tourLocationId = getTourLocationId()/*mCursor.getInt(tourLocationIdIndex)*/;
+        cursor.moveToPosition(-1);
+        while (cursor.moveToNext()) {
+            tourLocationId = getTourLocationId(cursor)/*mCursor.getInt(tourLocationIdIndex)*/;
             if (tourLocationId != previousTourLocationId) {
                 previousTourLocationId = tourLocationId;
                 numTourLocations++;
             }
         }
-        mCursor.moveToPosition(originalCursorPosition);
+        cursor.moveToPosition(originalCursorPosition);
         return numTourLocations;
     }
 
@@ -261,7 +281,16 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         }
 
         // Extract the `TourLocation`s from the cursor.
+        mTourLocations = getTourLocationsFromDatabaseData(mCursor);
+//        final int numTourLocations = getCursorNumTourLocations();
+//        mTourLocations = new ArrayList<>(numTourLocations);
+//        for (int i = 0; i < numTourLocations; i++) {
+//            TourLocation currentTourLocation = getTourLocationFromDatabaseData(mCursor, i);
+//            mTourLocations.add(currentTourLocation);
+//        }
 
+        if (mActivity.IsWifiCellEnabled())
+            PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mTourLocations);
 
         return temp;
     }
@@ -269,100 +298,130 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
     /**
      * Getters
      */
+
+    public ArrayList<TourLocation> getTourLocations() {return mTourLocations;}
+    public Cursor getCursor() {return mCursor;}
+
+    /**
+     * Cursor Getters
+     */
+    // TODO: Flatten these.
     /* TourLocationEntry data */
     private int getTourLocationId() {
-        int indx = getTourLocationIdIndex();
-        return mCursor.getInt(indx);
+        return getTourLocationId(mCursor);
     }
-
-    private int getTourLocationIdIndex() {
+    private static int getTourLocationId(Cursor cursor) {
+        int indx = getTourLocationIdIndex(cursor);
+        return cursor.getInt(indx);
+    }
+    private static int getTourLocationIdIndex(Cursor cursor) {
         String colName = TourLocationContract.TourLocationEntry._ID;
-        return mCursor.getColumnIndex(colName);
+        return cursor.getColumnIndex(colName);
     }
 
     private String getTourLocationName() {
-        return mCursor.getString(getTourLocationNameIndex());
+        return getTourLocationName(mCursor);
     }
-
-    private int getTourLocationNameIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_NAME);
+    private static String getTourLocationName(Cursor cursor) {
+        return cursor.getString(getTourLocationNameIndex(cursor));
+    }
+    private static int getTourLocationNameIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_NAME);
     }
 
     private String getTourLocationDescription() {
-        return mCursor.getString(getTourLocationDescriptionIndex());
+        return getTourLocationDescription(mCursor);
     }
-
-    private int getTourLocationDescriptionIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_DESCRIPTION);
+    private static String getTourLocationDescription(Cursor cursor) {
+        return cursor.getString(getTourLocationDescriptionIndex(cursor));
+    }
+    private static int getTourLocationDescriptionIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_DESCRIPTION);
     }
 
     private String getTourLocationAddress() {
-        return mCursor.getString(getTourLocationAddressIndex());
+        return getTourLocationAddress(mCursor);
     }
-
-    private int getTourLocationAddressIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_ADDRESS);
+    private static String getTourLocationAddress(Cursor cursor) {
+        return cursor.getString(getTourLocationAddressIndex(cursor));
+    }
+    private static int getTourLocationAddressIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_ADDRESS);
     }
 
     private String getTourLocationContactInfo() {
-        return mCursor.getString(getTourLocationContactInfoIndex());
+        return getTourLocationContactInfo(mCursor);
     }
-
-    private int getTourLocationContactInfoIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_CONTACT_INFO);
+    private static String getTourLocationContactInfo(Cursor cursor) {
+        return cursor.getString(getTourLocationContactInfoIndex(cursor));
+    }
+    private static int getTourLocationContactInfoIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.TourLocationEntry.QUALIFIED_COLUMN_LOCATION_CONTACT_INFO);
     }
 
     /* TourLocationResourceImage data */
     private int getResImgId() {
-        int indx = getResImgIdIndex();
-        return mCursor.getInt(indx);
+        return getResImgId(mCursor);
     }
-
-    private int getResImgIdIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.UNIQUE_ID);
+    private static int getResImgId(Cursor cursor) {
+        int indx = getResImgIdIndex(cursor);
+        return cursor.getInt(indx);
+    }
+    private static int getResImgIdIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.UNIQUE_ID);
     }
 
     private int getResImg() {
-        return mCursor.getInt(getResImgIndex());
+        return getResImg(mCursor);
     }
-
-    private int getResImgIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.QUALIFIED_COLUMN_RESOURCE_IMAGE);
+    private static int getResImg(Cursor cursor) {
+        return cursor.getInt(getResImgIndex(cursor));
+    }
+    private static int getResImgIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.TourLocationResourceImage.QUALIFIED_COLUMN_RESOURCE_IMAGE);
     }
 
     /* LocationFeatureEntry data */
     private int getFeatureId() {
-        int indx = getFeatureIdIndex();
-        return mCursor.getInt(indx);
+        return getFeatureId(mCursor);
     }
-
-    private int getFeatureIdIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.UNIQUE_ID);
+    private static int getFeatureId(Cursor cursor) {
+        int indx = getFeatureIdIndex(cursor);
+        return cursor.getInt(indx);
+    }
+    private static int getFeatureIdIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.UNIQUE_ID);
     }
 
     private String getFeatureName() {
-        return mCursor.getString(getFeatureNameIndex());
+        return getFeatureName(mCursor);
     }
-
-    private int getFeatureNameIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_COLUMN_FEATURE_NAME);
+    private static String getFeatureName(Cursor cursor) {
+        return cursor.getString(getFeatureNameIndex(cursor));
+    }
+    private static int getFeatureNameIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_COLUMN_FEATURE_NAME);
     }
 
     private String getFeatureDescription() {
-        return mCursor.getString(getFeatureDescriptionIndex());
+        return getFeatureDescription(mCursor);
     }
-
-    private int getFeatureDescriptionIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_COLUMN_FEATURE_DESCRIPTION);
+    private static String getFeatureDescription(Cursor cursor) {
+        return cursor.getString(getFeatureDescriptionIndex(cursor));
+    }
+    private static int getFeatureDescriptionIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.QUALIFIED_COLUMN_FEATURE_DESCRIPTION);
     }
 
     /* LocationFeatureResourceImage data */
     private int getFeatureResImg() {
-        return mCursor.getInt(getFeatureResImgIndex());
+        return getFeatureResImg(mCursor);
     }
-
-    private int getFeatureResImgIndex() {
-        return mCursor.getColumnIndex(TourLocationContract.LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_IMAGE);
+    private static int getFeatureResImg(Cursor cursor) {
+        return cursor.getInt(getFeatureResImgIndex(cursor));
+    }
+    private static int getFeatureResImgIndex(Cursor cursor) {
+        return cursor.getColumnIndex(TourLocationContract.LocationFeatureResourceImage.QUALIFIED_COLUMN_FEATURE_IMAGE);
     }
 
     /**

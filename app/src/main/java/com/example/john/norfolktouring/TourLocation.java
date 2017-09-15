@@ -50,34 +50,27 @@ public class TourLocation implements Parcelable {
 
     public static final int RATING_NOT_DETERMINED = -1;
 
-    /*** Nested Classes ***/
-    public class DailyHours {
-        private int openTime = UNKNOWN_TIME;
-        private int closeTime = UNKNOWN_TIME;
-
-        public static final int UNKNOWN_TIME = -1;
-
-        DailyHours(int openTime, int closeTime) {
-            setOpenTime(openTime);
-            setCloseTime(closeTime);
-        }
-
-        public int getOpenTime() {
-            return openTime;
-        }
-        public int getCloseTime() {
-            return closeTime;
-        }
-
-        public void setOpenTime(int openTime) {
-            this.openTime = openTime;
-        }
-        public void setCloseTime(int closeTime) {
-            this.closeTime = closeTime;
-        }
-    }
-
     /*** Methods ***/
+
+    @Override
+    public boolean equals(Object obj) {
+        TourLocation other = (TourLocation) obj;
+        boolean namesEqual = mLocationName.equals(other.getLocationName());
+        boolean descriptionsEqual =
+                mDescription == null ? other.getDescription() == null :
+                        mDescription.equals(other.getDescription());
+        boolean imagesEqual = mResourceImages.equals(other.getResourceImages());
+        boolean addressesEqual = mAddress.equals(other.getAddress());
+        boolean contactInfosEqual =
+                mContactInfo == null ? other.getContactInfo() == null :
+                        mContactInfo.equals(other.getContactInfo());
+        boolean featuresEqual =
+                mFeatures == null ? other.getFeatures() == null :
+                        mFeatures.equals(other.getFeatures());
+        return namesEqual && descriptionsEqual && imagesEqual &&
+                addressesEqual && contactInfosEqual && featuresEqual;
+
+    }
 
     public static Map<String, ArrayList<TourLocation>> getTourLocations() {
         return sTourLocations;
@@ -261,6 +254,33 @@ public class TourLocation implements Parcelable {
         }
     };
 
+    /*** Nested Classes ***/
+    public class DailyHours {
+        private int openTime = UNKNOWN_TIME;
+        private int closeTime = UNKNOWN_TIME;
+
+        public static final int UNKNOWN_TIME = -1;
+
+        DailyHours(int openTime, int closeTime) {
+            setOpenTime(openTime);
+            setCloseTime(closeTime);
+        }
+
+        public int getOpenTime() {
+            return openTime;
+        }
+        public int getCloseTime() {
+            return closeTime;
+        }
+
+        public void setOpenTime(int openTime) {
+            this.openTime = openTime;
+        }
+        public void setCloseTime(int closeTime) {
+            this.closeTime = closeTime;
+        }
+    }
+
     /**
      * Describes a feature of a TourLocation.
      */
@@ -268,6 +288,19 @@ public class TourLocation implements Parcelable {
         private String mName;
         private String mDescription;
         private ArrayList<Integer> mImages;
+
+        @Override
+        public boolean equals(Object obj) {
+            LocationFeature other = (LocationFeature) obj;
+            boolean namesEqual = mName.equals(other.getName());
+            boolean descriptionsEqual =
+                    mDescription == null ? other.getDescription() == null :
+                            mDescription.equals(other.getDescription());
+            boolean imagesEqual =
+                    mImages == null ? other.getDescription() == null :
+                            mImages.equals(other.getImages());
+            return namesEqual && descriptionsEqual && imagesEqual;
+        }
 
         public LocationFeature(String name, String description, ArrayList<Integer> images) {
             mName = name;

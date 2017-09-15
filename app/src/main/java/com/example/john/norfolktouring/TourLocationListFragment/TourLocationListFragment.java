@@ -36,6 +36,7 @@ import com.example.john.norfolktouring.TourLocationDetailFragment;
 import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public abstract class TourLocationListFragment extends Fragment
         LoaderManager.LoaderCallbacks<Cursor> {
     /*** Member Variables ***/
     protected MainActivity mActivity;
-    protected ArrayList<TourLocation> mLocations;
+//    protected ArrayList<TourLocation> mLocations;
     private /*TourLocationAdapter*/TourLocationCursorAdapter mAdapter;
     // Used to save and restore instance state.
     // Primarily used to save state when the fragment is put on the back stack.
@@ -124,6 +125,7 @@ public abstract class TourLocationListFragment extends Fragment
                 }
             }
 
+            @Override
             public void deliverResult(Cursor data) {
                 mTourLocationData = data;
                 super.deliverResult(data);
@@ -139,7 +141,17 @@ public abstract class TourLocationListFragment extends Fragment
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
+        ArrayList<TourLocation> adapterTourLocations = mAdapter.getTourLocations();
+        ArrayList<TourLocation> cursorTourLocations = null;
+        if (data != null)
+            cursorTourLocations = TourLocationCursorAdapter.getTourLocationsFromDatabaseData(data);
+        // If the data is identical, do not update the adapter's cursor.
+        if ((adapterTourLocations != null && data != null) &&
+                adapterTourLocations.equals(cursorTourLocations)) {
+            return;
+        } else {
+            mAdapter.swapCursor(data);
+        }
     }
 
 
@@ -170,7 +182,7 @@ public abstract class TourLocationListFragment extends Fragment
                 boolean wifiCellEnabled = sharedPreferences.getBoolean(key,
                         getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));
                 if (wifiCellEnabled)
-                    PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mLocations);
+                    PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mAdapter.getTourLocations());
             }
         }
     }
@@ -218,13 +230,15 @@ public abstract class TourLocationListFragment extends Fragment
             savedState = savedInstanceState.getBundle(SAVED_STATE);
         }
         if (savedState != null) {
-            mLocations = savedState.getParcelableArrayList(LOCATIONS);
+            ArrayList<TourLocation> tourLocations = savedState.getParcelableArrayList(LOCATIONS);
+            // Create an adapter for the locations.
+            mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(), mActivity.getCurrentLocation(), tourLocations);
+            /*TourLocationAdapter((MainActivity) getActivity(), mLocations, mActivity.getCurrentLocation());*/
+        } else {
+            mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(), mActivity.getCurrentLocation(), null);
         }
         savedState = null;
 
-        // Create an adapter for the locations.
-        mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(), mActivity.getCurrentLocation());
-            /*TourLocationAdapter((MainActivity) getActivity(), mLocations, mActivity.getCurrentLocation());*/
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.location_list);
         recyclerView.setAdapter(mAdapter);
         // Add a divider between items (like `ListView` default).
@@ -233,10 +247,6 @@ public abstract class TourLocationListFragment extends Fragment
                 new DividerItemDecoration(recyclerView.getContext(),
                         recyclerViewLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
-
-        // TODO: Move this to `TourLocationCursorAdapter`.
-//        if (mActivity.IsWifiCellEnabled())
-//            PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mLocations);
 
         return rootView;
     }
@@ -249,13 +259,13 @@ public abstract class TourLocationListFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-
-        mActivity.getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
+     mActivity.getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+//        mActivity.getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
     }
 
     protected Bundle saveState() {
         Bundle state = new Bundle();
-        state.putParcelableArrayList(LOCATIONS, mLocations);
+        state.putParcelableArrayList(LOCATIONS, mAdapter.getTourLocations());
         return state;
     }
 
@@ -273,6 +283,7 @@ public abstract class TourLocationListFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mActivity.getSupportLoaderManager().destroyLoader(TASK_LOADER_ID);
         // Accommodates this fragment being added to the back stack.
         savedState = saveState();
     }
