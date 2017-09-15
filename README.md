@@ -6,8 +6,8 @@ Its primary purpose is to showcase various features of Android - including Recyc
 DrawerLayouts, Adapters, Fragments (extensively used), click listeners, AsyncTasks, 
 Handlers (used for automatic image cycling), Services, MediaSessions 
 (including MediaStyle notifications that allow control of media playback as in apps like Spotify), 
-Widgets, Menus, SharedPreferences, Jobs (using Firebase JobDispatcher), 
-ContentProviders, and more.
+Widgets, Menus, SharedPreferences, Jobs (using Firebase JobDispatcher to issue recurring 
+notifications), ContentProviders, and more.
 
 Location data is stored in a SQLite database, and SQL queries are used to manage it.
 Data that may not be cached indefinitely - namely, data retrieved with APIs such as 
