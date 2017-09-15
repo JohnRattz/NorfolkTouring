@@ -9,13 +9,15 @@ Handlers (used for automatic image cycling), Services, MediaSessions
 Widgets, Menus, SharedPreferences, Jobs (using Firebase JobDispatcher), 
 ContentProviders, and more.
 
-Location data is stored in a SQLite database (using the `SQLiteOpenHelper` class), 
-and SQL queries are used to manage it. 
+Location data is stored in a SQLite database, and SQL queries are used to manage it.
+Data that may not be cached indefinitely - namely, data retrieved with APIs such as 
+the Google Places API - is not stored in the database.
 
 Some APIs used in this project include the Google Maps API 
 (both for Web and Android - using both URI queries and the Android API),
 the Google Places API (again, using both URI queries and the Android API),
-the YouTube Android Player API, and the Volley networking library.
+the YouTube Android Player API, the Fused Location Provider API, 
+and the Volley networking library.
 
 UI tests were conducted with the Espresso testing framework.
 These tests can be found in *app/src/androidTest*.
@@ -27,24 +29,24 @@ There is a drawer on the left that may be swiped open from the left side of
 the screen to the right side.
 
 Clicking on any of the drawer elements will open a list of tour locations 
-(populated by an Adapter) - displaying information such as the location name, 
+(`RecyclerView` populated by an `Adapter`) - displaying information such as the location name, 
 rating (from Google reviews), current open status, and distance (updated in real-time). 
 
-It is also possible to open a view of the locations on a map by clicking on the views 
-with the text "Google Maps View". Directions to these locations can be obtained 
-by clicking on the Views with the text "Plan Route" 
+It is also possible to open a view of a location on a map by clicking on the nested `View` 
+with the text "Google Maps View". Directions to a location can be obtained 
+by clicking on the nested `View` with the text "Plan Route" 
 (this opens the user's preferred map application with an implicit Intent).
 
-Clicking on the tour location view will open a detailed view of that location.
-This view shows additional information, such as the operating hours, website,
-address, contact information, and a description for the corresponding location.
+Clicking on the tour location `View` (e.g. clicking on the image) will open a detailed 
+view of that location. This view shows additional information, such as the operating hours, 
+website, address, contact information, and a description for the corresponding location.
 
 Notifications regarding the nearest location are issued every 5 to 10 minutes.
 Only locations that have been loaded so far are considered - i.e. only the categories opened
 since the app launched.
 
-The Settings menu can be accessed from the 3 vertical ellipses in the top right corner.
-Wifi and cell data usage can be toggled, which stops location updates and changes View 
+The settings menu can be accessed from the 3 vertical ellipses in the top right corner.
+Wifi and cell data usage can be toggled, which stops location updates and changes `View` 
 visibility and contents accordingly. Notifications may be toggled as well.
 
 <h3>Description of Software Components</h3>
