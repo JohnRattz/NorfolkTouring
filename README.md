@@ -17,9 +17,11 @@ Some APIs used in this project include the Google Maps API
 (both for Web and Android - using both URI queries and the Android API),
 the Google Places API (again, using both URI queries and the Android API),
 the YouTube Android Player API, the Fused Location Provider API, 
-and the Volley networking library.
+and the Volley networking library. 
+[ExpandableLayout by AAkira](https://github.com/AAkira/ExpandableLayout) provides
+animation to the expandable feature items in the detailed views for tour locations.
 
-UI tests were conducted with the Espresso testing framework.
+UI tests are conducted with the Espresso testing framework.
 These tests can be found in *app/src/androidTest*.
 
 <h3>Executive Overview</h3>
@@ -35,7 +37,7 @@ rating (from Google reviews), current open status, and distance (updated in real
 It is also possible to open a view of a location on a map by clicking on the nested `View` 
 with the text "Google Maps View". Directions to a location can be obtained 
 by clicking on the nested `View` with the text "Plan Route" 
-(this opens the user's preferred map application with an implicit Intent).
+(this opens the user's preferred map application with an implicit `Intent`).
 
 Clicking on the tour location `View` (e.g. clicking on the image) will open a detailed 
 view of that location. This view shows additional information, such as the operating hours, 
