@@ -6,7 +6,11 @@ Its primary purpose is to showcase various features of Android - including Recyc
 DrawerLayouts, Adapters, Fragments (extensively used), click listeners, AsyncTasks, 
 Handlers (used for automatic image cycling), Services, MediaSessions 
 (including MediaStyle notifications that allow control of media playback as in apps like Spotify), 
-Widgets, Menus, SharedPreferences, Jobs (using Firebase JobDispatcher), and more.
+Widgets, Menus, SharedPreferences, Jobs (using Firebase JobDispatcher), 
+ContentProviders, and more.
+
+Location data is stored in a SQLite database (using the `SQLiteOpenHelper` class), 
+and SQL queries are used to manage it. 
 
 Some APIs used in this project include the Google Maps API 
 (both for Web and Android - using both URI queries and the Android API),
@@ -55,7 +59,7 @@ the Navigation Drawer (a `DrawerLayout`), launches the `IntroductoryFragment`, a
 receives location updates from `Location/LocationService` if wifi and cell data usage is enabled.
 
 `IntroductoryFragment`: Contains and initializes a `YouTubePlayerFragment` and the
-introductory text. Contains a `MediaSession` (though this is often part of a containing `Activity`
+introductory text. Contains a `MediaSession` (this is often part of a containing `Activity`
 rather than a `Fragment`) that allows a YouTube video player (`YouTubePlayer`) to be controlled by 
 a MediaStyle notification (used by media playback applications such as Spotify).
 
@@ -72,7 +76,7 @@ and Google images (obtained asynchronously through `Utils/PlacesUtils`). Allows 
 and Google images to be viewed in an enlarged view that allows manual cycling of images 
 in forward and reverse with arrows on both sides of the screen. Features may be expanded and 
 collapsed with animated views by clicking on them. Feature images are also automatically cycled. 
-All image cycling stops and starts with the lifecycle of the `TourLocationDetailFragment`. 
+All image cycling in a `TourLocationDetailFragment` stops and starts with its lifecycle events. 
 
 <h4>Click Listeners</h4>
 
@@ -83,17 +87,18 @@ corresponding to a clicked drawer item. The `Fragment` launched will be one of t
 `TourLocationListFragment.TourLocationClickListener`: Replaces the main view with a `TourLocationDetailFragment` displaying
 more information than the `TourLocationListFragment`.
 
-`NavigationIconClickListeners.DirectionsIconClickListener`: Uses an implicit `Intent` to launch an application that plots a path
-between the device's location and the location of the corresponding `TourLocation`.
+`NavigationIconClickListeners.DirectionsIconClickListener`: Uses an implicit `Intent` to launch a 
+map application (e.g. Google Maps) that plots a path between 
+the device's location and the location of the corresponding `TourLocation`.
 
-`NavigationIconClickListeners.MapIconClickListener`: Opens a Google Maps view, places a marker at the location of the 
-corresponding `TourLocation`, and zooms to it. Also allows navigation to the device location 
-with a button.
+`NavigationIconClickListeners.MapIconClickListener`: Opens a Google Maps view, places a marker 
+at the location of the corresponding `TourLocation`, and zooms to it. 
+Also allows navigation to the device location with a button.
 
 <h4>Adapters</h4>
 
-`TourLocationListFragment.TourLocationAdapter`: Used by subclasses of `TourLocationListFragment` to fill a list of 
-`TourLocation` objects.
+`Data/TourLocationCursorAdapter`: Used by `TourLocationListFragment` to fill a list of 
+`TourLocation` objects with data from a `Cursor` provided by `TourLocationContentProvider`.
 
 <h4>Services</h4>
 
@@ -127,6 +132,16 @@ Smaller widgets just have the application background. Larger widgets also have a
 `Widget/GridWidgetService`: Populates a larger widget's `GridView` with the categories 
 of tour locations. Clicking on a `TextView` item in this `GridView` will open the application
 to that category of tour location.
+
+<h4>Database</h4>
+
+`TourLocationContentProvider`: Maps URIs passed in from a `ContentResolver` to actions
+on the `TourLocation` database - namely, SQL queries.
+
+`TourLocationContract`: Defines a URI for the database, which is needed by a `ContentResolver` 
+to interact with `TourLocationContentProvider`. Also defines names for table columns.
+
+`TourLocationDbHelper`: Creates and updates the SQLite database as needed.
 
 <h4>Other</h4>
 
