@@ -37,9 +37,6 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // TODO: Find out how to update the database without losing data.
-        // Drop any existing instance of the TourLocationEntry table.
-//        final String SQL_DROP_TOURLOCATION_TABLE = "DROP TABLE IF EXISTS " + TourLocationEntry.TABLE_NAME;
-//        db.execSQL(SQL_DROP_TOURLOCATION_TABLE);
         // Create TourLocationEntry table.
         final String SQL_CREATE_TOURLOCATION_TABLE = "CREATE TABLE " +
                 TourLocationEntry.TABLE_NAME + " (" +
@@ -52,16 +49,10 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 ");";
         try {
             db.execSQL(SQL_CREATE_TOURLOCATION_TABLE);
-            // TODO: Remove this when done debugging.
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TourLocationEntry.TABLE_NAME, null);
-            int numElems = cursor.getCount();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Drop any existing instance of the TourLocationResourceImage table.
-//        final String SQL_DROP_TOURLOCATION_RESOURCE_IMAGE_TABLE = "DROP TABLE IF EXISTS " + TourLocationResourceImage.TABLE_NAME;
-//        db.execSQL(SQL_DROP_TOURLOCATION_RESOURCE_IMAGE_TABLE);
         // Create TourLocationResourceImage table.
         final String SQL_CREATE_TOURLOCATION_RESOURCE_IMAGE_TABLE = "CREATE TABLE " +
                 TourLocationResourceImage.TABLE_NAME + " (" +
@@ -74,16 +65,10 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 ");";
         try {
             db.execSQL(SQL_CREATE_TOURLOCATION_RESOURCE_IMAGE_TABLE);
-            // TODO: Remove this when done debugging.
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TourLocationResourceImage.TABLE_NAME, null);
-            int numElems = cursor.getCount();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Drop any existing instance of the LocationFeatureEntry table.
-//        final String SQL_DROP_LOCATIONFEATURE_TABLE = "DROP TABLE IF EXISTS " + LocationFeatureEntry.TABLE_NAME;
-//        db.execSQL(SQL_DROP_LOCATIONFEATURE_TABLE);
         // Create LocationFeatureEntry table.
         final String SQL_CREATE_LOCATIONFEATURE_TABLE = "CREATE TABLE " +
                 LocationFeatureEntry.TABLE_NAME + " (" +
@@ -97,16 +82,10 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 ");";
         try {
             db.execSQL(SQL_CREATE_LOCATIONFEATURE_TABLE);
-            // TODO: Remove this when done debugging.
-            Cursor cursor = db.rawQuery("SELECT * FROM " + LocationFeatureEntry.TABLE_NAME, null);
-            int numElems = cursor.getCount();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Drop any existing instance of the LocationFeatureResourceImage table.
-//        final String SQL_DROP_LOCATIONFEATURE_RESOURCE_IMAGE_TABLE = "DROP TABLE IF EXISTS " + LocationFeatureResourceImage.TABLE_NAME;
-//        db.execSQL(SQL_DROP_LOCATIONFEATURE_RESOURCE_IMAGE_TABLE);
         // Create LocationFeatureResourceImage table.
         final String SQL_CREATE_LOCATIONFEATURE_RESOURCE_IMAGE_TABLE = "CREATE TABLE " +
                 LocationFeatureResourceImage.TABLE_NAME + " (" +
@@ -119,9 +98,6 @@ public class TourLocationDbHelper extends SQLiteOpenHelper {
                 ");";
         try {
             db.execSQL(SQL_CREATE_LOCATIONFEATURE_RESOURCE_IMAGE_TABLE);
-            // TODO: Remove this when done debugging.
-            Cursor cursor = db.rawQuery("SELECT * FROM " + LocationFeatureResourceImage.TABLE_NAME, null);
-            int numElems = cursor.getCount();
         } catch (SQLException e) {
             e.printStackTrace();
         }

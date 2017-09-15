@@ -20,7 +20,6 @@ import com.example.john.norfolktouring.TourLocationDetailFragment;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by John on 9/8/2017.
@@ -29,6 +28,7 @@ import java.util.List;
 public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocationCursorAdapter.TourLocationViewHolder> {
     private Cursor mCursor;
     private ArrayList<TourLocation> mTourLocations;
+    private String mCategory;
     private MainActivity mActivity;
     /**
      * The current device location.
@@ -37,9 +37,11 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
 
     public TourLocationCursorAdapter(MainActivity activity,
                                      Location deviceLocation,
+                                     String category,
                                      ArrayList<TourLocation> tourLocations) {
         mActivity = activity;
         mCurrentLocation = deviceLocation;
+        mCategory = category;
         mTourLocations = tourLocations;
     }
 
@@ -55,7 +57,6 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
     public void onBindViewHolder(TourLocationViewHolder holder, int position) {
         // Get the TourLocation object located at this position in the cursor.
         final TourLocation currentTourLocation = mTourLocations.get(position);
-        /*getTourLocationFromDatabaseData(mCursor, position)*/
 
         // Set the image resource (select the first-or these summary views).
         holder.locationImageView.setImageResource(currentTourLocation.getResourceImages().get(0));
@@ -129,7 +130,7 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         int tourLocationId = getTourLocationId(cursor);
         while (currentPosition < position) {
             cursor.moveToNext();
-            tourLocationId = getTourLocationId(cursor);;
+            tourLocationId = getTourLocationId(cursor);
             if (tourLocationId != previousTourLocationId) {
                 previousTourLocationId = tourLocationId;
                 currentPosition++;
@@ -192,49 +193,22 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         return tourLocations;
     }
 
-//    /**
-//     * Moves `mCursor` to the first row corresponding to entries
-//     * for the `TourLocation` specified by `position`.
-//     */
-//    void moveCursorToPosition(int tourLocationIdIndex, int position) {
-//        mCursor.moveToFirst();
-//        // The index of the `TourLocation` corresponding to the current row.
-//        int previousTourLocationId = -1;
-//        int currentPosition = -1;
-//        while (true) {
-//            int tourLocationId = mCursor.getInt(tourLocationIdIndex);
-//            if (tourLocationId != previousTourLocationId) {
-//                previousTourLocationId = tourLocationId;
-//                currentPosition++;
-//            }
-//            if (currentPosition == position)
-//                break;
-//        }
-//    }
-
     /**
      * Returns the number of items to display.
      */
     @Override
     public int getItemCount() {
-//        if (mCursor == null) {
-//            return 0;
-//        }
         if (mTourLocations != null)
             return mTourLocations.size();
         else
             return 0;
-        /*getCursorNumTourLocations()*/
     }
 
     /**
-     * Not every row in `mCursor` corresponds to a unique `TourLocation`, so determining
-     * the item count for this `Adapter` cannot be achieved by calling `mCursor.getCount()`.
+     * Not every row in the cursors corresponds to a unique {@code TourLocation}, so determining
+     * the number of {@code TourLocations} contained in a {@code Cursor} cannot be achieved
+     * simply by calling {@code cursor.getCount()}.
      */
-    public int getCursorNumTourLocations() {
-        return getCursorNumTourLocations(mCursor);
-    }
-
     public static int getCursorNumTourLocations(Cursor cursor) {
         int originalCursorPosition = cursor.getPosition();
         int previousTourLocationId = -1;
@@ -282,12 +256,11 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
 
         // Extract the `TourLocation`s from the cursor.
         mTourLocations = getTourLocationsFromDatabaseData(mCursor);
-//        final int numTourLocations = getCursorNumTourLocations();
-//        mTourLocations = new ArrayList<>(numTourLocations);
-//        for (int i = 0; i < numTourLocations; i++) {
-//            TourLocation currentTourLocation = getTourLocationFromDatabaseData(mCursor, i);
-//            mTourLocations.add(currentTourLocation);
-//        }
+
+        // Add these `TourLocation`s to the list of all loaded `TourLocation`s.
+        // If `c == null`, the `TourLocation`s are unloaded.
+        if (c != null)
+            TourLocation.addTourLocations(mCategory, mTourLocations);
 
         if (mActivity.IsWifiCellEnabled())
             PlacesUtils.getInfoForTourLocationsIfNeeded(mActivity, mTourLocations);
@@ -299,24 +272,26 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
      * Getters
      */
 
-    public ArrayList<TourLocation> getTourLocations() {return mTourLocations;}
-    public Cursor getCursor() {return mCursor;}
+    public ArrayList<TourLocation> getTourLocations() {
+        return mTourLocations;
+    }
+
+    public Cursor getCursor() {
+        return mCursor;
+    }
 
     /**
      * Cursor Getters
      */
-    // TODO: Flatten these.
     /* TourLocationEntry data */
     private int getTourLocationId() {
         return getTourLocationId(mCursor);
     }
     private static int getTourLocationId(Cursor cursor) {
-        int indx = getTourLocationIdIndex(cursor);
-        return cursor.getInt(indx);
+        return cursor.getInt(getTourLocationIdIndex(cursor));
     }
     private static int getTourLocationIdIndex(Cursor cursor) {
-        String colName = TourLocationContract.TourLocationEntry._ID;
-        return cursor.getColumnIndex(colName);
+        return cursor.getColumnIndex(TourLocationContract.TourLocationEntry._ID);
     }
 
     private String getTourLocationName() {
@@ -386,8 +361,7 @@ public class TourLocationCursorAdapter extends RecyclerView.Adapter<TourLocation
         return getFeatureId(mCursor);
     }
     private static int getFeatureId(Cursor cursor) {
-        int indx = getFeatureIdIndex(cursor);
-        return cursor.getInt(indx);
+        return cursor.getInt(getFeatureIdIndex(cursor));
     }
     private static int getFeatureIdIndex(Cursor cursor) {
         return cursor.getColumnIndex(TourLocationContract.LocationFeatureEntry.UNIQUE_ID);

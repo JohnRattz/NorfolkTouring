@@ -3,6 +3,7 @@ package com.example.john.norfolktouring.Utils;
 import android.location.Location;
 import android.os.AsyncTask;
 
+import com.example.john.norfolktouring.Data.TourLocationCursorAdapter;
 import com.example.john.norfolktouring.TourLocation;
 import com.example.john.norfolktouring.TourLocationListFragment.TourLocationListFragment;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -25,12 +26,12 @@ import java.util.List;
 class LocationsByIdsTask extends AsyncTask<String, Void, Void> {
     private GoogleApiClient mGoogleApiClient;
     private List<TourLocation> mTourLocations;
-    private TourLocationListFragment.TourLocationAdapter mAdapter;
+    private TourLocationCursorAdapter mAdapter;
 
     // Constants
     private static final String LOG_TAG = LocationsByIdsTask.class.getCanonicalName();
 
-    LocationsByIdsTask(List<TourLocation> tourLocations, TourLocationListFragment.TourLocationAdapter adapter) {
+    LocationsByIdsTask(List<TourLocation> tourLocations, TourLocationCursorAdapter adapter) {
         mGoogleApiClient = PlacesUtils.getGoogleApiClient();
         mTourLocations = tourLocations;
         mAdapter = adapter;

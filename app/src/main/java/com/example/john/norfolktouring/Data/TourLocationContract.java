@@ -52,7 +52,6 @@ public class TourLocationContract {
         /* Qualified versions of column names */
         public static final String QUALIFIED_ID = TABLE_NAME + "." + _ID;
         // Used to maintain BaseColumns._ID as the _ID from another table in a join.
-        // TODO: Ensure this works.
         public static final String UNIQUE_ID = "TLRI_ID";
         public static final String QUALIFIED_COLUMN_LOCATION_ID = TABLE_NAME + "." + COLUMN_LOCATION_ID;
         public static final String QUALIFIED_COLUMN_RESOURCE_IMAGE = TABLE_NAME + "." + COLUMN_RESOURCE_IMAGE;

@@ -7,10 +7,6 @@ import android.view.ViewGroup;
 
 import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.R;
-import com.example.john.norfolktouring.TourLocation;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by John on 5/16/2017.
@@ -28,7 +24,7 @@ public class RestaurantsFragment extends TourLocationListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ACTION_BAR_TITLE = CATEGORY_LABEL;
+        CURRENT_CATEGORY_LABEL = CATEGORY_LABEL;
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 }

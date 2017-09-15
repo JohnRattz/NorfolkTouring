@@ -16,9 +16,6 @@ import java.util.List;
 
 public class NorfolkTouring extends Application {
     /*** Member Variables ***/
-    // TODO: Remove this.
-    // A static instance of the application.
-    private static NorfolkTouring sInstance;
     // The application context (not an activity context).
     private static Context sContext;
 
@@ -32,10 +29,6 @@ public class NorfolkTouring extends Application {
 
     /*** Methods ***/
 
-    public static NorfolkTouring getInstance() {
-        return sInstance;
-    }
-
     public static Context getContext() {
         return sContext;
     }
@@ -44,7 +37,7 @@ public class NorfolkTouring extends Application {
      * Returns a list of categories of tour locations.
      */
     public static List<String> getCategoriesList() {
-        return new ArrayList<String>(Arrays.asList(
+        return new ArrayList<>(Arrays.asList(
                 sContext.getResources().getStringArray(R.array.categories_array)
         ));
     }

@@ -175,12 +175,8 @@ public class MainActivity extends AppCompatActivity
      * Initializes shared preferences and registers this Activity as a listener for changes.
      */
     private void setupSharedPreferences() {
-        // TODO: Are these the right shared preferences? Should Activity context be used instead (this)?
         SharedPreferences sharedPreferences = SharedPreferencesUtils.getDefaultSharedPreferences();
         mWifiCellEnabled = SharedPreferencesUtils.getWifiCellEnabled(sharedPreferences);
-                /*sharedPreferences.getBoolean(
-                getString(R.string.pref_enable_wifi_cell_data_usage_key),
-                getResources().getBoolean(R.bool.pref_enable_wifi_cell_data_usage_default));*/
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 

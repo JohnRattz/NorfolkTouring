@@ -3,11 +3,9 @@ package com.example.john.norfolktouring.TourLocationListFragment;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -19,34 +17,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.john.norfolktouring.Data.TourLocationContentProvider;
 import com.example.john.norfolktouring.Data.TourLocationCursorAdapter;
-import com.example.john.norfolktouring.Data.TourLocationDbHelper;
 import com.example.john.norfolktouring.MainActivity;
-import com.example.john.norfolktouring.NavigationIconClickListeners.DirectionsIconClickListener;
-import com.example.john.norfolktouring.NavigationIconClickListeners.MapIconClickListener;
 import com.example.john.norfolktouring.NorfolkTouring;
 import com.example.john.norfolktouring.R;
 import com.example.john.norfolktouring.TourLocation;
-import com.example.john.norfolktouring.TourLocationDetailFragment;
 import com.example.john.norfolktouring.Utils.InfoByIdsTask;
 import com.example.john.norfolktouring.Utils.PlacesUtils;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.john.norfolktouring.Constants.SAVED_STATE;
-import static com.example.john.norfolktouring.Data.TourLocationContract.LocationFeatureEntry;
-import static com.example.john.norfolktouring.Data.TourLocationContract.LocationFeatureResourceImage;
 import static com.example.john.norfolktouring.Data.TourLocationContract.TourLocationEntry;
-import static com.example.john.norfolktouring.Data.TourLocationContract.TourLocationResourceImage;
 import static com.example.john.norfolktouring.NorfolkTouring.setActionBarTitle;
-import static com.example.john.norfolktouring.TourLocation.RATING_NOT_DETERMINED;
 
 /**
  * Created by John on 7/3/2017.
@@ -61,15 +45,10 @@ public abstract class TourLocationListFragment extends Fragment
         LoaderManager.LoaderCallbacks<Cursor> {
     /*** Member Variables ***/
     protected MainActivity mActivity;
-//    protected ArrayList<TourLocation> mLocations;
-    private /*TourLocationAdapter*/TourLocationCursorAdapter mAdapter;
+    private TourLocationCursorAdapter mAdapter;
     // Used to save and restore instance state.
     // Primarily used to save state when the fragment is put on the back stack.
     protected Bundle savedState;
-
-    // Database access.
-    // TODO: Remove this if unused.
-//    SQLiteDatabase mDb;
 
     // Constants
     // Strings for storing state information.
@@ -80,7 +59,7 @@ public abstract class TourLocationListFragment extends Fragment
     // Identifies the `AsyncTaskLoader` for `TourLocation`s.
     private static final int TASK_LOADER_ID = 0;
     // This should always be a category label from strings.xml.
-    static String ACTION_BAR_TITLE = "";
+    static String CURRENT_CATEGORY_LABEL = "";
 
     /*** Methods ***/
     /**
@@ -90,13 +69,12 @@ public abstract class TourLocationListFragment extends Fragment
     /**
      * Instantiates and returns a new AsyncTaskLoader with the given ID.
      * This loader will return tour location data as a Cursor or null if an error occurs.
-     *
+     * <p>
      * Implements the required callbacks to take care of loading data at all stages of loading.
      */
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // TODO: Determine correct Context here.
-        return new AsyncTaskLoader<Cursor>(NorfolkTouring.getContext()/*mActivity*/) {
+        return new AsyncTaskLoader<Cursor>(NorfolkTouring.getContext()) {
             // Initialize a Cursor, this will hold all the tour location data
             Cursor mTourLocationData = null;
 
@@ -117,8 +95,8 @@ public abstract class TourLocationListFragment extends Fragment
                 try {
                     Uri uri = TourLocationEntry.CONTENT_URI;
                     return NorfolkTouring.getContext().getContentResolver().query(uri,
-                            null, null, new String[]{ACTION_BAR_TITLE}, null);
-                } catch(Exception e) {
+                            null, null, new String[]{CURRENT_CATEGORY_LABEL}, null);
+                } catch (Exception e) {
                     Log.e(LOG_TAG, "Failed to asynchronously load tour location cursor data.");
                     e.printStackTrace();
                     return null;
@@ -137,7 +115,7 @@ public abstract class TourLocationListFragment extends Fragment
      * Called when a previously created loader has finished its load.
      *
      * @param loader The Loader that has finished.
-     * @param data The data generated by the Loader.
+     * @param data   The data generated by the Loader.
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -153,7 +131,6 @@ public abstract class TourLocationListFragment extends Fragment
             mAdapter.swapCursor(data);
         }
     }
-
 
     /**
      * Called when a previously created loader is being reset, and thus
@@ -191,25 +168,9 @@ public abstract class TourLocationListFragment extends Fragment
      * Lifecycle Methods
      **/
 
-    // TODO: Remove this if unused.
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-
-    // TODO: Remove this if unused.
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
-
-        // Initialize the database of `TourLocations`.
-//        TourLocationDbHelper dbHelper = TourLocationContentProvider.getTourLocationHelper()/*new TourLocationDbHelper(NorfolkTouring.getContext())*/;
-//        mDb = dbHelper.getWritableDatabase();
 
         // Register this Fragment as a listener for shared preference changes.
         SharedPreferences sharedPreferences =
@@ -217,7 +178,7 @@ public abstract class TourLocationListFragment extends Fragment
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         // Set the Action Bar title to the name of this category.
-        setActionBarTitle(mActivity, ACTION_BAR_TITLE);
+        setActionBarTitle(mActivity, CURRENT_CATEGORY_LABEL);
 
         // Record that this Fragment is the currently displayed one in `MainActivity`.
         mActivity.setCurrentFragment(this);
@@ -232,10 +193,11 @@ public abstract class TourLocationListFragment extends Fragment
         if (savedState != null) {
             ArrayList<TourLocation> tourLocations = savedState.getParcelableArrayList(LOCATIONS);
             // Create an adapter for the locations.
-            mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(), mActivity.getCurrentLocation(), tourLocations);
-            /*TourLocationAdapter((MainActivity) getActivity(), mLocations, mActivity.getCurrentLocation());*/
+            mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(),
+                    mActivity.getCurrentLocation(), CURRENT_CATEGORY_LABEL, tourLocations);
         } else {
-            mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(), mActivity.getCurrentLocation(), null);
+            mAdapter = new TourLocationCursorAdapter((MainActivity) getActivity(),
+                    mActivity.getCurrentLocation(), CURRENT_CATEGORY_LABEL, null);
         }
         savedState = null;
 
@@ -252,15 +214,9 @@ public abstract class TourLocationListFragment extends Fragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-     mActivity.getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
-//        mActivity.getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
+        mActivity.getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
     }
 
     protected Bundle saveState() {
@@ -276,11 +232,6 @@ public abstract class TourLocationListFragment extends Fragment
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mActivity.getSupportLoaderManager().destroyLoader(TASK_LOADER_ID);
@@ -293,7 +244,6 @@ public abstract class TourLocationListFragment extends Fragment
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(mActivity)
                 .unregisterOnSharedPreferenceChangeListener(this);
-//        mDb.close();
     }
 
     /**
@@ -311,188 +261,5 @@ public abstract class TourLocationListFragment extends Fragment
     @Override
     public void infoByIdResultCallback() {
         mAdapter.notifyDataSetChanged();
-    }
-
-    // TODO: Remove this if unneeded.
-    /**
-     * Populates a TourLocationListFragment with views populated with TourLocation information.
-     */
-    public static class TourLocationAdapter extends RecyclerView.Adapter<TourLocationAdapter.TourLocationViewHolder> {
-        /*** Member Variables ***/
-        private MainActivity mActivity;
-
-        /**
-         * The `TourLocation` objects that populate the `View`s of this `RecyclerView`.
-         */
-        private List<TourLocation> mTourLocations;
-
-        /**
-         * The current device location.
-         */
-        private Location mCurrentLocation;
-
-        TourLocationAdapter(MainActivity activity,
-                            List<TourLocation> tourLocations,
-                            Location deviceLocation) {
-            mActivity = activity;
-            mTourLocations = tourLocations;
-            mCurrentLocation = deviceLocation;
-        }
-
-        @Override
-        public TourLocationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // Get the RecyclerView item layout
-            LayoutInflater inflater = LayoutInflater.from(mActivity);
-            View view = inflater.inflate(R.layout.location, parent, false);
-            return new TourLocationViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(TourLocationViewHolder holder, int position) {
-            // Get the {@link TourLocation} object located at this position in the list.
-            final TourLocation currentTourLocation = mTourLocations.get(position);
-
-            // Set the image resource (select the first for these summary views).
-            holder.locationImageView.setImageResource(currentTourLocation.getResourceImages().get(0));
-
-            // Set location name.
-            holder.locationNameView.setText(currentTourLocation.getLocationName());
-
-            // Set the rating (represented as stars).
-            int rating = currentTourLocation.getRating();
-            // If the rating is known or should be known soon, show the stars.
-            if (rating != RATING_NOT_DETERMINED || mActivity.IsWifiCellEnabled()) {
-                holder.ratingView.setVisibility(View.VISIBLE);
-                for (int starIndx = 0; starIndx < 5; starIndx++) {
-                    ImageView starView = (ImageView) holder.ratingView.getChildAt(starIndx);
-                    if (starIndx < rating)
-                        starView.setImageResource(R.drawable.ic_star_black_24dp);
-                    else
-                        starView.setImageResource(R.drawable.ic_star_border_black_24dp);
-                }
-            }// If the rating is not known and wireless data is disabled, do not show stars.
-            else {
-                holder.ratingView.setVisibility(View.GONE);
-            }
-
-            // Set the open status (whether this location is currently open).
-            Boolean locationIsOpen = currentTourLocation.getOpenNow();
-            if (locationIsOpen == null) {
-                holder.openStatusView.setText(R.string.open_status_unavailable);
-                // The open status should only be hidden if wireless data is disabled and
-                // the open status is unknown.
-            } else if (locationIsOpen)
-                holder.openStatusView.setText(R.string.location_open);
-            else
-                holder.openStatusView.setText(R.string.location_closed);
-
-            // Set the distance text for this location.
-            final Location location = currentTourLocation.getLocation();
-            mActivity.setDistanceText(holder.locationDistanceView, location, mCurrentLocation);
-            if (location != null && mCurrentLocation != null)
-                holder.locationDistanceView.setVisibility(View.VISIBLE);
-            else
-                holder.locationDistanceView.setVisibility(View.GONE);
-
-            // Handle the Google Maps view and Route Plan view.
-            if (mActivity.IsWifiCellEnabled()) {
-                holder.googleMapsView.setVisibility(View.VISIBLE);
-                holder.googleMapsRoutePlanView.setVisibility(View.VISIBLE);
-                // Set a click listener on the Google Maps icon and text.
-                holder.googleMapsView.setOnClickListener(new MapIconClickListener(mActivity, currentTourLocation));
-                // Set a click listener on the Google Maps Route Plan icon and text.
-                holder.googleMapsRoutePlanView.setOnClickListener(
-                        new DirectionsIconClickListener(mActivity, currentTourLocation, mCurrentLocation));
-            } else {
-                holder.googleMapsView.setVisibility(View.GONE);
-                holder.googleMapsRoutePlanView.setVisibility(View.GONE);
-            }
-
-            // Set a click listener for a detail view of this tour location.
-            TourLocationClickListener detailViewClickListener =
-                    new TourLocationClickListener(mActivity, currentTourLocation);
-            holder.rootView.setOnClickListener(detailViewClickListener);
-        }
-
-        @Override
-        public int getItemCount() {
-            if (mTourLocations == null) return 0;
-            return mTourLocations.size();
-        }
-
-        /**
-         * Records a device location update for this `Adapter`.
-         *
-         * @param location The new device location.
-         */
-        void updateLocation(Location location) {
-            mCurrentLocation = location;
-            // Refresh the views using the new location.
-            notifyDataSetChanged();
-        }
-
-        /**
-         * Class for the `RecyclerView` items.
-         */
-        static class TourLocationViewHolder extends RecyclerView.ViewHolder {
-            View rootView;
-            ImageView locationImageView;
-            TextView locationNameView;
-            LinearLayout ratingView;
-            TextView openStatusView;
-            TextView locationDistanceView;
-            View googleMapsView;
-            View googleMapsRoutePlanView;
-
-            TourLocationViewHolder(View itemView) {
-                super(itemView);
-                // Get the root `View`.
-                rootView = itemView;
-                // Get image.
-                locationImageView = (ImageView) itemView.findViewById(R.id.location_image);
-                // Get name.
-                locationNameView = (TextView) itemView.findViewById(R.id.location_name);
-                // Get rating.
-                ratingView = (LinearLayout) itemView.findViewById(R.id.location_rating_main_view);
-                // Get open status.
-                openStatusView = (TextView) itemView.findViewById(R.id.location_open_status_main_view);
-                // Get distance text.
-                locationDistanceView = (TextView) itemView.findViewById(R.id.location_distance_main_view);
-                // Get Google Maps icon and text.
-                googleMapsView = itemView.findViewById(R.id.google_maps_main_view);
-                // Get Google Maps Route Plan icon and text.
-                googleMapsRoutePlanView = itemView.findViewById(R.id.google_maps_route_plan_main_view);
-            }
-        }
-
-        /**
-         * Clicking on one of these Views opens a detailed view for the corresponding TourLocation.
-         */
-        public static class TourLocationClickListener implements View.OnClickListener {
-            private MainActivity mActivity;
-            private TourLocation mTourLocation;
-
-            TourLocationClickListener(MainActivity activity, TourLocation tourLocation) {
-                this.mActivity = activity;
-                this.mTourLocation = tourLocation;
-            }
-
-            @Override
-            public void onClick(View v) {
-                // Create a detail fragment associated with this position (a location).
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("location", mTourLocation/*location*/);
-                TourLocationDetailFragment detailFragment = new TourLocationDetailFragment();
-                detailFragment.setArguments(bundle);
-
-                // Make this detail fragment the current fragment.
-                mActivity.getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, detailFragment,
-                                TourLocationDetailFragment.FRAGMENT_LABEL)
-                        // Add this transaction to the back stack.
-                        .addToBackStack(TourLocationDetailFragment.FRAGMENT_LABEL)
-                        .commit();
-            }
-        }
     }
 }
