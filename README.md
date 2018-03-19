@@ -26,11 +26,15 @@ These tests can be found in *app/src/androidTest*.
 
 <h3>Executive Overview</h3>
 
-The application opens with an introductory video and navigation instructions.
-There is a drawer on the left that may be swiped open from the left side of 
-the screen to the right side.
+See a demo of this [here](https://www.youtube.com/watch?v=tg5QSXk-S1Y)!
 
-Clicking on any of the drawer elements will open a list of tour locations 
+The application opens with an introductory video and navigation instructions.
+The video can be controlled with the play/pause button on the video pane itself,
+but it can also be played, paused, and restarted through a MediaStyle notification
+with a musical note icon.
+
+There is a drawer on the left that may be swiped open from the left side of
+the screen to the right side. Clicking on any of the drawer elements will open a list of tour locations
 (`RecyclerView` populated by an `Adapter`) - displaying information such as the location name, 
 rating (from Google reviews), current open status, and distance (updated in real-time). 
 
@@ -42,13 +46,20 @@ by clicking on the nested `View` with the text "Plan Route"
 Clicking on the tour location `View` (e.g. clicking on the image) will open a detailed 
 view of that location. This view shows additional information, such as the operating hours, 
 website, address, contact information, and a description for the corresponding location.
+Both the "Chosen Images" and the "Images from Google" can be clicked on
+to enlarge them and allow manual cycling.
+
+There is also a widget that lists the categories of touring locations
+if it is large enough. Clicking an element of the list opens the app and
+shows the corresponding set of tour locations.
 
 Notifications regarding the nearest location are issued every 5 to 10 minutes.
 Only locations that have been loaded so far are considered - i.e. only the categories opened
-since the app launched.
+since the app launched. Clicking on these notifications shows the appropriate
+group of tour locations in the app.
 
 The settings menu can be accessed from the 3 vertical ellipses in the top right corner.
-Wifi and cell data usage can be toggled, which stops location updates and changes `View` 
+Wifi and cell data usage can be toggled, which stops location updates and changes `View`
 visibility and contents accordingly. Notifications may be toggled as well.
 
 <h3>Description of Software Components</h3>
